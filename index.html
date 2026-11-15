@@ -344,7 +344,7 @@ button:disabled{cursor:default}
 .wx-side{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none}
 .wx-off{cursor:pointer;color:var(--accent);font-weight:600;font-size:14.5px}
 .wx-off .wx-ic{width:30px;height:30px}
-.wx-src{font-size:11px;color:var(--fg2);text-align:right;padding:4px 6px 0}
+.wx-src{font-size:11px;color:var(--fg2);padding:5px 6px 0;display:flex;justify-content:space-between;gap:10px;align-items:center}
 .fam-av{width:34px;height:34px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:13px}
 .fam-av.sm{width:24px;height:24px;font-size:11px;border:2px solid var(--card);margin-left:-6px}
 .fam-dots{display:flex;padding-left:6px;flex:none}
@@ -417,6 +417,19 @@ a.row.news .t{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp
 .mk-more{display:flex;align-items:center;justify-content:center;gap:4px;font:inherit;font-size:13px;font-weight:600;color:var(--accent);background:none;border:0;padding:2px}
 .mk-more .i{width:14px;height:14px}
 @keyframes pulse{50%{transform:scale(1.08)}}
+.mk-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.mk-when{font-size:11.5px;color:var(--fg2);font-weight:600}
+.ibov{padding:14px 16px}
+.ibov-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.ibov-top b{display:block;font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.chip.good{background:color-mix(in srgb,var(--good) 16%,transparent);color:var(--good)}
+.spark{width:100%;height:70px;display:block;margin-top:10px}
+.spark-ax{display:flex;justify-content:space-between;font-size:11px;color:var(--fg2);font-variant-numeric:tabular-nums;margin-top:4px}
+.wx-city{display:flex;align-items:center;gap:3px;font-size:12.5px!important;color:var(--fg2)}
+.wx-city .i{width:12px;height:12px;flex:none}
+.wx-place{display:inline-flex;align-items:center;gap:5px;margin-top:4px;padding:6px 12px 6px 10px;border-radius:999px;background:var(--pill);font:inherit;font-size:14px;font-weight:600;color:var(--fg);border:0;max-width:100%}
+.wx-place span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wx-place .i{width:15px;height:15px;flex:none;color:var(--accent)}
 </style>
 </head>
 <body>
@@ -439,6 +452,7 @@ a.row.news .t{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp
   <symbol id="i-bot" viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="11" rx="4"/><path d="M12 4.5V8M9.5 13h.01M14.5 13h.01M9.8 16h4.4"/></symbol>
   <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></symbol>
   <symbol id="i-news" viewBox="0 0 24 24"><rect x="4" y="5" width="13" height="14" rx="2"/><path d="M17 9h2.5a.5.5 0 0 1 .5.5V17a2 2 0 0 1-2 2H6M7.5 9h6M7.5 12.5h6M7.5 16h3.5"/></symbol>
   <symbol id="i-nav" viewBox="0 0 24 24"><path d="M20 4 3.5 11.2l7 2.3 2.3 7z"/></symbol>
   <symbol id="i-send" viewBox="0 0 24 24"><path d="M20.5 3.5 10.5 13.5M20.5 3.5l-6.5 17-3.5-7-7-3.5z"/></symbol>
@@ -997,6 +1011,7 @@ function bindView(){
     if (a==='push-on'){ enablePush(); }
     if (a==='wx-on'){ loadWeather(true); }
     if (a==='mkt-refresh'){ loadMarket(true); }
+    if (a==='wx-pick'){ openWxPicker(); }
     if (a==='wx-refresh'){ wxFull = null; wxFullState = 'idle'; try { localStorage.removeItem('meudia.wxfull'); } catch(e) {} loadWeatherFull(true); render(); }
     if (a==='fam-create'){ famCall('family_create', { p_name: 'Família ' + ((S.name||'').split(' ').slice(-1)[0] || '') }, 'Família criada. Agora convide as pessoas.'); }
     if (a==='fam-code'){ openJoin(''); }
@@ -1385,9 +1400,9 @@ function wxCard(){
   if (!wx) return '';
   return `<button class="wx" data-go="clima" aria-label="Abrir previsão do tempo">
     ${wxIcon(wx.cond, !wx.is_day)}
-    <div class="wx-main"><b>${wx.temp}°C</b><span>${esc(wx.desc)}${wx.city ? ' · ' + esc(wx.city) : ''}</span></div>
+    <div class="wx-main"><b>${wx.temp}°C</b><span>${esc(wx.desc)}</span></div>
     <div class="wx-side"><span>máx ${wx.max}° · mín ${wx.min}°</span><span>chuva ${wx.rain}%</span></div>
-  </button><div class="wx-src">Dados: ${esc(wx.source)}</div>`;
+  </button><div class="wx-src">${wx.city ? `<span class="wx-city">${ic('pin')}${esc(wx.city)}</span>` : '<span></span>'}<span>Dados: ${esc(wx.source)}</span></div>`;
 }
 function loadWeather(ask){
   if (wxState === 'loading' || !navigator.geolocation || (wxState === 'err' && !ask)) return;
@@ -1479,18 +1494,24 @@ async function checkPendingInvite(){
 
 /* ---------- previsão completa (tela Previsão do tempo) ---------- */
 let wxFull = null, wxFullState = 'idle';
-try { const c = JSON.parse(localStorage.getItem('meudia.wxfull') || 'null'); if (c && Date.now() - c.at < 30 * 60e3) wxFull = c.data; } catch(e) {}
+const lsGet = (k, d) => { try { return JSON.parse(localStorage.getItem(k) || 'null') ?? d; } catch(e) { return d; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} };
+let wxPlace = lsGet('meudia.wxplace', null);            // { name, lat, lon, tz } ou null = minha localização
+const wxKey = () => wxPlace ? `${wxPlace.lat},${wxPlace.lon}` : 'aqui';
+{ const c = lsGet('meudia.wxfull', null); if (c && c.key === wxKey() && Date.now() - c.at < 30 * 60e3) wxFull = c.data; }
 const wxPos = () => { try { return JSON.parse(localStorage.getItem('meudia.wxpos') || 'null'); } catch(e) { return null; } };
 function loadWeatherFull(force){
   if (wxFullState === 'loading' || (wxFull && !force)) return;
   const run = async p => {
     const { data, error } = await sb.functions.invoke('clima', { body:{ lat:p.lat, lon:p.lon, full:true } });
     if (error || !data || data.error || !data.days){ wxFullState = 'err'; if (view === 'clima') render(); return; }
+    if (wxPlace && wxPlace.name) data.city = wxPlace.name;
     wxFull = data; wxFullState = 'ok';
-    try { localStorage.setItem('meudia.wxfull', JSON.stringify({ at: Date.now(), data })); } catch(e) {}
+    lsSet('meudia.wxfull', { at: Date.now(), key: wxKey(), data });
     if (view === 'clima') render();
   };
   wxFullState = 'loading';
+  if (wxPlace) return run(wxPlace);
   const p = wxPos();
   if (p) return run(p);
   if (!navigator.geolocation){ wxFullState = 'err'; return; }
@@ -1501,7 +1522,13 @@ const DOW3 = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
 function dayLabel(s){ const d = fromIso(s); if (s === today()) return 'Hoje'; if (s === iso(addDays(new Date(),1))) return 'Amanhã'; return `${DOW3[d.getDay()]} ${pad(d.getDate())}/${pad(d.getMonth()+1)}`; }
 function vClima(){
   if (!ui.wxTab) ui.wxTab = 'hoje';
-  const head = `${back()}<div class="head"><div><h1 class="lt">Previsão do tempo</h1><div class="sub">${wxFull && wxFull.city ? esc(wxFull.city) : 'Onde você está'}</div></div>
+  const tz = (wxPlace && wxPlace.tz) || (wxFull && wxFull.tz) || '';
+  let localNow = '';
+  try { if (tz) localNow = new Date().toLocaleTimeString('pt-BR', { timeZone: tz, hour: '2-digit', minute: '2-digit' }); } catch(e) {}
+  const myTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const head = `${back()}<div class="head"><div><h1 class="lt">Previsão do tempo</h1>
+      <button class="wx-place" data-act="wx-pick">${ic('pin')}<span>${wxFull && wxFull.city ? esc(wxFull.city) : wxPlace ? esc(wxPlace.name) : 'Onde você está'}</span>${ic('down')}</button>
+      ${localNow ? `<div class="sub">${tz !== myTz ? 'Horário local lá' : 'Agora'}: ${localNow}${tz !== myTz ? ` · aqui ${nowHM()}` : ''}</div>` : ''}</div>
     <button class="icon-btn" data-act="wx-refresh" aria-label="Atualizar">${ic('refresh')}</button></div>`;
   if (!wxFull){
     loadWeatherFull();
@@ -1529,6 +1556,38 @@ function vClima(){
     <div class="wx-side"><span>sensação ${w.feels}°C</span>${w.humidity != null ? `<span>umidade ${w.humidity}%</span>` : ''}${w.wind != null ? `<span>vento ${w.wind} km/h</span>` : ''}</div></div>
   <div class="seg" role="group" aria-label="Período">${[['hoje','Hoje'],['7','7 dias'],['15','15 dias']].map(([k,l]) => `<button data-wxtab="${k}" aria-pressed="${tab === k}">${l}</button>`).join('')}</div>
   <section>${list}<div class="foot">${tab === 'hoje' ? 'Hora, chance de chuva (%) e temperatura (°C).' : tab === '15' ? 'Dias 8 a 15: quanto mais distante, menos precisa é a previsão.' : 'Chance de chuva (%), mínima e máxima (°C).'} Dados: ${esc(w.source)}</div></section>`;
+}
+
+function setWxPlace(pl){
+  wxPlace = pl; lsSet('meudia.wxplace', pl);
+  if (pl){ const list = lsGet('meudia.wxplaces', []).filter(x => x.name !== pl.name); list.unshift(pl); lsSet('meudia.wxplaces', list.slice(0, 6)); }
+  wxFull = null; wxFullState = 'idle'; ui.wxPage = 0; loadWeatherFull(true); render();
+}
+function openWxPicker(){
+  const el = $('#sheet');
+  const draw = (results, msg) => {
+    const saved = lsGet('meudia.wxplaces', []);
+    el.querySelector('#wxp-list').innerHTML = `
+      <button class="row" data-wxp="aqui">${ic('nav','i chev')}<span class="main"><div class="t">Minha localização</div><div class="s">Onde o celular está</div></span>${!wxPlace ? ic('ok','i chev') : ''}</button>
+      ${results ? results.map((r, i) => `<button class="row" data-wxr="${i}"><span class="main"><div class="t">${esc(r.name)}</div><div class="s">${esc(r.detail)}</div></span></button>`).join('') || `<div class="empty">${msg || 'Nada encontrado.'}</div>`
+        : saved.map((r, i) => `<div class="row"><button class="main" data-wxs="${i}" style="text-align:left"><div class="t">${esc(r.name)}</div></button>${wxPlace && wxPlace.name === r.name ? ic('ok','i chev') : ''}<button class="test danger" data-wxdel="${i}" aria-label="Remover ${esc(r.name)}">Remover</button></div>`).join('')}`;
+    el.querySelectorAll('[data-wxp]').forEach(b => b.onclick = () => { close(); setWxPlace(null); });
+    el.querySelectorAll('[data-wxr]').forEach(b => b.onclick = () => { const r = results[Number(b.dataset.wxr)]; close(); setWxPlace({ name:r.name, lat:r.lat, lon:r.lon, tz:r.tz }); });
+    el.querySelectorAll('[data-wxs]').forEach(b => b.onclick = () => { close(); setWxPlace(lsGet('meudia.wxplaces', [])[Number(b.dataset.wxs)]); });
+    el.querySelectorAll('[data-wxdel]').forEach(b => b.onclick = () => { const l = lsGet('meudia.wxplaces', []); const [gone] = l.splice(Number(b.dataset.wxdel), 1); lsSet('meudia.wxplaces', l); if (wxPlace && gone && wxPlace.name === gone.name){ close(); setWxPlace(null); return; } draw(null); });
+  };
+  el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="Escolher local">
+    <div class="bar"><span style="min-width:70px"></span><b>Local da previsão</b><button class="save" data-x>Fechar</button></div>
+    <div class="body"><div class="group"><div class="row"><input class="full" id="wxp-q" placeholder="Buscar cidade no Brasil ou no mundo" autocomplete="off" aria-label="Buscar cidade"></div></div>
+      <div class="group" id="wxp-list"></div></div></div>`;
+  el.hidden = false;
+  const close = () => { el.hidden = true; el.innerHTML = ''; };
+  el.onclick = ev => { if (ev.target === el) close(); };
+  el.querySelector('[data-x]').onclick = close;
+  draw(null);
+  let t = null, seq = 0; const q = el.querySelector('#wxp-q');
+  q.oninput = () => { clearTimeout(t); const v = q.value.trim(), my = ++seq; if (v.length < 2){ draw(null); return; }
+    t = setTimeout(async () => { const { data } = await sb.functions.invoke('clima', { body:{ action:'search', q:v } }); if (my !== seq) return; draw((data && data.results) || [], 'Nenhuma cidade encontrada.'); }, 400); };
 }
 
 /* ---------- hora de sair (deslocamento até o compromisso) ---------- */
@@ -1737,12 +1796,12 @@ function mktStrip(){
   const top = latestNews(), seen = newsSeen(), isNew = top && top.at && top.at > seen;
   return `<div class="mk-box"><button class="mk-strip" data-go="mercado" aria-label="Abrir mercado e notícias">
     ${m ? cell('Dólar', `R$ ${n2(m.usd.value)}`, pctTxt(m.usd.pct), pctCls(m.usd.pct)) : ''}
-    ${m ? cell('Euro', `R$ ${n2(m.eur.value)}`, pctTxt(m.eur.pct), pctCls(m.eur.pct)) : ''}
+    ${mkt.bolsa && mkt.bolsa.ibov ? cell('Ibovespa', `${n2(mkt.bolsa.ibov.price / 1000, 1)} mil`, pctTxt(mkt.bolsa.ibov.pct), pctCls(mkt.bolsa.ibov.pct)) : m ? cell('Euro', `R$ ${n2(m.eur.value)}`, pctTxt(m.eur.pct), pctCls(m.eur.pct)) : ''}
     ${j ? cell('Selic', `${n2(j.selic.value)}%`, 'ao ano') : ''}
     ${j ? cell('IPCA', `${n2(j.ipca12.value)}%`, '12 meses') : ''}
   </button>
   ${top ? `<a class="mk-news" href="${esc(top.link)}" target="_blank" rel="noopener" data-newsopen="${esc(top.at || '')}">
-      ${isNew ? '<span class="mk-new">Nova</span>' : `<span class="mk-tag">${ic('news')}</span>`}<span class="mk-head">${esc(top.title)}</span>${ic('r','i chev')}</a>` : ''}
+      ${isNew ? '<span class="mk-new">Nova</span>' : `<span class="mk-tag">${ic('news')}</span>`}<span class="mk-txt"><span class="mk-when">Últimas notícias · atualizado às ${hm(mkt.noticias.updated_at)}</span><span class="mk-head">${esc(top.title)}</span></span>${ic('r','i chev')}</a>` : ''}
   <button class="mk-more" data-go="mercado">Ver mais notícias e indicadores${ic('r','i')}</button></div>`;
 }
 // manchete mais nova (Brasil ou Economia) e o que a pessoa já viu (neste aparelho)
@@ -1765,7 +1824,9 @@ function vMercado(){
   const tab = ui.newsTab, list = (nw && nw[tab]) || [], per = 6, pages = Math.max(1, Math.ceil(list.length / per));
   ui.newsPage = Math.min(Math.max(ui.newsPage || 0, 0), pages - 1);
   const items = list.slice(ui.newsPage * per, ui.newsPage * per + per);
+  const bo = mkt.bolsa;
   return `${head}
+  ${bo ? bolsaSection(bo) : ''}
   <section><div class="sh">Moedas</div><div class="group">
     ${m ? cur('Dólar comercial', m.usd, 4) + cur('Euro', m.eur, 4) + (m.btc ? cur('Bitcoin', m.btc, 2) : '') : '<div class="empty">Sem dados agora.</div>'}
   </div><div class="foot">Valores em R$ por unidade da moeda. Variação do dia em %. Dados: ${esc((m && m.source) || '')}</div></section>
@@ -1781,6 +1842,23 @@ function vMercado(){
   </section>`;
 }
 const mesRef = d => { const [, mm, yy] = String(d).split('/'); return mm ? `${MON[Number(mm) - 1]}/${yy}` : esc(d); };
+function spark(pts, up){
+  if (!pts || pts.length < 3) return '';
+  const ys = pts.map(p => p[1]), lo = Math.min(...ys), hi = Math.max(...ys), w = 300, h = 70, span = Math.max(hi - lo, 1e-9);
+  const xy = pts.map((p, i) => [i / (pts.length - 1) * w, h - 4 - (p[1] - lo) / span * (h - 8)]);
+  const d = xy.map((q, i) => `${i ? 'L' : 'M'}${q[0].toFixed(1)},${q[1].toFixed(1)}`).join('');
+  const col = up ? 'var(--good)' : 'var(--bad)';
+  const t0 = new Date(pts[0][0] * 1000), t1 = new Date(pts[pts.length - 1][0] * 1000);
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Ibovespa ao longo do dia"><path d="${d}L${w},${h}L0,${h}Z" fill="${col}" opacity=".12"/><path d="${d}" fill="none" stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>
+    <div class="spark-ax"><span>${pad(t0.getHours())}h</span><span>mín ${n2(lo, 0)} · máx ${n2(hi, 0)} pts</span><span>${pad(t1.getHours())}h</span></div>`;
+}
+function bolsaSection(bo){
+  const ib = bo.ibov;
+  return `<section><div class="sh">Bolsa (B3)</div>
+    ${ib ? `<div class="card ibov"><div class="ibov-top"><span><span class="mk-l">Ibovespa</span><b>${n2(ib.price, 2)} pts</b></span><span class="chip ${ib.pct >= 0 ? 'good' : 'bad'}">${ib.pct > 0 ? '+' : ''}${n2(ib.pct)}%</span></div>${spark(ib.chart, ib.pct >= 0)}</div>` : ''}
+    ${bo.stocks && bo.stocks.length ? `<div class="group" style="margin-top:10px">${bo.stocks.map(x => `<div class="row"><span class="main"><div class="t">${esc(x.symbol)}</div><div class="s">${esc(x.name)}</div></span><span class="mk-r">${accN(x.price, 2)}<span class="mk-s ${pctCls(x.pct)}">${pctTxt(x.pct)}</span></span></div>`).join('')}</div>` : ''}
+    <div class="foot">Ações em destaque em R$ por ação, variação do dia em %. Cotações com atraso de cerca de ${bo.delay_min || 30} min (B3 em tempo real é serviço pago). Atualizado às ${hm(bo.updated_at)}. Dados: ${esc(bo.source)}</div></section>`;
+}
 const accTxt = (v, d) => `R$ ${n2(v, d)}`;
 
 /* ---------- painel do administrador ---------- */
