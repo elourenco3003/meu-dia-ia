@@ -1394,7 +1394,8 @@ function vAdmin(){
   const spent = Number(ai.spent_usd), budget = Number(ai.budget_usd), left = Math.max(budget - spent, 0);
   const pct = budget ? Math.min(spent / budget * 100, 100) : 0;
   const plans = Object.assign({ free:0, plus:0, familia:0 }, d.plans);
-  const mrr = plans.plus * PLAN_PRICE.plus + plans.familia * PLAN_PRICE.familia;
+  const paid = Object.assign({ plus:0, familia:0 }, d.paid);
+  const mrr = paid.plus * PLAN_PRICE.plus + paid.familia * PLAN_PRICE.familia;
   const per = 8, pages = Math.max(1, Math.ceil(d.list.length / per));
   adminPage = Math.min(Math.max(adminPage, 0), pages - 1);
   const rows = d.list.slice(adminPage * per, adminPage * per + per);
@@ -1410,9 +1411,10 @@ function vAdmin(){
     <div class="sh">Planos</div>
     <div class="group">
       ${['free','plus','familia'].map(k => `<div class="row"><span class="main t">${PLAN_NAME[k]}</span><span class="n" style="font-weight:700;font-variant-numeric:tabular-nums">${plans[k]} un</span></div>`).join('')}
-      <div class="row"><span class="main"><div class="t">Receita mensal estimada</div><div class="s">Pelos preços de tabela</div></span>${acc(mrr)}</div>
+      <div class="row"><span class="main t">Acesso grátis (cortesia e família)</span><span class="n" style="font-weight:700;font-variant-numeric:tabular-nums">${d.free_access || 0} un</span></div>
+      <div class="row"><span class="main"><div class="t">Receita mensal estimada</div><div class="s">Só assinaturas pagas: ${paid.plus} Plus · ${paid.familia} Família</div></span>${acc(mrr)}</div>
     </div>
-    <div class="foot">Plus R$ 19,90 e Família R$ 29,90 por mês. A cobrança real entra com os pagamentos.</div>
+    <div class="foot">Plus R$ 19,90 e Família R$ 29,90 por mês. Cortesias (você, a Renata) e quem entra pela família de alguém não geram receita.</div>
   </section>
   <section>
     <div class="sh">Inteligência artificial<button data-act="admin-budget">Atualizar crédito</button></div>
@@ -1435,7 +1437,7 @@ function vAdmin(){
       ${rows.map(u => `<button class="row" data-auser="${u.id}">
         <span class="main"><div class="t">${esc(u.name || '(sem nome)')}${u.is_admin ? ' <span class="chip tint">admin</span>' : ''}${u.confirmed ? '' : ' <span class="chip warn">e-mail não confirmado</span>'}</div>
           <div class="s">${esc(u.email || '')} · desde ${fmtD(u.created_at)} · ${u.msgs_30d} msg em 30 dias · ${u.devices} aparelho${u.devices == 1 ? '' : 's'} com alerta</div></span>
-        <span class="right"><span class="chip ${u.plan === 'free' ? '' : 'good'}">${PLAN_NAME[u.plan] || u.plan}</span><span style="font-size:12.5px;color:var(--fg2);font-variant-numeric:tabular-nums">${usd(u.cost_30d)}</span></span>
+        <span class="right"><span class="chip ${u.plan === 'free' ? '' : 'good'}">${PLAN_NAME[u.plan] || u.plan}${u.plan !== 'free' && u.plan_source !== 'assinatura' ? (u.plan_source === 'familia' ? ' · via família' : ' · cortesia') : ''}</span><span style="font-size:12.5px;color:var(--fg2);font-variant-numeric:tabular-nums">${usd(u.cost_30d)}</span></span>
       </button>`).join('') || '<div class="empty">Nenhum usuário.</div>'}
     </div>
     ${pages > 1 ? `<div class="pager" style="margin-top:10px"><button class="icon-btn" data-apage="-1" aria-label="Página anterior" ${adminPage === 0 ? 'disabled' : ''}>${ic('l')}</button><span class="lbl" style="text-transform:none">Página ${adminPage + 1} de ${pages}</span><button class="icon-btn" data-apage="1" aria-label="Próxima página" ${adminPage >= pages - 1 ? 'disabled' : ''}>${ic('r')}</button></div>` : ''}
