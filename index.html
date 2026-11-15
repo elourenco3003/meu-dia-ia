@@ -369,6 +369,16 @@ button:disabled{cursor:default}
 .lc-t{font-weight:700;font-size:16px} .lc-s{font-size:13px;opacity:.9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lc-go{flex:none;font-size:13px;font-weight:700;background:#fff;color:var(--accent);padding:6px 12px;border-radius:999px}
 .leave-card.late .lc-go{color:var(--now)}
+.place-wrap{display:block}
+.place-in{display:flex;flex-direction:column;gap:6px;width:100%}
+.phint{font-size:12.5px;color:var(--accent)}
+.sugs{display:flex;flex-direction:column;border-top:1px solid var(--sep);margin:2px -4px 0;padding-top:4px}
+.sug-it{display:flex;align-items:flex-start;gap:10px;padding:9px 4px;text-align:left;font:inherit;color:var(--fg);border-radius:10px;width:100%}
+.sug-it:active{background:var(--fill)}
+.sug-it .i{width:16px;height:16px;flex:none;margin-top:2px;color:var(--accent)}
+.sug-it span{display:flex;flex-direction:column;min-width:0}
+.sug-it b{font-weight:600;font-size:15px} .sug-it small{font-size:13px;color:var(--fg2)}
+.sug-wait{font-size:13px;color:var(--fg2);padding:8px 4px}
 </style>
 </head>
 <body>
@@ -469,7 +479,7 @@ const MAP = {
   ev:   { table:'events',
           to: r => ({id:r.id, title:r.title, date:r.date, time:tm(r.start_time), end:tm(r.end_time), place:r.place||'', cat:r.category, done:r.done,
                 from:r.travel_from||'auto', plat:r.place_lat ?? null, plon:r.place_lon ?? null, plabel:r.place_label||'', tmin:r.travel_min ?? null, leave:r.leave_at||null, torig:r.travel_origin||'', tsrc:r.travel_source||''}),
-          from: o => ({title:o.title, date:o.date, start_time:o.time, end_time:o.end || null, place:o.place || '', category:o.cat || 'pessoal', done:!!o.done, travel_from:o.from || 'auto'}) },
+          from: o => ({title:o.title, date:o.date, start_time:o.time, end_time:o.end || null, place:o.place || '', category:o.cat || 'pessoal', done:!!o.done, travel_from:o.from || 'auto', ...(o.pgeoSet ? { place_geo:o.place, place_lat:o.plat, place_lon:o.plon, place_label:o.plabel } : {})}) },
   task: { table:'tasks',
           to: r => ({id:r.id, title:r.title, due:r.due_date || '', pri:r.priority, cat:r.category, done:r.done}),
           from: o => ({title:o.title, due_date:o.due || null, priority:o.pri || 'media', category:o.cat || 'pessoal', done:!!o.done, done_at:o.done ? new Date().toISOString() : null}) },
@@ -1024,6 +1034,7 @@ function openForm({title, fields, values={}, onSave, onDelete, saveLabel}){
   const f = fd => {
     const v = values[fd.k] ?? fd.def ?? '';
     if (fd.type==='title') return `<div class="row"><input class="full" id="f-${fd.k}" placeholder="${esc(fd.label)}" value="${esc(v)}" aria-label="${esc(fd.label)}"></div>`;
+    if (fd.type==='place') return `<div class="row place-wrap"><div class="place-in"><input class="full" id="f-${fd.k}" data-place autocomplete="off" placeholder="${esc(fd.ph || fd.label)}" value="${esc(v)}" aria-label="${esc(fd.label)}"><div class="phint" id="h-${fd.k}" hidden></div><div class="sugs" id="s-${fd.k}" hidden></div></div></div>`;
     if (fd.type==='select') return `<label class="row" for="f-${fd.k}"><span class="lab">${fd.label}</span><select id="f-${fd.k}">${fd.options.map(([o,l])=>`<option value="${o}" ${String(o)===String(v)?'selected':''}>${l}</option>`).join('')}</select></label>`;
     if (fd.type==='money') return `<label class="row" for="f-${fd.k}"><span class="lab">${fd.label}</span><input id="f-${fd.k}" data-money data-cents="${Number(v)||0}" inputmode="numeric" autocomplete="off" placeholder="R$ 0,00" value="${v ? 'R$ ' + brl(v) : ''}"></label>`;
     return `<label class="row" for="f-${fd.k}"><span class="lab">${fd.label}</span><input id="f-${fd.k}" type="${fd.type}" value="${esc(v)}" ${fd.ph?`placeholder="${esc(fd.ph)}"`:''}></label>`;
@@ -1038,6 +1049,7 @@ function openForm({title, fields, values={}, onSave, onDelete, saveLabel}){
       ${onDelete ? `<div class="group"><button class="row del" data-d>Excluir</button></div>` : ''}
     </div></div>`;
   el.hidden = false;
+  el.querySelectorAll('input[data-place]').forEach(bindPlace);
   // valor estilo caixa: ao começar a digitar apaga o valor e preenche a partir dos centavos (1 → 0,01; 1290 → 12,90)
   el.querySelectorAll('input[data-money]').forEach(inp => {
     let fresh = true;
@@ -1057,7 +1069,7 @@ function openForm({title, fields, values={}, onSave, onDelete, saveLabel}){
   el.querySelector('[data-x]').onclick = close;
   el.querySelector('[data-s]').onclick = () => {
     const vals = {};
-    fields.filter(x=>x.type!=='break').forEach(fd => { const inp = $('#f-'+fd.k); vals[fd.k] = fd.type==='money' ? (Number(inp.dataset.cents) || 0) : inp.value.trim(); });
+    fields.filter(x=>x.type!=='break').forEach(fd => { const inp = $('#f-'+fd.k); vals[fd.k] = fd.type==='money' ? (Number(inp.dataset.cents) || 0) : inp.value.trim(); if (fd.type==='place' && inp.dataset.lat) vals[fd.k+'_geo'] = { lat:Number(inp.dataset.lat), lon:Number(inp.dataset.lon), label:inp.dataset.label || '' }; });
     const miss = fields.find(fd => fd.req && !vals[fd.k]);
     if (miss){ const er = $('#f-err'); er.textContent = `Preencha: ${miss.label.toLowerCase()}.`; er.hidden = false; return; }
     const btn = el.querySelector('[data-s]'); if (btn.disabled) return; btn.disabled = true; btn.textContent = 'Salvando…';
@@ -1069,7 +1081,7 @@ function openForm({title, fields, values={}, onSave, onDelete, saveLabel}){
 }
 
 const FIELDS = {
-  ev: [{k:'title',label:'Título',type:'title',req:1},{type:'break'},{k:'date',label:'Data',type:'date',req:1},{k:'time',label:'Início',type:'time',req:1},{k:'end',label:'Fim',type:'time'},{type:'break'},{k:'place',label:'Local',type:'text',ph:'Ex.: rua, número, cidade'},{k:'from',label:'Sair de',type:'select',def:'auto',options:[['auto','Automático'],['casa','Casa'],['trabalho','Trabalho']]},{k:'cat',label:'Categoria',type:'select',def:'pessoal',options:[['pessoal','Pessoal'],['trabalho','Trabalho']]}],
+  ev: [{k:'title',label:'Título',type:'title',req:1},{type:'break'},{k:'date',label:'Data',type:'date',req:1},{k:'time',label:'Início',type:'time',req:1},{k:'end',label:'Fim',type:'time'},{type:'break'},{k:'place',label:'Local',type:'place',ph:'Local: nome do lugar, endereço ou CEP'},{k:'from',label:'Sair de',type:'select',def:'auto',options:[['auto','Automático'],['casa','Casa'],['trabalho','Trabalho']]},{k:'cat',label:'Categoria',type:'select',def:'pessoal',options:[['pessoal','Pessoal'],['trabalho','Trabalho']]}],
   task: [{k:'title',label:'Título',type:'title',req:1},{type:'break'},{k:'due',label:'Data',type:'date'},{k:'pri',label:'Prioridade',type:'select',def:'media',options:[['alta','Alta'],['media','Média'],['baixa','Baixa']]},{k:'cat',label:'Categoria',type:'select',def:'pessoal',options:[['pessoal','Pessoal'],['trabalho','Trabalho']]}],
   fin: [{k:'type',label:'Tipo',type:'select',def:'conta',options:[['conta','Conta a pagar'],['despesa','Despesa'],['receita','Receita']]},{k:'title',label:'Descrição',type:'title',req:1},{type:'break'},{k:'cents',label:'Valor',type:'money',req:1},{k:'date',label:'Data ou vencimento',type:'date',req:1}],
   rem: [{k:'title',label:'Título',type:'title',req:1},{type:'break'},{k:'date',label:'Data',type:'date',req:1},{k:'time',label:'Hora',type:'time',req:1},{k:'adv',label:'Avisar',type:'select',def:0,options:Object.entries(ADV)}],
@@ -1084,11 +1096,12 @@ function openEntity(k, id){
     onSave: async v => {
       let it_new = null;
       if (k==='rem') v.adv = Number(v.adv);
+      if (k==='ev'){ const g = v.place_geo; delete v.place_geo; if (g){ v.plat = g.lat; v.plon = g.lon; v.plabel = g.label; v.pgeoSet = true; } else if (it && v.place !== it.place){ v.plat = null; v.plon = null; v.plabel = ''; } }
       if (k==='fin' && !it) v.paid = v.type!=='conta';
       if (!it) v.done = false;
       if (it) { const prev = {...it}; Object.assign(it, v); try { await dbSave(k, it, false); } catch(e) { Object.assign(it, prev); throw e; } if (k==='rem') delete S.fired[it.id]; }
       else { const rec = await dbSave(k, v, true); arr.push(rec); play(k==='rem'?'lembrete':'resposta'); if (k==='ev') it_new = rec; }
-      const evT = it || it_new; if (k==='ev' && evT && evT.place){ if (it){ evT.leave = null; evT.tsrc = ''; } setTimeout(() => calcTravel(evT, true), 0); }
+      const evT = it || it_new; if (evT) delete evT.pgeoSet; if (k==='ev' && evT && evT.place){ if (it){ evT.leave = null; evT.tsrc = ''; } setTimeout(() => calcTravel(evT, true), 0); }
       if (k==='ev'){ const c = conflictWith(v.date, v.time, it && it.id); if (c) return `Atenção: conflita com <b>${esc(c.title)}</b> às ${c.time}`; }
       return it ? 'Alterações salvas' : `${NAMES[k][1]} adicionado`.replace('Tarefa adicionado','Tarefa adicionada');
     },
@@ -1551,7 +1564,7 @@ function openAddr(k){
   const label = k === 'home' ? 'Casa' : 'Trabalho';
   openForm({
     title: `Endereço de ${label}`, saveLabel: 'Salvar',
-    fields: [{ k:'addr', label:'Rua, número, bairro e cidade', type:'title' }],
+    fields: [{ k:'addr', label:'Endereço', type:'place', ph:'CEP ou rua, número, bairro e cidade' }],
     values: { addr: S[k].addr },
     onSave: async v => {
       const pre = k === 'home' ? 'home' : 'work';
@@ -1560,7 +1573,7 @@ function openAddr(k){
         S[k] = { addr:'', lat:null, lon:null }; return `Endereço de ${label} removido`;
       }
       const p = wxPos();
-      const { data, error } = await sb.functions.invoke('rota', { body:{ action:'geocode', q:v.addr, lat:p && p.lat, lon:p && p.lon } });
+      const { data, error } = v.addr_geo ? { data: v.addr_geo, error: null } : await sb.functions.invoke('rota', { body:{ action:'geocode', q:v.addr, lat:p && p.lat, lon:p && p.lon } });
       if (error || !data || data.error) throw Object.assign(new Error('geo'), { userMsg: 'Não encontrei esse endereço. Tente com rua, número e cidade.' });
       const { error: e2 } = await sb.from('profiles').update({ [pre+'_addr']:v.addr, [pre+'_lat']:data.lat, [pre+'_lon']:data.lon }).eq('id', session.user.id); if (e2) throw e2;
       S[k] = { addr:v.addr, lat:data.lat, lon:data.lon };
@@ -1581,6 +1594,61 @@ function saveLocationSoon(){
 }
 let pendingRoute = null;
 try { const r = new URLSearchParams(location.search).get('rota'); if (r){ pendingRoute = r; history.replaceState(null, '', location.pathname); } } catch(e) {}
+
+/* ---------- busca de local: nome do lugar, endereço ou CEP ---------- */
+const cepOf = q => { const d = String(q).replace(/\D/g, ''); return /^\s*\d{5}-?\d{3}\s*$/.test(q) ? d : ''; };
+async function viaCep(cep){
+  try {
+    const j = await fetch(`https://viacep.com.br/ws/${cep}/json/`).then(r => r.json());
+    if (!j || j.erro) return null;
+    return { street: j.logradouro || '', district: j.bairro || '', city: j.localidade || '', uf: j.uf || '', cep: j.cep || cep };
+  } catch(e) { return null; }
+}
+function bindPlace(inp){
+  const box = document.getElementById('s-' + inp.id.slice(2)), hint = document.getElementById('h-' + inp.id.slice(2));
+  let t = null, seq = 0;
+  const clearGeo = () => { delete inp.dataset.lat; delete inp.dataset.lon; delete inp.dataset.label; };
+  const show = items => {
+    if (!items.length){ box.hidden = true; box.innerHTML = ''; return; }
+    box.innerHTML = items.map((it, i) => `<button type="button" class="sug-it" data-i="${i}">${ic(it.cep ? 'search' : 'nav')}<span><b>${esc(it.name)}</b>${it.address ? `<small>${esc(it.address)}</small>` : ''}</span></button>`).join('');
+    box.hidden = false;
+    box.querySelectorAll('[data-i]').forEach(b => b.onclick = () => {
+      const it = items[Number(b.dataset.i)];
+      if (it.cep){
+        // CEP: preenche rua, bairro e cidade; a pessoa completa o número
+        inp.value = [it.street, it.district, it.city && `${it.city} - ${it.uf}`].filter(Boolean).join(', ');
+        clearGeo(); hint.textContent = 'Acrescente o número depois do nome da rua.'; hint.hidden = false;
+        inp.focus(); const pos = (it.street || '').length; inp.setSelectionRange(pos, pos);
+      } else {
+        inp.value = it.address && it.address !== it.name ? `${it.name} - ${it.address}` : it.name;
+        inp.dataset.lat = it.lat; inp.dataset.lon = it.lon; inp.dataset.label = it.name;
+        hint.textContent = 'Local encontrado no mapa.'; hint.hidden = false;
+      }
+      box.hidden = true; box.innerHTML = '';
+    });
+  };
+  inp.addEventListener('input', () => {
+    clearGeo(); hint.hidden = true; clearTimeout(t);
+    const q = inp.value.trim(), my = ++seq;
+    if (q.length < 3){ show([]); return; }
+    t = setTimeout(async () => {
+      const cep = cepOf(q);
+      if (cep){
+        const c = await viaCep(cep); if (my !== seq) return;
+        if (!c){ show([]); hint.textContent = 'CEP não encontrado.'; hint.hidden = false; return; }
+        show([{ cep:true, ...c, name: c.street || `${c.city} - ${c.uf}`, address: [c.district, `${c.city} - ${c.uf}`, `CEP ${c.cep}`].filter(Boolean).join(', ') }]);
+        return;
+      }
+      box.innerHTML = '<div class="sug-wait">Buscando…</div>'; box.hidden = false;
+      const p = wxPos();
+      const { data } = await sb.functions.invoke('rota', { body:{ action:'search', q, lat: p && p.lat, lon: p && p.lon } });
+      if (my !== seq) return;
+      const res = (data && data.results) || [];
+      show(res);
+      if (!res.length){ hint.textContent = 'Nada encontrado com esse nome. Tente o endereço ou o CEP.'; hint.hidden = false; }
+    }, 450);
+  });
+}
 
 /* ---------- painel do administrador ---------- */
 let adminData = null, adminErr = '', adminLoading = false, adminPage = 0;
