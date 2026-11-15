@@ -111,6 +111,25 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 .h2{font-size:22px;font-weight:600;letter-spacing:-.015em;margin:0}
 .sub{color:var(--fg2);font-size:14.5px;margin-top:4px}
 .head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.li-sec{font-size:12.5px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.04em;padding:12px 14px 4px}
+.li .t{font-size:16px}
+.li.done .t{color:var(--fg2);text-decoration:line-through}
+.li-add{margin:0}
+.li-total .row{min-height:44px}
+.note-prev{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.note-row .main{flex:1;min-width:0}
+.note-ta{width:100%;min-height:200px;border:0;background:none;font:inherit;font-size:16px;line-height:1.5;resize:none;color:inherit;outline:none}
+.note-bt{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.note-bt form{display:contents}
+.note-bt .btn-go{font-size:13.5px;padding:12px 6px;flex-direction:column;gap:4px}
+.note-bt .btn-go svg{width:20px;height:20px}
+.texp{white-space:nowrap}
+.nt-row{justify-content:flex-start;gap:12px}.nt-row .main{flex:1;min-width:0}
+.subs{background:var(--fill);border-radius:0 0 14px 14px;margin:-2px 0 4px}
+.row.sub{padding-left:46px;min-height:44px}
+.row.sub .t{font-size:14.5px}
+.check.sm{width:22px;height:22px}
+.sub-add input{flex:1;border:0;background:none;font:inherit;font-size:14.5px;color:inherit;outline:none;min-width:0}
 .me-card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);border:0;border-radius:18px;padding:14px;box-shadow:var(--shadow);font:inherit;color:inherit}
 .me-card .round{width:48px;height:48px;flex:none}
 .me-card .main{flex:1;min-width:0}.me-card .t{font-weight:700;font-size:17px}.me-card .s{font-size:13.5px;color:var(--fg2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -590,6 +609,10 @@ button.row{width:100%;text-align:left;font:inherit;color:inherit;background:none
   <symbol id="i-ok" viewBox="0 0 24 24"><path d="m5.5 12.5 4.2 4.2L18.5 8"/></symbol>
   <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3.5 13.8 9l5.7 1.8-5.7 1.8L12 18.5l-1.8-5.9L4.5 10.8 10.2 9z"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M10 6h10M10 12h10M10 18h10"/><path d="m3.5 6 1.2 1.2L7 5M3.5 12l1.2 1.2L7 11M3.5 18l1.2 1.2L7 17"/></symbol>
+  <symbol id="i-note" viewBox="0 0 24 24"><path d="M6 3.5h8.5L18.5 7.5v13H6z"/><path d="M14 3.5v4.5h4.5M9 12h6M9 16h6"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><path d="M4.5 10.5h15v9.5h-15zM3.5 7.5h17v3h-17zM12 7.5V20"/><path d="M12 7.5C10.5 5 7.5 4.5 7.5 6.2S10 7.5 12 7.5c2 0 4.5-.1 4.5-1.3S13.5 5 12 7.5"/></symbol>
+  <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M4.5 11.5a7 7 0 0 1 12.4-4.4L19 9M19.5 12.5a7 7 0 0 1-12.4 4.4L5 15"/><path d="M19 4.5V9h-4.5M5 19.5V15h4.5"/></symbol>
   <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 11.5a7.5 7 0 1 1 3.4 5.9L4 18.5l1.1-3.2A6.8 6.8 0 0 1 4 11.5Z"/><path d="M9 11.5h.01M12 11.5h.01M15 11.5h.01"/></symbol>
   <symbol id="i-bot" viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="11" rx="4"/><path d="M12 4.5V8M9.5 13h.01M14.5 13h.01M9.8 16h4.4"/></symbol>
   <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></symbol>
@@ -662,11 +685,11 @@ const SB_URL = 'https://tgrfwgzfjrwgkkvpgbqq.supabase.co';
 // chave pública (anon): pode ficar no navegador; quem protege os dados de cada usuário é o RLS do banco
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ3Z3pmanJ3Z2trdnBnYnFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2OTMxMDYsImV4cCI6MjExMDI2OTEwNn0.O2xXMY9NAQSeuxYmbOvT20u9UXaFp9Fr73W2HMcju4Q';
 const sb = window.supabase.createClient(SB_URL, SB_KEY);
-const CATS = {lembrete:'Novo lembrete',compromisso:'Compromisso próximo',vencer:'Conta a vencer',vencida:'Conta vencida',pendente:'Tarefa pendente',concluida:'Tarefa concluída',resposta:'Resposta da IA',resumo:'Resumo diário',sair:'Hora de sair',noticia:'Notícia em destaque',prioritario:'Alerta prioritário'};
+const CATS = {lembrete:'Novo lembrete',compromisso:'Compromisso próximo',vencer:'Conta a vencer',vencida:'Conta vencida',pendente:'Tarefa pendente',concluida:'Tarefa concluída',resposta:'Resposta da IA',resumo:'Resumo diário',sair:'Hora de sair',noticia:'Notícia em destaque',aniversario:'Aniversário',semana:'Resumo da semana',prioritario:'Alerta prioritário'};
 const defCats = () => Object.fromEntries(Object.keys(CATS).map(k=>[k, k !== 'noticia']));
 const LOCAL = 'meudia.local';
 let session = null;
-const blankState = () => ({ name:'', sounds:true, quiet_start:'', quiet_end:'', event_adv:30, summary_time:'07:30', home:{addr:''}, work:{addr:''}, travel_on:true, travel_arrive:30, cats:defCats(), example:false, fired:{}, chat:[], chatLoaded:false, events:[], tasks:[], fin:[], rems:[] });
+const blankState = () => ({ name:'', sounds:true, quiet_start:'', quiet_end:'', event_adv:30, summary_time:'07:30', home:{addr:''}, work:{addr:''}, travel_on:true, travel_arrive:30, cats:defCats(), example:false, fired:{}, chat:[], chatLoaded:false, events:[], tasks:[], fin:[], rems:[], lists:[], items:[], notes:[], recurring:[], birthdays:[] });
 let S = blankState();
 try { S.fired = (JSON.parse(localStorage.getItem(LOCAL)) || {}).fired || {}; } catch(e) {}
 const save = () => { try { localStorage.setItem(LOCAL, JSON.stringify({ fired: S.fired })); } catch(e) {} };
@@ -677,8 +700,8 @@ const MAP = {
                 from:r.travel_from||'auto', plat:r.place_lat ?? null, plon:r.place_lon ?? null, plabel:r.place_label||'', tmin:r.travel_min ?? null, leave:r.leave_at||null, torig:r.travel_origin||'', tsrc:r.travel_source||''}),
           from: o => ({title:o.title, date:o.date, start_time:o.time, end_time:o.end || null, place:o.place || '', category:o.cat || 'pessoal', done:!!o.done, travel_from:o.from || 'auto', ...(o.pgeoSet ? { place_geo:o.place, place_lat:o.plat, place_lon:o.plon, place_label:o.plabel } : {})}) },
   task: { table:'tasks',
-          to: r => ({id:r.id, title:r.title, due:r.due_date || '', pri:r.priority, cat:r.category, done:r.done}),
-          from: o => ({title:o.title, due_date:o.due || null, priority:o.pri || 'media', category:o.cat || 'pessoal', done:!!o.done, done_at:o.done ? new Date().toISOString() : null}) },
+          to: r => ({id:r.id, title:r.title, due:r.due_date || '', pri:r.priority, cat:r.category, done:r.done, parent:r.parent_id || null}),
+          from: o => ({title:o.title, due_date:o.due || null, priority:o.pri || 'media', category:o.cat || 'pessoal', done:!!o.done, done_at:o.done ? new Date().toISOString() : null, parent_id:o.parent || null}) },
   fin:  { table:'finance_entries',
           to: r => ({id:r.id, type:r.kind, title:r.title, cents:Number(r.amount_cents), date:r.date, paid:r.paid}),
           from: o => ({kind:o.type, title:o.title, amount_cents:o.cents, date:o.date, paid:!!o.paid}) },
@@ -702,6 +725,12 @@ async function loadAll(){
     S.travel_on = p.data.travel_on !== false; S.travel_arrive = p.data.travel_arrive_min || 30; S.plan = p.data.plan || 'free';
   }
   S.events = ev.data.map(MAP.ev.to); S.tasks = tk.data.map(MAP.task.to); S.fin = fn.data.map(MAP.fin.to); S.rems = rm.data.map(MAP.rem.to);
+  const [ls, li, nt, rb, bd] = await Promise.all([
+    sb.from('lists').select('*').order('updated_at', { ascending:false }), sb.from('list_items').select('*').order('created_at'),
+    sb.from('notes').select('*').order('updated_at', { ascending:false }), sb.from('recurring_bills').select('*').order('day'),
+    sb.from('birthdays').select('*').order('month').order('day'),
+  ]);
+  S.lists = ls.data || []; S.items = li.data || []; S.notes = nt.data || []; S.recurring = rb.data || []; S.birthdays = bd.data || [];
 }
 async function dbSave(k, o, isNew){
   const m = MAP[k];
@@ -721,7 +750,7 @@ function saveProfile(){
 const TONES = {
   lembrete:[[880,0],[1318,.12]], compromisso:[[659,0],[880,.13],[988,.26]], vencer:[[523,0],[659,.15]],
   vencida:[[440,0],[349,.2]], pendente:[[740,0],[740,.16]], concluida:[[784,0],[1047,.1]],
-  resposta:[[1175,0]], resumo:[[523,0],[659,.12],[784,.24],[1047,.36]], prioritario:[[988,0],[988,.17],[988,.34]], sair:[[587,0],[784,.12],[988,.24],[784,.36]], noticia:[[698,0],[880,.14]],
+  resposta:[[1175,0]], resumo:[[523,0],[659,.12],[784,.24],[1047,.36]], prioritario:[[988,0],[988,.17],[988,.34]], sair:[[587,0],[784,.12],[988,.24],[784,.36]], noticia:[[698,0],[880,.14]], aniversario:[[523,0],[659,.12],[784,.24],[1047,.4]], semana:[[659,0],[523,.15]],
 };
 // toques curtos que a pessoa pode escolher para cada tipo de alerta
 const SHORT_TONES = {
@@ -872,22 +901,24 @@ const dayItems = d => [
   ...S.events.filter(e=>e.date===d).map(e=>({k:'ev',time:e.time,title:e.title,sub:e.place||'Compromisso',ref:e})),
   ...S.rems.filter(r=>r.date===d && !r.done).map(r=>({k:'rem',time:r.time,title:r.title,sub:'Lembrete',ref:r})),
 ].sort((a,b)=>(a.time||'99').localeCompare(b.time||'99'));
-const pendingTasks = () => S.tasks.filter(t=>!t.done).sort((a,b)=>(a.due||'9999').localeCompare(b.due||'9999') || PRIO_N[a.pri]-PRIO_N[b.pri]);
+const pendingTasks = () => S.tasks.filter(t=>!t.done && !t.parent).sort((a,b)=>(a.due||'9999').localeCompare(b.due||'9999') || PRIO_N[a.pri]-PRIO_N[b.pri]);
 
 /* ---------- navegação ---------- */
 let view = 'inicio';
 const ui = { agendaSel: today(), weekOff: 0, monthOff: 0, calMode: 'semana', taskSeg: 'pend', finOff: 0, wipe: false, filter: 'todas' };
-function go(v){ if (v === 'ajustes' && view !== 'ajustes') ui.setSub = null; view = v; render(); $('#view').scrollTop = 0; }
+function go(v){ if (v !== 'lista') unwatchList(); if (v === 'ajustes' && view !== 'ajustes') ui.setSub = null; view = v; render(); $('#view').scrollTop = 0; }
 document.querySelectorAll('#tabs [data-v]').forEach(b => b.onclick = () => go(b.dataset.v));
 $('#fab').onclick = () => openNewMenu();
 
 function render(){
   document.querySelectorAll('#tabs [data-v]').forEach(b => { if (b.dataset.v===view) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
-  const V = {inicio:vHome, agenda:vAgenda, assistente:vAssist, tarefas:vTasks, financas:vFin, lembretes:vRems, ajustes:vSettings, admin:vAdmin, clima:vClima, mercado:vMercado, noticias:vNoticias}[view] || vHome;
+  const V = {inicio:vHome, agenda:vAgenda, assistente:vAssist, tarefas:vTasks, financas:vFin, lembretes:vRems, ajustes:vSettings, admin:vAdmin, clima:vClima, mercado:vMercado, noticias:vNoticias, listas:vListas, lista:vLista}[view] || vHome;
   const m = $('#view'); m.classList.toggle('chat', view==='assistente');
   m.innerHTML = `<div class="wrap">${V()}</div>`;
   bindView();
   if (view==='assistente') bindChat();
+  if (view==='lista') bindLista();
+  if (view==='tarefas') bindSubs();
 }
 const back = () => `<button class="back" data-go="inicio">${ic('l')}Início</button>`;
 const exBanner = () => S.example ? `<div class="banner"><span style="flex:1">Os itens já preenchidos são exemplos para você testar.</span><button data-act="clear-ex">Remover</button></div>` : '';
@@ -983,6 +1014,8 @@ function vHome(){
     <button class="tile" data-go="tarefas"><span class="ic">${ic('task')}</span><span class="tx"><div class="lab">Tarefas</div><div class="n">${pend}</div></span></button>
     <button class="tile" data-go="financas"><span class="ic">${ic('fin')}</span><span class="tx"><div class="lab">${lateB?`<span style="color:var(--bad)">A pagar · ${lateB} vencida${lateB>1?'s':''}</span>`:'A pagar'}</div><div class="n">${acc(owed)}</div></span></button>
     <button class="tile" data-go="lembretes"><span class="ic">${ic('bell')}</span><span class="tx"><div class="lab">Lembretes</div><div class="n">${remT}</div></span></button>
+    <button class="tile" data-golistas><span class="ic">${ic('list')}</span><span class="tx"><div class="lab">Listas</div><div class="n">${S.items.filter(i => !i.done).length}</div></span></button>
+    <button class="tile" data-lnnotes><span class="ic">${ic('note')}</span><span class="tx"><div class="lab">Notas</div><div class="n">${S.notes.length}</div></span></button>
   </div>
 
   <section>
@@ -1066,20 +1099,20 @@ function openNewMenu(){
   el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="Adicionar">
     <div class="bar"><span style="min-width:70px"></span><b>Adicionar</b><button class="save" data-x>Fechar</button></div>
     <div class="body">
-      <div class="group">${[['ev','cal','Compromisso'],['task','task','Tarefa'],['rem','bell','Lembrete'],['fin','fin','Conta, despesa ou receita']].map(([k,i,l])=>`<button class="row" data-k="${k}"><span class="mi">${ic(i)}</span><span class="main t">${l}</span>${ic('r','i chev')}</button>`).join('')}</div>
+      <div class="group">${[['ev','cal','Compromisso'],['task','task','Tarefa'],['rem','bell','Lembrete'],['fin','fin','Conta, despesa ou receita'],['list','list','Lista (mercado, compras…)'],['note','note','Nota']].map(([k,i,l])=>`<button class="row" data-k="${k}"><span class="mi">${ic(i)}</span><span class="main t">${l}</span>${ic('r','i chev')}</button>`).join('')}</div>
       <div class="group"><button class="row" data-ai><span class="mi">${ic('spark')}</span><span class="main"><div class="t">Pedir ao assistente</div><div class="s">Diga do seu jeito e ele organiza</div></span>${ic('r','i chev')}</button></div>
     </div></div>`;
   el.hidden = false;
   const close = () => { el.hidden = true; el.innerHTML = ''; };
   el.onclick = e => { if (e.target === el) close(); };
   el.querySelector('[data-x]').onclick = close;
-  el.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { close(); openEntity(b.dataset.k); });
+  el.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { close(); const k = b.dataset.k; if (k === 'list') openListForm(null); else if (k === 'note') openNote(null); else openEntity(k); });
   el.querySelector('[data-ai]').onclick = () => { close(); go('assistente'); setTimeout(()=>{ const i = $('#chat-in'); if (i) i.focus(); }, 60); };
 }
 
 /* ---------- Tarefas ---------- */
 function vTasks(){
-  const pend = pendingTasks(), done = S.tasks.filter(t=>t.done);
+  const pend = pendingTasks(), done = S.tasks.filter(t=>t.done && !t.parent);
   const list = ui.taskSeg==='pend' ? pend : done;
   const t = today();
   return `
@@ -1097,8 +1130,9 @@ function vTasks(){
           <div class="t">${esc(x.title)}</div>
           <div class="s">${x.due ? (x.due<t && !x.done ? `<span style="color:var(--bad)">Atrasada · ${rel(x.due)}</span>` : rel(x.due).replace(/^./,c=>c.toUpperCase())) : 'Sem data'} · prioridade ${PRI[x.pri].toLowerCase()}</div>
         </button>
+        ${(() => { const sb2 = subsOf(x.id), dn = sb2.filter(s => s.done).length; return `<button class="test texp" data-texp="${x.id}" aria-expanded="${ui.taskOpen === x.id}" aria-label="Passos de ${esc(x.title)}">${sb2.length ? `${dn}/${sb2.length} passos` : 'Passos'} ${ui.taskOpen === x.id ? '▴' : '▾'}</button>`; })()}
         <span class="dot p-${x.pri}" title="Prioridade ${PRI[x.pri]}"></span>
-      </div>`).join('') : `<div class="empty">${ui.taskSeg==='pend' ? 'Tudo feito. Bom trabalho.' : 'Nenhuma tarefa concluída ainda.'}</div>`}
+      </div>${subTasksHtml(x)}`).join('') : `<div class="empty">${ui.taskSeg==='pend' ? 'Tudo feito. Bom trabalho.' : 'Nenhuma tarefa concluída ainda.'}</div>`}
   </div>`;
 }
 
@@ -1137,6 +1171,7 @@ function vFin(){
         </div>`).join('') : `<div class="empty">Nenhuma conta neste mês.</div>`}
     </div>
   </section>
+  ${recurringSection()}
   <section>
     <div class="sh">Despesas e receitas</div>
     <div class="group">
@@ -1166,7 +1201,8 @@ function vRems(){
   return `
   ${back()}<div class="head"><div><h1 class="lt">Lembretes</h1><div class="sub">${pushState()==='ativo' ? 'Alerta no celular, mesmo com o app fechado' : 'Ative os alertas em Ajustes para receber com o app fechado'}</div></div>
     <button class="icon-btn" data-new="rem" aria-label="Novo lembrete">${ic('plus')}</button></div>
-  ${groups.filter(([,l])=>l.length).map(([h,l]) => `<section><div class="sh">${h}</div><div class="group">${l.map(row).join('')}</div></section>`).join('') || `<div class="group"><div class="empty">Nenhum lembrete. Diga ao assistente: “me lembre de pagar a escola amanhã às 10h”.</div></div>`}`;
+  ${groups.filter(([,l])=>l.length).map(([h,l]) => `<section><div class="sh">${h}</div><div class="group">${l.map(row).join('')}</div></section>`).join('') || `<div class="group"><div class="empty">Nenhum lembrete. Diga ao assistente: “me lembre de pagar a escola amanhã às 10h”.</div></div>`}
+  ${birthdaySection()}`;
 }
 
 /* ---------- Ajustes ---------- */
@@ -1265,6 +1301,17 @@ function bindView(){
   V.querySelectorAll('[data-month]').forEach(b => b.onclick = () => { ui.finOff += Number(b.dataset.month); render(); });
   V.querySelectorAll('[data-seg]').forEach(b => b.onclick = () => { ui.taskSeg = b.dataset.seg; render(); });
   V.querySelectorAll('[data-test]').forEach(b => b.onclick = () => play(b.dataset.test, true));
+  V.querySelectorAll('[data-lnnotes]').forEach(b => b.onclick = () => { ui.lnTab = 'notas'; go('listas'); });
+  V.querySelectorAll('[data-lntab]').forEach(b => b.onclick = () => { ui.lnTab = b.dataset.lntab; render(); });
+  V.querySelectorAll('[data-newlist]').forEach(b => b.onclick = () => openListForm(null));
+  V.querySelectorAll('[data-newnote]').forEach(b => b.onclick = () => openNote(null));
+  V.querySelectorAll('[data-openlist]').forEach(b => b.onclick = () => { ui.listId = b.dataset.openlist; ui.liDraft = ''; go('lista'); });
+  V.querySelectorAll('[data-golistas]').forEach(b => b.onclick = () => { ui.lnTab = 'listas'; go('listas'); });
+  V.querySelectorAll('[data-note]').forEach(b => b.onclick = () => openNote(S.notes.find(n => n.id === b.dataset.note)));
+  V.querySelectorAll('[data-newrec]').forEach(b => b.onclick = () => openRecurring(null));
+  V.querySelectorAll('[data-rec]').forEach(b => b.onclick = () => openRecurring(S.recurring.find(r => r.id === b.dataset.rec)));
+  V.querySelectorAll('[data-newbday]').forEach(b => b.onclick = () => openBirthday(null));
+  V.querySelectorAll('[data-bday]').forEach(b => b.onclick = () => openBirthday(S.birthdays.find(x => x.id === b.dataset.bday)));
   V.querySelectorAll('[data-setsub]').forEach(b => b.onclick = () => { ui.setSub = b.dataset.setsub || null; ui.wipe = false; render(); $('#view').scrollTop = 0; });
   V.querySelectorAll('[data-tone]').forEach(sl => sl.onchange = () => { const t = catTones(); t[sl.dataset.tone] = sl.value; try { localStorage.setItem('meudia.tones', JSON.stringify(t)); } catch(e) {} play(sl.dataset.tone, true); });
   V.querySelectorAll('[data-cat]').forEach(c => c.onchange = () => { S.cats[c.dataset.cat] = c.checked; saveProfile(); });
@@ -1336,7 +1383,7 @@ function bindView(){
 const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null;
 function micNote(e){ startDictation(e.currentTarget); }
-function startDictation(btn){
+function startDictation(btn, onDone){
   const form = btn.closest('form'), input = form && form.querySelector('input');
   if (!input) return;
   if (!SpeechRec){ toast('Aqui o ditado direto não está disponível. Toque no campo e use o microfone do teclado do celular.'); input.focus(); return; }
@@ -1357,7 +1404,7 @@ function startDictation(btn){
   rec.onend = () => {
     btn.classList.remove('rec'); btn.setAttribute('aria-label', 'Falar'); input.placeholder = ph; rec = null;
     const t = (finalText || input.value).trim();
-    if (t && !failed){ input.value = ''; send(t); }
+    if (t && !failed){ input.value = ''; (onDone || send)(t); }
   };
   try { rec.start(); } catch(err) { rec = null; btn.classList.remove('rec'); input.placeholder = ph; toast('Não consegui abrir o microfone. Use o microfone do teclado.'); }
 }
@@ -1571,9 +1618,353 @@ function openPlans(from){
   el.querySelector('[data-x]').onclick = close;
 }
 document.addEventListener('click', ev => { const b = ev.target.closest('[data-plans]'); if (b) openPlans(b.dataset.plans); });
+/* ---------- Listas (com riscado), Notas, contas fixas e aniversários ---------- */
+const SECTIONS = ['Hortifrúti','Padaria','Açougue e peixaria','Frios e laticínios','Mercearia','Bebidas','Limpeza','Higiene','Congelados','Pet','Outros'];
+const SEC_WORDS = {
+  'Hortifrúti':'banana maca laranja limao tomate cebola alho batata cenoura alface fruta verdura legume mamao abacate uva melancia couve pepino pimentao abobora brocolis morango manga cheiro verde coentro salsa',
+  'Padaria':'pao paes bolo bisnaga torrada sonho croissant baguete',
+  'Açougue e peixaria':'carne frango peixe linguica bife picanha costela peito coxa salsicha camarao file patinho alcatra moida acem',
+  'Frios e laticínios':'leite queijo presunto iogurte manteiga requeijao margarina mortadela creme de leite ovo ovos nata',
+  'Mercearia':'arroz feijao macarrao acucar sal oleo azeite cafe farinha molho extrato milho ervilha atum sardinha aveia achocolatado tempero biscoito bolacha fuba granola mel vinagre maionese ketchup mostarda',
+  'Bebidas':'agua refrigerante suco cerveja vinho energetico cha',
+  'Limpeza':'detergente sabao amaciante desinfetante sanitaria esponja papel toalha saco de lixo limpador alvejante multiuso lustra vassoura rodo',
+  'Higiene':'papel higienico sabonete shampoo xampu condicionador pasta de dente creme dental escova desodorante absorvente fralda fio dental cotonete',
+  'Congelados':'sorvete pizza congelad lasanha nuggets hamburguer batata frita',
+  'Pet':'racao areia petisco',
+};
+const noAcc = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+function guessSection(t){
+  const x = ' ' + noAcc(t) + ' ';
+  let best = null, len = 0;
+  Object.entries(SEC_WORDS).forEach(([sec, w]) => w.split(' ').forEach(k => { if (k.length > 2 && x.includes(' ' + k) && k.length > len){ best = sec; len = k.length; } }));
+  // termos de duas palavras
+  [['papel higienico','Higiene'],['pasta de dente','Higiene'],['creme dental','Higiene'],['creme de leite','Frios e laticínios'],['agua sanitaria','Limpeza'],['papel toalha','Limpeza'],['saco de lixo','Limpeza'],['batata frita','Congelados'],['cheiro verde','Hortifrúti']]
+    .forEach(([k, sec]) => { if (x.includes(k)) best = sec; });
+  return best || 'Outros';
+}
+const UNITS = [['','—'],['un','un'],['kg','kg'],['g','g'],['L','L'],['ml','ml'],['pct','pct'],['cx','cx'],['dz','dz']];
+function normUnit(u){
+  if (!u) return null; u = noAcc(u);
+  if (/^(kg|quilo)/.test(u)) return 'kg'; if (/^g(r|ramas?)?$/.test(u)) return 'g'; if (/^(ml)/.test(u)) return 'ml';
+  if (/^(l|lt|litro)/.test(u)) return 'L'; if (/^(pct|pacote)/.test(u)) return 'pct'; if (/^(cx|caixa)/.test(u)) return 'cx';
+  if (/^(dz|duzia)/.test(u)) return 'dz'; if (/^(un|und|unidade)/.test(u)) return 'un'; return null;
+}
+const capF = s => s.charAt(0).toUpperCase() + s.slice(1);
+function parseItemLine(s){
+  s = s.trim().replace(/\s+/g, ' '); let qty = null, unit = null;
+  const m = s.match(/^(\d+(?:[.,]\d+)?)\s*(kg|quilos?|gramas?|gr|g|litros?|lt|l|ml|unidades?|und|un|pacotes?|pct|caixas?|cx|d[uú]zias?|dz)?\.?\s+(?:de\s+)?(.+)$/i);
+  if (m){ qty = Number(m[1].replace(',', '.')); unit = normUnit(m[2]); s = m[3]; }
+  return { text: capF(s).slice(0, 120), qty: qty > 0 ? qty : null, unit, section: guessSection(s) };
+}
+const qtyTxt = it => it.qty ? `${String(Number(it.qty)).replace('.', ',')}${it.unit ? ' ' + it.unit : it.unit === null ? '×' : ''} ` : '';
+const itemTotal = it => it.price_cents ? Math.round(it.price_cents * (Number(it.qty) || 1)) : 0;
+const listItems = id => S.items.filter(i => i.list_id === id);
+const myId = () => session && session.user.id;
+const partner = () => fam && fam.group && fam.members.find(m => !m.is_me);
+const memberName = uidv => { const m = fam && fam.members && fam.members.find(x => x.user_id === uidv); return m ? nameCase(m.name.split(' ')[0]) : ''; };
+
+function vListas(){
+  const tab = ui.lnTab || 'listas';
+  const head = `${back()}<div class="head"><div><h1 class="lt">Listas e notas</h1><div class="sub">${tab === 'listas' ? 'Compras, mercado e o que precisar' : 'Anotações rápidas'}</div></div>
+    <button class="icon-btn" data-${tab === 'listas' ? 'newlist' : 'newnote'} aria-label="${tab === 'listas' ? 'Nova lista' : 'Nova nota'}">${ic('plus')}</button></div>
+  <div class="seg" role="group" aria-label="Mostrar"><button data-lntab="listas" aria-pressed="${tab === 'listas'}">Listas</button><button data-lntab="notas" aria-pressed="${tab === 'notas'}">Notas</button></div>`;
+  if (tab === 'notas'){
+    const ns = [...S.notes].sort((a, b) => (b.pinned - a.pinned) || b.updated_at.localeCompare(a.updated_at));
+    return head + `<div class="group">${ns.length ? ns.map(n => `<button class="row note-row" data-note="${n.id}"><span class="set-ic">${ic('note')}</span>
+      <span class="main"><div class="t">${esc(n.title || (n.body.split('\n')[0] || 'Nota sem título').slice(0, 60))}</div><div class="s note-prev">${esc(n.body.slice(0, 140) || ' ')}</div><div class="s">${n.pinned ? 'Fixada · ' : ''}${agoTxt(n.updated_at)}</div></span>${ic('r','i chev')}</button>`).join('')
+      : `<div class="empty">Nenhuma nota ainda. Toque no + para escrever ou ditar.</div>`}</div>
+      <div class="foot">Dentro da nota, o botão "Virar tarefas" lê o texto e sugere tarefas e lembretes.</div>`;
+  }
+  return head + `<div class="group">${S.lists.length ? S.lists.map(l => {
+      const its = listItems(l.id), left = its.filter(i => !i.done).length;
+      return `<button class="row" data-openlist="${l.id}"><span class="set-ic">${ic(l.kind === 'mercado' ? 'fin' : 'list')}</span>
+        <span class="main"><div class="t">${esc(l.name)}</div><div class="s">${left ? `${left} ${left === 1 ? 'item faltando' : 'itens faltando'}` : its.length ? 'Tudo marcado' : 'Vazia'}${l.shared ? ' · compartilhada' : ''}${l.user_id !== myId() ? ' · de ' + esc(memberName(l.user_id)) : ''}</div></span>${ic('r','i chev')}</button>`;
+    }).join('') : `<div class="empty">Nenhuma lista ainda. Toque no + e crie a do mercado.</div>`}</div>
+    <div class="foot">Dentro da lista, toque no microfone e fale tudo de uma vez ("arroz, 2 kg de feijão, leite…"). O app separa item por item.</div>`;
+}
+
+function vLista(){
+  const l = S.lists.find(x => x.id === ui.listId);
+  if (!l){ ui.listId = null; return vListas(); }
+  const its = listItems(l.id), pend = its.filter(i => !i.done), done = its.filter(i => i.done).sort((a, b) => String(b.done_at).localeCompare(String(a.done_at)));
+  const total = its.reduce((s, i) => s + itemTotal(i), 0), cart = done.reduce((s, i) => s + itemTotal(i), 0);
+  const row = it => `<div class="row li ${it.done ? 'done' : ''}">
+      <button class="check ${it.done ? 'on' : ''}" data-litog="${it.id}" aria-label="${it.done ? 'Desmarcar' : 'Marcar'} ${esc(it.text)}">${it.done ? ic('ok') : ''}</button>
+      <button class="main" data-liedit="${it.id}" style="text-align:left"><div class="t">${esc(qtyTxt(it))}${esc(it.text)}</div>${l.shared && it.added_by && it.added_by !== myId() ? `<div class="s">por ${esc(memberName(it.added_by))}</div>` : ''}</button>
+      ${it.price_cents ? acc(itemTotal(it)) : ''}</div>`;
+  let pendHtml;
+  if (l.kind === 'mercado' && pend.length){
+    pendHtml = SECTIONS.map(sec => { const g = pend.filter(i => (i.section || 'Outros') === sec); return g.length ? `<div class="li-sec">${sec}</div>${g.map(row).join('')}` : ''; }).join('');
+  } else pendHtml = pend.map(row).join('');
+  return `<button class="back" data-golistas style="display:inline-flex!important">${ic('l')}Listas</button>
+  <div class="head"><div><h1 class="lt">${esc(l.name)}</h1><div class="sub">${pend.length} faltando · ${done.length} marcado${done.length === 1 ? '' : 's'}${l.shared ? ' · compartilhada' + (partner() ? ' com ' + esc(nameCase(partner().name.split(' ')[0])) : '') : ''}</div></div>
+    ${l.user_id === myId() ? `<button class="icon-btn" data-listopt aria-label="Opções da lista">${ic('gear')}</button>` : ''}</div>
+  <form class="askbox li-add" id="li-form" aria-label="Adicionar item">
+    ${ic('plus')}<input id="li-in" placeholder="Adicionar item (ex.: 2 kg arroz)" autocomplete="off" aria-label="Novo item" value="${esc(ui.liDraft || '')}">
+    <button type="button" class="mic" data-limic aria-label="Ditar itens">${ic('mic')}</button><button class="go" aria-label="Adicionar">${ic('up')}</button>
+  </form>
+  <div class="group">${pendHtml || `<div class="empty">${its.length ? 'Tudo marcado. Boa!' : 'Lista vazia. Digite ou dite os itens acima.'}</div>`}</div>
+  ${total ? `<div class="card li-total"><div class="row"><span class="main t">Total da lista</span>${acc(total)}</div><div class="row"><span class="main t">Já marcado (no carrinho)</span>${acc(cart)}</div><div class="row"><span class="main t">Falta</span>${acc(total - cart)}</div></div>` : ''}
+  ${done.length ? `<section><div class="sh">Marcados (${done.length})<button data-liclear>Limpar marcados</button></div><div class="group">${done.map(row).join('')}</div></section>` : ''}
+  <div class="foot">Toque no círculo para riscar. Toque no item para mudar quantidade, unidade e preço (R$ por unidade).${l.kind === 'mercado' ? ' Os itens ficam separados por seção do mercado.' : ''}</div>`;
+}
+
+let listCh = null, listPoll = null;
+function unwatchList(){ if (listCh){ try { sb.removeChannel(listCh); } catch(e) {} listCh = null; } clearInterval(listPoll); listPoll = null; }
+async function reloadItems(id){
+  const { data } = await sb.from('list_items').select('*').eq('list_id', id).order('created_at');
+  if (!data) return;
+  S.items = S.items.filter(i => i.list_id !== id).concat(data);
+  if (view === 'lista' && ui.listId === id && $('#sheet').hidden && document.activeElement !== $('#li-in')) render();
+}
+function watchList(l){
+  if (!l.shared){ unwatchList(); return; }
+  if (listCh && listCh._lid === l.id) return;
+  unwatchList();
+  try { listCh = sb.channel('li-' + l.id).on('postgres_changes', { event:'*', schema:'public', table:'list_items', filter:'list_id=eq.' + l.id }, () => reloadItems(l.id)).subscribe(); listCh._lid = l.id; } catch(e) {}
+  listPoll = setInterval(() => { if (document.visibilityState === 'visible') reloadItems(l.id); }, 20000);
+}
+async function addItems(l, arr){
+  const rows = arr.filter(x => x && x.text).map(x => ({ list_id: l.id, text: String(x.text).slice(0, 120), qty: Number(x.qty) > 0 ? Number(x.qty) : null, unit: normUnit(x.unit) || (x.unit === 'L' ? 'L' : null), section: l.kind === 'mercado' ? (SECTIONS.includes(x.section) ? x.section : guessSection(x.text)) : null }));
+  if (!rows.length) return 0;
+  const { data, error } = await sb.from('list_items').insert(rows).select();
+  if (error) throw error;
+  S.items.push(...data); persist(sb.from('lists').update({ name: l.name }).eq('id', l.id)); // atualiza a data da lista
+  return data.length;
+}
+async function listDictate(l, text){
+  toast('Separando os itens…');
+  const { data, error } = await sb.functions.invoke('assistente', { body:{ extract:{ kind:'list', text, market: l.kind === 'mercado' } } });
+  if (data && data.quota) quotaSet({ quota: data.quota });
+  if (error || !data || data.error || !Array.isArray(data.items)){
+    // sem IA: separa por vírgula e "e"
+    const parts = text.split(/,|;|\n|\se\s/).map(s => s.trim()).filter(Boolean);
+    const n = await addItems(l, parts.map(parseItemLine)).catch(() => 0);
+    toast(n ? `${n} ${n === 1 ? 'item adicionado' : 'itens adicionados'}${data && data.error ? ' (' + esc(data.error) + ')' : ''}` : 'Não consegui adicionar. Tente digitar.');
+  } else {
+    const n = await addItems(l, data.items.map(x => ({ ...x, text: capF(String(x.text || '').trim()) })));
+    toast(`${n} ${n === 1 ? 'item adicionado' : 'itens adicionados'}`);
+  }
+  render();
+}
+function openListForm(l){
+  const canShare = fam && fam.group && fam.members.length > 1, p = partner();
+  openForm({
+    title: l ? 'Lista' : 'Nova lista',
+    fields: [{k:'name',label:'Nome da lista (ex.: Mercado)',type:'title',req:1},{type:'break'},
+      {k:'kind',label:'Tipo',type:'select',def:'mercado',options:[['mercado','Mercado (separa por seção)'],['geral','Outra lista']]},
+      ...(canShare ? [{k:'shared',label:'Quem vê',type:'select',def:'nao',options:[['nao','Só eu'],['sim',`Eu e ${p ? nameCase(p.name.split(' ')[0]) : 'minha dupla'}`]]}] : [])],
+    values: l ? { name:l.name, kind:l.kind, shared:l.shared ? 'sim' : 'nao' } : {},
+    onSave: async v => {
+      const row = { name: v.name.slice(0, 60), kind: v.kind, shared: v.shared === 'sim' };
+      if (l){ const { error } = await sb.from('lists').update(row).eq('id', l.id); if (error) throw error; Object.assign(l, row); return 'Lista salva'; }
+      const { data, error } = await sb.from('lists').insert(row).select().single(); if (error) throw error;
+      S.lists.unshift(data); ui.listId = data.id; ui.liDraft = ''; view = 'lista'; return 'Lista criada. Agora adicione os itens.';
+    },
+    onDelete: l ? async () => { await sb.from('lists').delete().eq('id', l.id); S.lists = S.lists.filter(x => x.id !== l.id); S.items = S.items.filter(i => i.list_id !== l.id); ui.listId = null; view = 'listas'; } : null,
+  });
+}
+function openItemForm(it, l){
+  openForm({
+    title:'Item', saveLabel:'Salvar',
+    fields: [{k:'text',label:'Item',type:'title',req:1},{type:'break'},{k:'qty',label:'Quantidade',type:'number'},{k:'unit',label:'Unidade',type:'select',options:UNITS},
+      {k:'price',label:'Preço por unidade',type:'money'},
+      ...(l.kind === 'mercado' ? [{k:'section',label:'Seção',type:'select',options:SECTIONS.map(s => [s, s])}] : [])],
+    values: { text:it.text, qty:it.qty || '', unit:it.unit || '', price:it.price_cents || 0, section:it.section || 'Outros' },
+    onSave: async v => {
+      const row = { text: v.text.slice(0, 120), qty: Number(String(v.qty).replace(',', '.')) > 0 ? Number(String(v.qty).replace(',', '.')) : null, unit: v.unit || null, price_cents: v.price || null };
+      if (l.kind === 'mercado') row.section = v.section;
+      const { error } = await sb.from('list_items').update(row).eq('id', it.id); if (error) throw error; Object.assign(it, row);
+    },
+    onDelete: async () => { await sb.from('list_items').delete().eq('id', it.id); S.items = S.items.filter(x => x.id !== it.id); },
+  });
+}
+function bindLista(){
+  const V = $('#view'), l = S.lists.find(x => x.id === ui.listId); if (!l) return;
+  watchList(l);
+  const f = $('#li-form'), inp = $('#li-in');
+  if (inp) inp.oninput = () => { ui.liDraft = inp.value; };
+  if (f) f.onsubmit = async e => {
+    e.preventDefault(); const t = inp.value.trim(); if (!t) return;
+    ui.liDraft = ''; inp.value = '';
+    const parts = /[,;\n]/.test(t) ? t.split(/[,;\n]/).map(s => s.trim()).filter(Boolean) : [t];
+    try { await addItems(l, parts.map(parseItemLine)); render(); setTimeout(() => { const i = $('#li-in'); if (i) i.focus(); }, 30); } catch(err) { fail(err); }
+  };
+  const mic = V.querySelector('[data-limic]'); if (mic) mic.onclick = () => startDictation(mic, t => listDictate(l, t));
+  V.querySelectorAll('[data-litog]').forEach(b => b.onclick = () => {
+    const it = S.items.find(x => x.id === b.dataset.litog); if (!it) return;
+    it.done = !it.done; it.done_at = it.done ? new Date().toISOString() : null; if (it.done) play('concluida'); render();
+    persist(sb.from('list_items').update({ done: it.done, done_at: it.done_at }).eq('id', it.id).then(r => { if (r.error) throw r.error; }));
+  });
+  V.querySelectorAll('[data-liedit]').forEach(b => b.onclick = () => { const it = S.items.find(x => x.id === b.dataset.liedit); if (it) openItemForm(it, l); });
+  const cl = V.querySelector('[data-liclear]'); if (cl) cl.onclick = () => {
+    const ids = listItems(l.id).filter(i => i.done).map(i => i.id); S.items = S.items.filter(i => !ids.includes(i.id)); render(); toast(`${ids.length} ${ids.length === 1 ? 'item apagado' : 'itens apagados'}`);
+    persist(sb.from('list_items').delete().in('id', ids).then(r => { if (r.error) throw r.error; }));
+  };
+  const op = V.querySelector('[data-listopt]'); if (op) op.onclick = () => openListForm(l);
+}
+
+/* ----- notas ----- */
+function openNote(n){
+  const el = $('#sheet'), isNew = !n; n = n || { id:null, title:'', body:'', pinned:false };
+  el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="Nota">
+    <div class="bar"><button data-x>Fechar</button><b>${isNew ? 'Nova nota' : 'Nota'}</b><button class="save" data-s>Salvar</button></div>
+    <div class="body">
+      <div class="group"><div class="row"><input class="full" id="nt-title" placeholder="Título (opcional)" value="${esc(n.title)}" maxlength="120" aria-label="Título"></div>
+        <div class="row"><textarea id="nt-body" class="note-ta" placeholder="Escreva ou toque no microfone para ditar…" aria-label="Texto da nota">${esc(n.body)}</textarea></div></div>
+      <div class="note-bt">
+        <form id="nt-micf"><input type="hidden"><button type="button" class="btn-go" data-ntmic>${ic('mic')}Ditar</button></form>
+        <button type="button" class="btn-go" data-ntpin>${ic('up')}${n.pinned ? 'Desafixar' : 'Fixar no topo'}</button>
+        <button type="button" class="btn-go" data-ntai>${ic('spark')}Virar tarefas</button>
+      </div>
+      ${isNew ? '' : `<div class="group"><button class="row del" data-d>Excluir nota</button></div>`}
+    </div></div>`;
+  el.hidden = false;
+  const ta = $('#nt-body'), ti = $('#nt-title');
+  const grow = () => { ta.style.height = 'auto'; ta.style.height = Math.max(200, ta.scrollHeight) + 'px'; }; ta.oninput = grow; setTimeout(grow, 0);
+  if (isNew) setTimeout(() => ta.focus(), 60);
+  const close = () => { el.hidden = true; el.innerHTML = ''; render(); };
+  const doSave = async () => {
+    const row = { title: ti.value.trim().slice(0, 120), body: ta.value.trim().slice(0, 20000), pinned: n.pinned };
+    if (!row.title && !row.body){ return; }
+    if (n.id){ const { error } = await sb.from('notes').update({ ...row, updated_at: new Date().toISOString() }).eq('id', n.id); if (error) throw error; Object.assign(n, row, { updated_at: new Date().toISOString() }); }
+    else { const { data, error } = await sb.from('notes').insert(row).select().single(); if (error) throw error; Object.assign(n, data); S.notes.unshift(data); }
+  };
+  el.onclick = e => { if (e.target === el) doSave().then(close).catch(fail); };
+  el.querySelector('[data-x]').onclick = () => doSave().then(close).catch(fail);
+  el.querySelector('[data-s]').onclick = () => doSave().then(() => { close(); toast('Nota salva'); }).catch(fail);
+  el.querySelector('[data-ntpin]').onclick = () => { n.pinned = !n.pinned; doSave().then(() => { toast(n.pinned ? 'Nota fixada no topo' : 'Nota desafixada'); close(); }).catch(fail); };
+  const mic = el.querySelector('[data-ntmic]');
+  mic.onclick = () => {
+    if (!SpeechRec){ toast('Use o microfone do teclado do celular para ditar.'); ta.focus(); return; }
+    const hid = $('#nt-micf input'); hid.type = 'text'; hid.style.display = 'none';
+    startDictation(mic, t => { ta.value = (ta.value ? ta.value.replace(/\s*$/, '') + '\n' : '') + capF(t); grow(); });
+  };
+  el.querySelector('[data-ntai]').onclick = async () => {
+    const txt = [ti.value, ta.value].join('\n').trim(); if (!txt){ toast('Escreva ou dite a nota primeiro.'); return; }
+    await doSave().catch(() => {});
+    toast('Lendo a nota…');
+    const { data, error } = await sb.functions.invoke('assistente', { body:{ extract:{ kind:'tasks', text: txt } } });
+    if (data && data.quota) quotaSet({ quota: data.quota });
+    if (error || !data || data.error){ toast(esc((data && data.error) || 'Não consegui ler a nota agora.')); return; }
+    if (!data.items.length){ toast('Não encontrei tarefas nessa nota.'); return; }
+    openNoteTasks(data.items);
+  };
+  const d = el.querySelector('[data-d]');
+  if (d) d.onclick = () => { if (!d.dataset.sure){ d.dataset.sure = 1; d.textContent = 'Toque de novo para excluir'; return; }
+    persist(sb.from('notes').delete().eq('id', n.id).then(r => { if (r.error) throw r.error; })); S.notes = S.notes.filter(x => x.id !== n.id); el.hidden = true; el.innerHTML = ''; render(); toast('Nota excluída'); };
+}
+function openNoteTasks(items){
+  const el = $('#sheet');
+  const lab = x => x.type === 'lembrete' && x.date && x.time ? `Lembrete · ${fmtBr(x.date)} às ${x.time}` : x.date ? `Tarefa · ${fmtBr(x.date)}` : 'Tarefa · sem data';
+  el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="Tarefas da nota">
+    <div class="bar"><button data-x>Cancelar</button><b>Tarefas da nota</b><button class="save" data-s>Criar</button></div>
+    <div class="body"><div class="group">${items.map((x, i) => `<label class="row nt-row"><input type="checkbox" class="nt-ck" data-i="${i}" checked style="width:22px;height:22px;accent-color:var(--accent)">
+      <span class="main"><div class="t">${esc(x.title || '')}</div><div class="s">${lab(x)}</div></span></label>`).join('')}</div>
+      <div class="foot">Desmarque o que não quiser. Tarefas vão para Tarefas; lembretes com hora avisam no celular.</div></div></div>`;
+  el.hidden = false;
+  const close = () => { el.hidden = true; el.innerHTML = ''; render(); };
+  el.querySelector('[data-x]').onclick = close;
+  el.querySelector('[data-s]').onclick = async () => {
+    const pick = [...el.querySelectorAll('.nt-ck')].filter(c => c.checked).map(c => items[Number(c.dataset.i)]);
+    let n = 0;
+    for (const x of pick){
+      const title = String(x.title || '').trim().slice(0, 200); if (!title) continue;
+      const okDate = /^\d{4}-\d{2}-\d{2}$/.test(x.date || '') ? x.date : '', okTime = /^\d{2}:\d{2}$/.test(x.time || '') ? x.time : '';
+      try {
+        if (x.type === 'lembrete' && okDate && okTime) S.rems.push(await dbSave('rem', { title, date: okDate, time: okTime, adv: 0 }, true));
+        else S.tasks.push(await dbSave('task', { title, due: okDate, pri: 'media', cat: 'pessoal' }, true));
+        n++;
+      } catch(e) { console.error(e); }
+    }
+    close(); toast(`${n} ${n === 1 ? 'item criado' : 'itens criados'}`);
+  };
+}
+const fmtBr = s => { const [y, m, d] = s.split('-'); return `${d}/${m}`; };
+
+/* ----- contas fixas (Finanças) ----- */
+function recurringSection(){
+  const rs = S.recurring;
+  return `<section><div class="sh">Contas fixas (todo mês)<button data-newrec>Adicionar</button></div><div class="group">
+    ${rs.length ? rs.map(r => `<button class="row" data-rec="${r.id}"><span class="set-ic">${ic('repeat')}</span><span class="main"><div class="t">${esc(r.title)}</div><div class="s">Vence todo dia ${r.day}${r.active ? '' : ' · pausada'}</div></span>${acc(r.amount_cents)}</button>`).join('')
+      : `<div class="empty">Cadastre luz, internet, aluguel… O app lança a conta sozinho todo mês.</div>`}
+  </div><div class="foot">Todo começo de mês o app cria a conta a pagar com o vencimento no dia escolhido e avisa antes de vencer.</div></section>`;
+}
+function openRecurring(r){
+  openForm({
+    title: r ? 'Conta fixa' : 'Nova conta fixa',
+    fields: [{k:'title',label:'Descrição (ex.: Internet)',type:'title',req:1},{type:'break'},{k:'cents',label:'Valor',type:'money',req:1},
+      {k:'day',label:'Vence todo dia',type:'select',def:'10',options:Array.from({length:31}, (_, i) => [String(i + 1), String(i + 1)])},
+      ...(r ? [{k:'active',label:'Situação',type:'select',options:[['1','Ativa'],['0','Pausada']]}] : [])],
+    values: r ? { title:r.title, cents:r.amount_cents, day:String(r.day), active:r.active ? '1' : '0' } : {},
+    onSave: async v => {
+      const row = { title: v.title.slice(0, 120), amount_cents: v.cents, day: Number(v.day), active: r ? v.active === '1' : true };
+      if (!row.amount_cents){ const e = new Error('valor'); e.userMsg = 'Informe o valor.'; throw e; }
+      if (r){ const { error } = await sb.from('recurring_bills').update(row).eq('id', r.id); if (error) throw error; Object.assign(r, row); return 'Conta fixa salva'; }
+      // se o dia deste mês já passou, começa no mês que vem (evita duplicar a conta que já foi lançada)
+      const t = new Date(); if (row.day < t.getDate()) row.last_month = iso(t).slice(0, 7);
+      const { data, error } = await sb.from('recurring_bills').insert(row).select().single(); if (error) throw error;
+      S.recurring.push(data); S.recurring.sort((a, b) => a.day - b.day);
+      const g = await sb.rpc('my_recurring_bills'); if (g.data > 0) await loadAll();
+      return row.last_month ? 'Conta fixa criada. A primeira entra no mês que vem.' : 'Conta fixa criada e lançada neste mês.';
+    },
+    onDelete: r ? async () => { await sb.from('recurring_bills').delete().eq('id', r.id); S.recurring = S.recurring.filter(x => x.id !== r.id); } : null,
+  });
+}
+
+/* ----- aniversários (Lembretes) ----- */
+function nextBday(b){
+  const t = new Date(); t.setHours(0, 0, 0, 0);
+  let d = new Date(t.getFullYear(), b.month - 1, b.day); if (d < t) d = new Date(t.getFullYear() + 1, b.month - 1, b.day);
+  return { date: d, days: Math.round((d - t) / 864e5), age: b.year ? d.getFullYear() - b.year : null };
+}
+function birthdaySection(){
+  const bs = S.birthdays.map(b => ({ b, n: nextBday(b) })).sort((x, y) => x.n.days - y.n.days);
+  return `<section><div class="sh">Aniversários<button data-newbday>Adicionar</button></div><div class="group">
+    ${bs.length ? bs.slice(0, 8).map(({ b, n }) => `<button class="row" data-bday="${b.id}"><span class="set-ic">${ic('gift')}</span><span class="main"><div class="t">${esc(b.name)}</div>
+      <div class="s">${pad(b.day)}/${pad(b.month)} · ${n.days === 0 ? '<b style="color:var(--accent)">hoje!</b>' : n.days === 1 ? 'amanhã' : `em ${n.days} dias`}${n.age ? ` · faz ${n.age} anos` : ''}</div></span>${ic('r','i chev')}</button>`).join('')
+      : `<div class="empty">Cadastre e o app avisa no dia e na véspera, às 9h.</div>`}
+  </div></section>`;
+}
+function openBirthday(b){
+  openForm({
+    title: b ? 'Aniversário' : 'Novo aniversário',
+    fields: [{k:'name',label:'Nome (ex.: Renata)',type:'title',req:1},{type:'break'},
+      {k:'day',label:'Dia',type:'select',def:'1',options:Array.from({length:31}, (_, i) => [String(i + 1), String(i + 1)])},
+      {k:'month',label:'Mês',type:'select',def:String(new Date().getMonth() + 1),options:MONL.map((m, i) => [String(i + 1), capF(m)])},
+      {k:'year',label:'Ano de nascimento (opcional)',type:'number',ph:'ex.: 1985'}],
+    values: b ? { name:b.name, day:String(b.day), month:String(b.month), year:b.year || '' } : {},
+    onSave: async v => {
+      const y = Number(v.year), row = { name: v.name.slice(0, 80), day: Number(v.day), month: Number(v.month), year: y >= 1900 && y <= 2100 ? y : null };
+      if (b){ const { error } = await sb.from('birthdays').update(row).eq('id', b.id); if (error) throw error; Object.assign(b, row); return 'Aniversário salvo'; }
+      const { data, error } = await sb.from('birthdays').insert(row).select().single(); if (error) throw error; S.birthdays.push(data); return 'Aniversário salvo. Vou avisar no dia e na véspera.';
+    },
+    onDelete: b ? async () => { await sb.from('birthdays').delete().eq('id', b.id); S.birthdays = S.birthdays.filter(x => x.id !== b.id); } : null,
+  });
+}
+
+/* ----- subtarefas (Tarefas) ----- */
+const subsOf = id => S.tasks.filter(t => t.parent === id);
+function subTasksHtml(x){
+  const subs = subsOf(x.id); if (!subs.length && ui.taskOpen !== x.id) return '';
+  if (ui.taskOpen !== x.id) return '';
+  return `<div class="subs">${subs.map(s => `<div class="row sub ${s.done ? 'done' : ''}"><button class="check sm ${s.done ? 'on' : ''}" data-toggle="task:${s.id}" aria-label="${s.done ? 'Reabrir' : 'Concluir'} ${esc(s.title)}">${s.done ? ic('ok') : ''}</button>
+      <span class="main"><div class="t">${esc(s.title)}</div></span><button class="test" data-subdel="${s.id}" aria-label="Apagar passo">Apagar</button></div>`).join('')}
+    <form class="row sub sub-add" data-subadd="${x.id}"><input placeholder="Adicionar passo" aria-label="Novo passo" maxlength="200"><button class="test">Adicionar</button></form></div>`;
+}
+function bindSubs(){
+  const V = $('#view');
+  V.querySelectorAll('[data-texp]').forEach(b => b.onclick = () => { ui.taskOpen = ui.taskOpen === b.dataset.texp ? null : b.dataset.texp; render(); });
+  V.querySelectorAll('[data-subadd]').forEach(f => f.onsubmit = async e => {
+    e.preventDefault(); const inp = f.querySelector('input'), t = inp.value.trim(); if (!t) return;
+    try { S.tasks.push(await dbSave('task', { title: t, parent: f.dataset.subadd, pri: 'media', cat: 'pessoal' }, true)); render(); const ni = V.querySelector(`[data-subadd="${f.dataset.subadd}"] input`); if (ni) ni.focus(); } catch(err) { fail(err); }
+  });
+  V.querySelectorAll('[data-subdel]').forEach(b => b.onclick = () => { const id = b.dataset.subdel; S.tasks = S.tasks.filter(t => t.id !== id); render(); persist(dbDel('task', id)); });
+}
+
 /* ---------- sino: caixa de notificações (lidas são apagadas) ---------- */
 let inbox = [];
-const INB_IC = { lembrete:'bell', sair:'nav', sairja:'nav', compromisso:'cal', vencer:'fin', vencida:'fin', pendente:'task', resumo:'spark', noticia:'news' };
+const INB_IC = { lembrete:'bell', sair:'nav', sairja:'nav', compromisso:'cal', vencer:'fin', vencida:'fin', pendente:'task', resumo:'spark', noticia:'news', aniversario:'gift', semana:'fin' };
 async function loadInbox(){
   if (!session) return;
   const { data, error } = await sb.from('inbox').select('id,kind,ref,title,body,url,created_at').order('created_at', { ascending:false }).limit(60);
@@ -1585,7 +1976,7 @@ async function loadInbox(){
 function inboxGo(n){
   if (n.kind === 'sair' || n.kind === 'sairja'){ if (S.events.some(e => e.id === n.ref)) openRoute(n.ref); else go('agenda'); return; }
   if (n.kind === 'noticia' && /^https?:/.test(n.url || '')){ window.open(n.url, '_blank', 'noopener'); return; }
-  go({ lembrete:'lembretes', compromisso:'agenda', vencer:'financas', vencida:'financas', pendente:'tarefas' }[n.kind] || 'inicio');
+  go({ lembrete:'lembretes', compromisso:'agenda', vencer:'financas', vencida:'financas', pendente:'tarefas', aniversario:'lembretes', semana:'financas' }[n.kind] || 'inicio');
 }
 function openInbox(){
   const el = $('#sheet'), per = 6, seen = new Set();
@@ -1764,6 +2155,7 @@ async function startApp(){
   view = 'inicio'; render(); checkReminders();
   fam = null; loadFamily().then(checkPendingInvite);
   saveLocationSoon(); loadMarket(); loadInbox();
+  sb.rpc('my_recurring_bills').then(r => { if (r.data > 0) loadAll().then(render).catch(() => {}); });
   if (pendingRoute){ const r = pendingRoute; pendingRoute = null; setTimeout(() => openRoute(r), 300); }
   refreshPush().then(() => { if (pushOn && (view === 'inicio' || view === 'ajustes')) render(); });
 }
@@ -2677,7 +3069,7 @@ function openBudget(){
 
 /* ---------- alertas no celular (Web Push) ---------- */
 const VAPID_PUB = 'BDgwg6S3VsklJoKIWEaW5-z7AoGakq7C3AiwFy5TrjgAbpbB9Uq0o7DVFlDkSOLHkK7OYRed_DzTjZ5fz7t-39A';
-const PUSH_KINDS = ['lembrete','sair','compromisso','vencer','vencida','pendente','resumo','noticia'];
+const PUSH_KINDS = ['lembrete','sair','compromisso','vencer','vencida','pendente','resumo','noticia','aniversario','semana'];
 const PUSH_TXT = {
   ativo: 'Você recebe os alertas mesmo com o app fechado.',
   desligado: 'Toque em Ativar e permita as notificações.',
