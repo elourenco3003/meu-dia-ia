@@ -1699,6 +1699,7 @@ function vLista(){
   return `<button class="back" data-golistas style="display:inline-flex!important">${ic('l')}Listas</button>
   <div class="head"><div><h1 class="lt">${esc(l.name)}</h1><div class="sub">${pend.length} faltando · ${done.length} marcado${done.length === 1 ? '' : 's'}${l.shared ? ' · compartilhada' + (partner() ? ' com ' + esc(nameCase(partner().name.split(' ')[0])) : '') : ''}</div></div>
     ${l.user_id === myId() ? `<button class="icon-btn" data-listopt aria-label="Opções da lista">${ic('gear')}</button>` : ''}</div>
+  ${l.user_id === myId() ? shareRow(l) : ''}
   <form class="askbox li-add" id="li-form" aria-label="Adicionar item">
     ${ic('plus')}<input id="li-in" placeholder="Adicionar item (ex.: 2 kg arroz)" autocomplete="off" aria-label="Novo item" value="${esc(ui.liDraft || '')}">
     <button type="button" class="mic" data-limic aria-label="Ditar itens">${ic('mic')}</button><button class="go" aria-label="Adicionar">${ic('up')}</button>
@@ -1709,6 +1710,13 @@ function vLista(){
   <div class="foot">Toque no círculo para riscar. Toque no item para mudar quantidade, unidade e preço (R$ por unidade).${l.kind === 'mercado' ? ' Os itens ficam separados por seção do mercado.' : ''}</div>`;
 }
 
+// compartilhar: uma chave liga/desliga para cada pessoa da família (no Plano Família são 2 pessoas)
+function shareRow(l){
+  const others = fam && fam.group ? fam.members.filter(m => !m.is_me) : [];
+  if (!others.length) return `<div class="group"><button class="row" data-sharepromo><span class="set-ic">${ic('home')}</span><span class="main"><div class="t">Compartilhar lista</div><div class="s">${(S.plan || 'free') === 'familia' ? 'Convide sua dupla no Plano Família para usar a mesma lista' : 'Recurso do Plano Família: a lista fica igual nos dois celulares'}</div></span>${ic('r','i chev')}</button></div>`;
+  return `<div class="group">${others.map(m => `<div class="row"><span class="set-ic">${ic('home')}</span><span class="main"><div class="t">Compartilhar com ${esc(nameCase(m.name.split(' ')[0]))}</div><div class="s">${l.shared ? 'Vocês veem e marcam os mesmos itens' : 'Desligado: só você vê esta lista'}</div></span>
+    <label class="switch"><input type="checkbox" data-share="${l.id}" ${l.shared ? 'checked' : ''} aria-label="Compartilhar com ${esc(nameCase(m.name.split(' ')[0]))}"><span></span></label></div>`).join('')}</div>`;
+}
 let listCh = null, listPoll = null;
 function unwatchList(){ if (listCh){ try { sb.removeChannel(listCh); } catch(e) {} listCh = null; } clearInterval(listPoll); listPoll = null; }
 async function reloadItems(id){
@@ -1748,15 +1756,14 @@ async function listDictate(l, text){
   render();
 }
 function openListForm(l){
-  const canShare = fam && fam.group && fam.members.length > 1, p = partner();
   openForm({
     title: l ? 'Lista' : 'Nova lista',
     fields: [{k:'name',label:'Nome da lista (ex.: Mercado)',type:'title',req:1},{type:'break'},
       {k:'kind',label:'Tipo',type:'select',def:'mercado',options:[['mercado','Mercado (separa por seção)'],['geral','Outra lista']]},
-      ...(canShare ? [{k:'shared',label:'Quem vê',type:'select',def:'nao',options:[['nao','Só eu'],['sim',`Eu e ${p ? nameCase(p.name.split(' ')[0]) : 'minha dupla'}`]]}] : [])],
-    values: l ? { name:l.name, kind:l.kind, shared:l.shared ? 'sim' : 'nao' } : {},
+],
+    values: l ? { name:l.name, kind:l.kind } : {},
     onSave: async v => {
-      const row = { name: v.name.slice(0, 60), kind: v.kind, shared: v.shared === 'sim' };
+      const row = { name: v.name.slice(0, 60), kind: v.kind };
       if (l){ const { error } = await sb.from('lists').update(row).eq('id', l.id); if (error) throw error; Object.assign(l, row); return 'Lista salva'; }
       const { data, error } = await sb.from('lists').insert(row).select().single(); if (error) throw error;
       S.lists.unshift(data); ui.listId = data.id; ui.liDraft = ''; view = 'lista'; return 'Lista criada. Agora adicione os itens.';
@@ -1802,6 +1809,12 @@ function bindLista(){
     persist(sb.from('list_items').delete().in('id', ids).then(r => { if (r.error) throw r.error; }));
   };
   const op = V.querySelector('[data-listopt]'); if (op) op.onclick = () => openListForm(l);
+  const sh = V.querySelector('[data-share]'); if (sh) sh.onchange = async () => {
+    const on = sh.checked, { error } = await sb.from('lists').update({ shared: on }).eq('id', l.id);
+    if (error){ sh.checked = !on; toast(esc(/Família/.test(error.message || '') ? 'Compartilhar é do Plano Família.' : 'Não consegui mudar agora. Tente de novo.')); return; }
+    l.shared = on; render(); toast(on ? 'Lista compartilhada. Ela já aparece no celular da sua dupla.' : 'Compartilhamento desligado.');
+  };
+  const pr = V.querySelector('[data-sharepromo]'); if (pr) pr.onclick = () => { if ((S.plan || 'free') === 'familia'){ ui.setSub = 'familia'; view = 'ajustes'; render(); } else openPlans('ajustes'); };
 }
 
 /* ----- notas ----- */
