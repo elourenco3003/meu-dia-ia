@@ -2101,7 +2101,8 @@ function bindSubs(){
 }
 
 /* ---------- Investimentos: só acompanha (código do ativo), sem quantidade nem valor ---------- */
-const INV_KIND = { acao:'Ação', fii:'FII', bdr:'BDR', etf:'ETF' };
+const INV_KIND = { acao:'Ação', fii:'FII', etf:'ETF', bdr:'BDR' };
+const INV_GROUPS = [['acao','Ações'],['fii','Fundos imobiliários (FIIs)'],['etf','ETFs'],['bdr','BDRs']];
 async function loadInvest(){
   if (!session) return;
   const { data: w } = await sb.from('watchlist').select('id,symbol,created_at').order('created_at');
@@ -2115,21 +2116,21 @@ const pctChip = p => p == null ? '<span class="chip">—</span>' : `<span class=
 function vInvest(){
   if (!S.watch || Date.now() - (S.invAt || 0) > 60e3) loadInvest();
   const w = S.watch || [], Q = S.quotes || {}, tab = ui.invTab || 'todos';
-  const kindOf = s => (Q[s] && Q[s].kind) || (/11$/.test(s) ? 'fii' : 'acao');
-  const list = w.filter(x => tab === 'todos' || (tab === 'fii' ? kindOf(x.symbol) === 'fii' : kindOf(x.symbol) !== 'fii'));
+  const kindOf = s => { const k = Q[s] && Q[s].kind; return INV_KIND[k] ? k : /3[2-5]$/.test(s) ? 'bdr' : /11$/.test(s) ? 'fii' : 'acao'; };
+  const list = w.filter(x => tab === 'todos' || kindOf(x.symbol) === tab);
   const qs = w.map(x => Q[x.symbol]).filter(q => q && q.price != null);
   const up = qs.filter(q => q.pct > 0).length, down = qs.filter(q => q.pct < 0).length;
   const last = qs.reduce((m, q) => Math.max(m, new Date(q.updated_at).getTime()), 0);
   return `${back()}<div class="head"><div><h1 class="lt">Investimentos</h1><div class="sub">${last ? 'Atualizado ' + agoTxt(new Date(last).toISOString()) + ' · cotação com até 30 min de atraso' : 'Acompanhe ações e fundos imobiliários'}</div></div></div>
   ${qs.length ? `<div class="inv-sum"><span>Hoje</span><b class="up">${up} em alta</b><b class="down">${down} em queda</b><span>${qs.length - up - down} estáveis</span></div>` : ''}
   <form class="askbox" id="inv-form" aria-label="Adicionar ativo">${ic('plus')}<input id="inv-in" placeholder="Código do ativo (ex.: PETR4, MXRF11)" autocomplete="off" autocapitalize="characters" maxlength="12" aria-label="Código do ativo"><button class="go" aria-label="Adicionar">${ic('up')}</button></form>
-  <div class="seg" role="group" aria-label="Mostrar">${[['todos','Todos'],['acoes','Ações'],['fii','FIIs']].map(([k,l]) => `<button data-invtab="${k}" aria-pressed="${tab === k}">${l}</button>`).join('')}</div>
-  <div class="group">${list.length ? list.map(x => { const q = Q[x.symbol];
+  <div class="seg" role="group" aria-label="Mostrar">${[['todos','Todos'],['acao','Ações'],['fii','FIIs'],['etf','ETFs'],['bdr','BDRs']].filter(([k]) => k === 'todos' || k === 'acao' || k === 'fii' || w.some(x => kindOf(x.symbol) === k)).map(([k,l]) => `<button data-invtab="${k}" aria-pressed="${tab === k}">${l}</button>`).join('')}</div>
+  ${list.length ? INV_GROUPS.map(([gk, gl]) => { const g = list.filter(x => kindOf(x.symbol) === gk); return g.length ? `<section><div class="sh">${gl} (${g.length})</div><div class="group">${g.map(x => { const q = Q[x.symbol];
       return `<button class="row inv-row" data-inv="${x.symbol}" data-swipe="ativo:${x.id}">
         <span class="inv-logo">${q && q.logo && /^https:\/\//.test(q.logo) ? `<img src="${esc(q.logo)}" alt="" loading="lazy" onerror="this.remove()">` : esc(x.symbol.slice(0, 2))}</span>
-        <span class="main"><div class="t">${esc(x.symbol)} <small class="inv-k">${INV_KIND[kindOf(x.symbol)] || ''}</small></div><div class="s">${q ? (q.kind === 'invalido' ? 'Código não encontrado na bolsa' : esc(tcase(q.name || ''))) : 'Buscando cotação…'}</div></span>
-        <span class="mk-r">${q && q.price != null ? `${accN(Number(q.price), 2)}${pctChip(q.pct)}` : ''}</span></button>`; }).join('')
-    : `<div class="empty">${w.length ? 'Nenhum ativo nesta aba.' : 'Digite o código de um ativo acima para começar a acompanhar. Você não informa quantidade nem valor investido.'}</div>`}</div>
+        <span class="main"><div class="t">${esc(x.symbol)}</div><div class="s">${q ? (q.kind === 'invalido' ? 'Código não encontrado na bolsa' : esc(tcase(q.name || ''))) : 'Buscando cotação…'}</div></span>
+        <span class="mk-r">${q && q.price != null ? `${accN(Number(q.price), 2)}${pctChip(q.pct)}` : ''}</span></button>`; }).join('')}</div></section>` : ''; }).join('')
+    : `<div class="group"><div class="empty">${w.length ? 'Nenhum ativo nesta aba.' : 'Digite o código de um ativo acima para começar a acompanhar. Você não informa quantidade nem valor investido.'}</div></div>`}
   <div class="foot">Preço em R$ por cota/ação e variação do dia em %. Fonte: brapi (B3), com até 30 minutos de atraso, atualizado a cada 15 min no pregão. Toque no ativo para ver o gráfico; arraste para o lado para parar de acompanhar.</div>`;
 }
 function bindInvest(){
