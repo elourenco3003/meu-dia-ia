@@ -780,7 +780,7 @@ function vRems(){
       </button>
     </div>`;
   return `
-  ${back()}<div class="head"><div><h1 class="lt">Lembretes</h1><div class="sub">Aviso com som enquanto o app estiver aberto</div></div>
+  ${back()}<div class="head"><div><h1 class="lt">Lembretes</h1><div class="sub">${pushState()==='ativo' ? 'Alerta no celular, mesmo com o app fechado' : 'Ative os alertas em Ajustes para receber com o app fechado'}</div></div>
     <button class="icon-btn" data-new="rem" aria-label="Novo lembrete">${ic('plus')}</button></div>
   ${groups.filter(([,l])=>l.length).map(([h,l]) => `<section><div class="sh">${h}</div><div class="group">${l.map(row).join('')}</div></section>`).join('') || `<div class="group"><div class="empty">Nenhum lembrete. Diga ao assistente: “me lembre de pagar a escola amanhã às 10h”.</div></div>`}`;
 }
