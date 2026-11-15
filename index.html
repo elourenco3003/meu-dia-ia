@@ -111,11 +111,20 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 .h2{font-size:22px;font-weight:600;letter-spacing:-.015em;margin:0}
 .sub{color:var(--fg2);font-size:14.5px;margin-top:4px}
 .head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.row[data-swipe]{touch-action:pan-y}
+.row.swiping{background:linear-gradient(to left,var(--bad) var(--swa,0px),var(--card) var(--swa,0px))}
+.row.swiping.sw-right{background:linear-gradient(to right,var(--bad) var(--swa,0px),var(--card) var(--swa,0px))}
+.row.swiping>*{transform:translateX(var(--sw,0px))}
+.row.swiping::after{content:"Excluir";position:absolute;right:18px;top:50%;transform:translateY(-50%);color:#fff;font-weight:700;font-size:14.5px;opacity:var(--swo,0);pointer-events:none}
+.row.swiping.sw-right::after{right:auto;left:18px}
+.row.sw-anim>*{transition:transform .18s ease}
+#toast .undo{color:var(--accent-2);font-weight:800;font-size:14.5px;background:none;border:0;padding:4px 2px;white-space:nowrap}
 .li-sec{font-size:12.5px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.04em;padding:12px 14px 4px}
 .li .t{font-size:16px}
 .li.done .t{color:var(--fg2);text-decoration:line-through}
 .li-add{margin:0}
 .li-total .row{min-height:44px}
+.li-clear{display:flex;justify-content:center}.li-clear .btn-go{padding:10px 18px;font-size:14.5px}
 .note-prev{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .note-row .main{flex:1;min-width:0}
 .note-ta{width:100%;min-height:200px;border:0;background:none;font:inherit;font-size:16px;line-height:1.5;resize:none;color:inherit;outline:none}
@@ -882,9 +891,60 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 
 /* ---------- aviso rápido ---------- */
 let toastT;
-function toast(html){
+function toast(html, ms){
   const el = $('#toast'); el.innerHTML = html; el.hidden = false;
-  clearTimeout(toastT); toastT = setTimeout(() => el.hidden = true, 3200);
+  clearTimeout(toastT); toastT = setTimeout(() => el.hidden = true, ms || 3200);
+}
+
+/* ---------- arrastar para o lado para excluir (estilo Gmail), com "Desfazer" ---------- */
+let swp = null, swipedAt = 0;
+document.addEventListener('pointerdown', e => {
+  const row = e.target.closest('[data-swipe]'); if (!row || (e.button && e.button > 0)) return;
+  swp = { row, x: e.clientX, y: e.clientY, dx: 0, on: false, id: e.pointerId };
+}, true);
+document.addEventListener('pointermove', e => {
+  if (!swp || e.pointerId !== swp.id) return;
+  const dx = e.clientX - swp.x, dy = e.clientY - swp.y;
+  if (!swp.on){
+    if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)){ swp = null; return; }
+    if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.3){ swp.on = true; swp.row.classList.add('swiping'); try { swp.row.setPointerCapture(e.pointerId); } catch(_) {} }
+    else return;
+  }
+  swp.dx = dx; const a = Math.abs(dx);
+  swp.row.style.setProperty('--sw', dx + 'px'); swp.row.style.setProperty('--swa', a + 'px'); swp.row.style.setProperty('--swo', String(Math.min(1, a / 90)));
+  swp.row.classList.toggle('sw-right', dx > 0);
+  e.preventDefault();
+}, { passive: false });
+function endSwipe(){
+  if (!swp) return; const s = swp; swp = null; if (!s.on) return;
+  swipedAt = Date.now(); const w = s.row.offsetWidth; s.row.classList.add('sw-anim');
+  if (Math.abs(s.dx) > w * 0.35){ s.row.style.setProperty('--sw', (s.dx < 0 ? -w : w) + 'px'); s.row.style.setProperty('--swa', w + 'px'); setTimeout(() => swipeDelete(s.row.dataset.swipe), 170); }
+  else { s.row.style.setProperty('--sw', '0px'); s.row.style.setProperty('--swa', '0px'); setTimeout(() => s.row.classList.remove('swiping', 'sw-anim', 'sw-right'), 220); }
+}
+document.addEventListener('pointerup', endSwipe, true);
+document.addEventListener('pointercancel', endSwipe, true);
+// depois de arrastar, o toque não conta como clique
+document.addEventListener('click', e => { if (Date.now() - swipedAt < 400){ e.stopPropagation(); e.preventDefault(); } }, true);
+function swipeDelete(key){
+  const [k, id] = key.split(':'); let restore, commit, label;
+  if (k === 'li'){ const it = S.items.find(x => x.id === id); if (!it) return; S.items = S.items.filter(x => x !== it);
+    restore = () => { S.items.push(it); S.items.sort((a, b) => String(a.created_at).localeCompare(String(b.created_at))); }; commit = () => sb.from('list_items').delete().eq('id', id); label = 'Item excluído'; }
+  else if (k === 'list'){ const l = S.lists.find(x => x.id === id); if (!l) return;
+    if (l.user_id !== myId()){ toast('Só quem criou a lista pode excluir.'); render(); return; }
+    const its = listItems(id); S.lists = S.lists.filter(x => x !== l); S.items = S.items.filter(i => i.list_id !== id);
+    restore = () => { S.lists.push(l); S.items.push(...its); S.lists.sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at))); }; commit = () => sb.from('lists').delete().eq('id', id); label = `Lista "${esc(l.name)}" excluída`; }
+  else if (k === 'task'){ const t = S.tasks.find(x => x.id === id); if (!t) return; const subs = subsOf(id); S.tasks = S.tasks.filter(x => x.id !== id && x.parent !== id);
+    restore = () => S.tasks.push(t, ...subs); commit = () => sb.from('tasks').delete().eq('id', id); label = t.parent ? 'Passo excluído' : 'Tarefa excluída'; }
+  else if (k === 'note'){ const n = S.notes.find(x => x.id === id); if (!n) return; S.notes = S.notes.filter(x => x !== n);
+    restore = () => S.notes.push(n); commit = () => sb.from('notes').delete().eq('id', id); label = 'Nota excluída'; }
+  else if (k === 'rem'){ const r = S.rems.find(x => x.id === id); if (!r) return; S.rems = S.rems.filter(x => x !== r);
+    restore = () => S.rems.push(r); commit = () => sb.from('reminders').delete().eq('id', id); label = 'Lembrete excluído'; }
+  else return;
+  render();
+  let undone = false;
+  const timer = setTimeout(() => { if (!undone) persist(Promise.resolve(commit()).then(r => { if (r && r.error) throw r.error; })); }, 4500);
+  toast(`<span style="flex:1;white-space:nowrap">${label}</span><button class="undo" data-undo>Desfazer</button>`, 4500);
+  const b = $('#toast [data-undo]'); if (b) b.onclick = () => { undone = true; clearTimeout(timer); restore(); render(); $('#toast').hidden = true; };
 }
 
 /* ---------- cálculos ---------- */
@@ -906,7 +966,7 @@ const pendingTasks = () => S.tasks.filter(t=>!t.done && !t.parent).sort((a,b)=>(
 /* ---------- navegação ---------- */
 let view = 'inicio';
 const ui = { agendaSel: today(), weekOff: 0, monthOff: 0, calMode: 'semana', taskSeg: 'pend', finOff: 0, wipe: false, filter: 'todas' };
-function go(v){ if (v !== 'lista') unwatchList(); if (v === 'ajustes' && view !== 'ajustes') ui.setSub = null; view = v; render(); $('#view').scrollTop = 0; }
+function go(v){ if (v !== view) ui.keep = new Set(); if (v !== 'lista') unwatchList(); if (v === 'ajustes' && view !== 'ajustes') ui.setSub = null; view = v; render(); $('#view').scrollTop = 0; }
 document.querySelectorAll('#tabs [data-v]').forEach(b => b.onclick = () => go(b.dataset.v));
 $('#fab').onclick = () => openNewMenu();
 
@@ -1112,8 +1172,8 @@ function openNewMenu(){
 
 /* ---------- Tarefas ---------- */
 function vTasks(){
-  const pend = pendingTasks(), done = S.tasks.filter(t=>t.done && !t.parent);
-  const list = ui.taskSeg==='pend' ? pend : done;
+  const keep = ui.keep || new Set(), pend = pendingTasks(), done = S.tasks.filter(t=>t.done && !t.parent);
+  const list = ui.taskSeg==='pend' ? S.tasks.filter(t => !t.parent && (!t.done || keep.has(t.id))).sort((a,b)=>(a.due||'9999').localeCompare(b.due||'9999') || PRIO_N[a.pri]-PRIO_N[b.pri]) : done;
   const t = today();
   return `
   ${back()}<div class="head"><div><h1 class="lt">Tarefas</h1><div class="sub">${pend.length} pendente${pend.length===1?'':'s'}</div></div>
@@ -1124,7 +1184,7 @@ function vTasks(){
   </div>
   <div class="group">
     ${list.length ? list.map(x => `
-      <div class="row ind ${x.done?'done':''}">
+      <div class="row ind ${x.done?'done':''}" data-swipe="task:${x.id}">
         <button class="check ${x.done?'on':''}" data-toggle="task:${x.id}" aria-label="${x.done?'Reabrir':'Concluir'} ${esc(x.title)}">${x.done?ic('ok'):''}</button>
         <button class="main" data-edit="task:${x.id}" style="text-align:left">
           <div class="t">${esc(x.title)}</div>
@@ -1188,10 +1248,11 @@ function vFin(){
 /* ---------- Lembretes ---------- */
 function vRems(){
   const t = today();
-  const open = S.rems.filter(r=>!r.done).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
-  const groups = [['Hoje', open.filter(r=>r.date===t)], ['Próximos', open.filter(r=>r.date>t)], ['Atrasados', open.filter(r=>r.date<t)], ['Concluídos', S.rems.filter(r=>r.done).slice(-8).reverse()]];
+  const keep = ui.keep || new Set();
+  const open = S.rems.filter(r=>!r.done || keep.has(r.id)).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+  const groups = [['Hoje', open.filter(r=>r.date===t)], ['Próximos', open.filter(r=>r.date>t)], ['Atrasados', open.filter(r=>r.date<t && !r.done)], ['Concluídos', S.rems.filter(r=>r.done && !keep.has(r.id)).slice(-8).reverse()]];
   const row = r => `
-    <div class="row ind ${r.done?'done':''}">
+    <div class="row ind ${r.done?'done':''}" data-swipe="rem:${r.id}">
       <button class="check ${r.done?'on':''}" data-toggle="rem:${r.id}" aria-label="${r.done?'Reabrir':'Concluir'} ${esc(r.title)}">${r.done?ic('ok'):''}</button>
       <button class="main" data-edit="rem:${r.id}" style="text-align:left">
         <div class="t">${esc(r.title)}</div>
@@ -1273,7 +1334,7 @@ function bindView(){
   V.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => { const [k,id] = b.dataset.edit.split(':'); openEntity(k, id); });
   V.querySelectorAll('[data-toggle]').forEach(b => b.onclick = () => {
     const [k,id] = b.dataset.toggle.split(':'); const it = S[ARR[k]].find(x=>x.id===id); if (!it) return;
-    it.done = !it.done; if (it.done) play('concluida'); render(); persist(dbSave(k, it, false));
+    it.done = !it.done; if (it.done){ play('concluida'); (ui.keep = ui.keep || new Set()).add(id); } render(); persist(dbSave(k, it, false));
   });
   V.querySelectorAll('[data-pay]').forEach(b => b.onclick = () => {
     const f = S.fin.find(x=>x.id===b.dataset.pay); f.paid = true; play('concluida'); render(); persist(dbSave('fin', f, false));
@@ -1670,14 +1731,14 @@ function vListas(){
   <div class="seg" role="group" aria-label="Mostrar"><button data-lntab="listas" aria-pressed="${tab === 'listas'}">Listas</button><button data-lntab="notas" aria-pressed="${tab === 'notas'}">Notas</button></div>`;
   if (tab === 'notas'){
     const ns = [...S.notes].sort((a, b) => (b.pinned - a.pinned) || b.updated_at.localeCompare(a.updated_at));
-    return head + `<div class="group">${ns.length ? ns.map(n => `<button class="row note-row" data-note="${n.id}"><span class="set-ic">${ic('note')}</span>
+    return head + `<div class="group">${ns.length ? ns.map(n => `<button class="row note-row" data-note="${n.id}" data-swipe="note:${n.id}"><span class="set-ic">${ic('note')}</span>
       <span class="main"><div class="t">${esc(n.title || (n.body.split('\n')[0] || 'Nota sem título').slice(0, 60))}</div><div class="s note-prev">${esc(n.body.slice(0, 140) || ' ')}</div><div class="s">${n.pinned ? 'Fixada · ' : ''}${agoTxt(n.updated_at)}</div></span>${ic('r','i chev')}</button>`).join('')
       : `<div class="empty">Nenhuma nota ainda. Toque no + para escrever ou ditar.</div>`}</div>
       <div class="foot">Dentro da nota, o botão "Virar tarefas" lê o texto e sugere tarefas e lembretes.</div>`;
   }
   return head + `<div class="group">${S.lists.length ? S.lists.map(l => {
       const its = listItems(l.id), left = its.filter(i => !i.done).length;
-      return `<button class="row" data-openlist="${l.id}"><span class="set-ic">${ic(l.kind === 'mercado' ? 'fin' : 'list')}</span>
+      return `<button class="row" data-openlist="${l.id}" ${l.user_id === myId() ? `data-swipe="list:${l.id}"` : ''}><span class="set-ic">${ic(l.kind === 'mercado' ? 'fin' : 'list')}</span>
         <span class="main"><div class="t">${esc(l.name)}</div><div class="s">${left ? `${left} ${left === 1 ? 'item faltando' : 'itens faltando'}` : its.length ? 'Tudo marcado' : 'Vazia'}${l.shared ? ' · compartilhada' : ''}${l.user_id !== myId() ? ' · de ' + esc(memberName(l.user_id)) : ''}</div></span>${ic('r','i chev')}</button>`;
     }).join('') : `<div class="empty">Nenhuma lista ainda. Toque no + e crie a do mercado.</div>`}</div>
     <div class="foot">Dentro da lista, toque no microfone e fale tudo de uma vez ("arroz, 2 kg de feijão, leite…"). O app separa item por item.</div>`;
@@ -1686,16 +1747,17 @@ function vListas(){
 function vLista(){
   const l = S.lists.find(x => x.id === ui.listId);
   if (!l){ ui.listId = null; return vListas(); }
-  const its = listItems(l.id), pend = its.filter(i => !i.done), done = its.filter(i => i.done).sort((a, b) => String(b.done_at).localeCompare(String(a.done_at)));
+  const its = listItems(l.id), pend = its.filter(i => !i.done), done = its.filter(i => i.done);
   const total = its.reduce((s, i) => s + itemTotal(i), 0), cart = done.reduce((s, i) => s + itemTotal(i), 0);
-  const row = it => `<div class="row li ${it.done ? 'done' : ''}">
+  const row = it => `<div class="row li ${it.done ? 'done' : ''}" data-swipe="li:${it.id}">
       <button class="check ${it.done ? 'on' : ''}" data-litog="${it.id}" aria-label="${it.done ? 'Desmarcar' : 'Marcar'} ${esc(it.text)}">${it.done ? ic('ok') : ''}</button>
       <button class="main" data-liedit="${it.id}" style="text-align:left"><div class="t">${esc(qtyTxt(it))}${esc(it.text)}</div>${l.shared && it.added_by && it.added_by !== myId() ? `<div class="s">por ${esc(memberName(it.added_by))}</div>` : ''}</button>
       ${it.price_cents ? acc(itemTotal(it)) : ''}</div>`;
   let pendHtml;
-  if (l.kind === 'mercado' && pend.length){
-    pendHtml = SECTIONS.map(sec => { const g = pend.filter(i => (i.section || 'Outros') === sec); return g.length ? `<div class="li-sec">${sec}</div>${g.map(row).join('')}` : ''; }).join('');
-  } else pendHtml = pend.map(row).join('');
+  // o item marcado fica riscado no mesmo lugar (não pula para o fim)
+  if (l.kind === 'mercado' && its.length){
+    pendHtml = SECTIONS.map(sec => { const g = its.filter(i => (i.section || 'Outros') === sec); return g.length ? `<div class="li-sec">${sec}</div>${g.map(row).join('')}` : ''; }).join('');
+  } else pendHtml = its.map(row).join('');
   return `<button class="back" data-golistas style="display:inline-flex!important">${ic('l')}Listas</button>
   <div class="head"><div><h1 class="lt">${esc(l.name)}</h1><div class="sub">${pend.length} faltando · ${done.length} marcado${done.length === 1 ? '' : 's'}${l.shared ? ' · compartilhada' + (partner() ? ' com ' + esc(nameCase(partner().name.split(' ')[0])) : '') : ''}</div></div>
     ${l.user_id === myId() ? `<button class="icon-btn" data-listopt aria-label="Opções da lista">${ic('gear')}</button>` : ''}</div>
@@ -1704,10 +1766,10 @@ function vLista(){
     ${ic('plus')}<input id="li-in" placeholder="Adicionar item (ex.: 2 kg arroz)" autocomplete="off" aria-label="Novo item" value="${esc(ui.liDraft || '')}">
     <button type="button" class="mic" data-limic aria-label="Ditar itens">${ic('mic')}</button><button class="go" aria-label="Adicionar">${ic('up')}</button>
   </form>
-  <div class="group">${pendHtml || `<div class="empty">${its.length ? 'Tudo marcado. Boa!' : 'Lista vazia. Digite ou dite os itens acima.'}</div>`}</div>
+  <div class="group">${pendHtml || `<div class="empty">Lista vazia. Digite ou dite os itens acima.</div>`}</div>
+  ${done.length ? `<div class="li-clear"><button class="btn-go" data-liclear>Limpar marcados (${done.length})</button></div>` : ''}
   ${total ? `<div class="card li-total"><div class="row"><span class="main t">Total da lista</span>${acc(total)}</div><div class="row"><span class="main t">Já marcado (no carrinho)</span>${acc(cart)}</div><div class="row"><span class="main t">Falta</span>${acc(total - cart)}</div></div>` : ''}
-  ${done.length ? `<section><div class="sh">Marcados (${done.length})<button data-liclear>Limpar marcados</button></div><div class="group">${done.map(row).join('')}</div></section>` : ''}
-  <div class="foot">Toque no círculo para riscar. Toque no item para mudar quantidade, unidade e preço (R$ por unidade).${l.kind === 'mercado' ? ' Os itens ficam separados por seção do mercado.' : ''}</div>`;
+  <div class="foot">Toque no círculo para riscar (o item fica no lugar). Arraste o item para o lado para excluir. Toque no item para mudar quantidade, unidade e preço (R$ por unidade).${l.kind === 'mercado' ? ' Os itens ficam separados por seção do mercado.' : ''}</div>`;
 }
 
 // compartilhar: uma chave liga/desliga para cada pessoa da família (no Plano Família são 2 pessoas)
@@ -1961,7 +2023,7 @@ const subsOf = id => S.tasks.filter(t => t.parent === id);
 function subTasksHtml(x){
   const subs = subsOf(x.id); if (!subs.length && ui.taskOpen !== x.id) return '';
   if (ui.taskOpen !== x.id) return '';
-  return `<div class="subs">${subs.map(s => `<div class="row sub ${s.done ? 'done' : ''}"><button class="check sm ${s.done ? 'on' : ''}" data-toggle="task:${s.id}" aria-label="${s.done ? 'Reabrir' : 'Concluir'} ${esc(s.title)}">${s.done ? ic('ok') : ''}</button>
+  return `<div class="subs">${subs.map(s => `<div class="row sub ${s.done ? 'done' : ''}" data-swipe="task:${s.id}"><button class="check sm ${s.done ? 'on' : ''}" data-toggle="task:${s.id}" aria-label="${s.done ? 'Reabrir' : 'Concluir'} ${esc(s.title)}">${s.done ? ic('ok') : ''}</button>
       <span class="main"><div class="t">${esc(s.title)}</div></span><button class="test" data-subdel="${s.id}" aria-label="Apagar passo">Apagar</button></div>`).join('')}
     <form class="row sub sub-add" data-subadd="${x.id}"><input placeholder="Adicionar passo" aria-label="Novo passo" maxlength="200"><button class="test">Adicionar</button></form></div>`;
 }
