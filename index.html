@@ -337,6 +337,38 @@ button:disabled{cursor:default}
 .famline{display:flex;align-items:center;gap:8px;margin-top:10px;font:inherit;font-size:13.5px;color:var(--fg2);background:none;border:0;padding:0;text-align:left;min-width:0}
 .famline>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .test.danger{color:var(--bad)}
+.route-btn{width:34px;height:34px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.route-btn .i{width:17px;height:17px}
+.leave{color:var(--accent);font-weight:600}
+.route-t{font-size:19px;font-weight:600;line-height:1.25}
+.route-s{font-size:14px;color:var(--fg2);margin-top:4px}
+.route-big{display:flex;align-items:baseline;gap:10px;justify-content:center;padding:6px 0}
+.route-big span{font-size:16px;color:var(--fg2)} .route-big b{font-size:44px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.route-go{display:flex;flex-direction:column;gap:10px}
+.btn-go{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:14px;background:var(--card);color:var(--fg);font-weight:600;font-size:16px;text-decoration:none;box-shadow:var(--shadow)}
+.btn-go.waze{background:#33CCFF;color:#062a3a}
+.btn-go .i{width:18px;height:18px}
+.n{font-weight:700;font-variant-numeric:tabular-nums} .s2{color:var(--fg2);font-size:15px}
+.wx-now{display:flex;align-items:center;gap:12px;padding:16px 18px}
+.wx-now .wx-ic{width:52px;height:52px} .wx-now .wx-main b{font-size:30px}
+.wx-row{gap:10px}
+.wx-row .wx-ic{width:28px;height:28px}
+.wx-t,.wx-d{flex:none;width:84px;font-variant-numeric:tabular-nums;font-weight:500}
+.wx-t{width:52px}
+.wx-rain{flex:none;width:42px;font-size:13px;color:#5E8DE8;font-variant-numeric:tabular-nums;text-align:right}
+.wx-temp{margin-left:auto;font-variant-numeric:tabular-nums}
+.wx-range{flex:1;min-width:0;display:flex;align-items:center;gap:6px;font-variant-numeric:tabular-nums;font-size:14px}
+.wx-min{color:var(--fg2);width:30px;text-align:right} .wx-max{font-weight:700;width:30px}
+.wx-bar{flex:1;min-width:20px;height:5px;border-radius:5px;background:var(--fill);position:relative}
+.wx-bar span{position:absolute;top:0;bottom:0;border-radius:5px;background:linear-gradient(90deg,#8FB4F0,#F5A623)}
+.leave-card{display:flex;align-items:center;gap:12px;width:100%;margin-top:-6px;padding:12px 14px;border-radius:18px;background:var(--accent);color:#fff;text-align:left;font:inherit;border:0;box-shadow:var(--shadow)}
+.leave-card.late{background:var(--now)}
+.leave-card .main{flex:1;min-width:0;display:flex;flex-direction:column}
+.lc-ic{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.22);display:grid;place-items:center;flex:none}
+.lc-ic .i{width:17px;height:17px}
+.lc-t{font-weight:700;font-size:16px} .lc-s{font-size:13px;opacity:.9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lc-go{flex:none;font-size:13px;font-weight:700;background:#fff;color:var(--accent);padding:6px 12px;border-radius:999px}
+.leave-card.late .lc-go{color:var(--now)}
 </style>
 </head>
 <body>
@@ -359,6 +391,7 @@ button:disabled{cursor:default}
   <symbol id="i-bot" viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="11" rx="4"/><path d="M12 4.5V8M9.5 13h.01M14.5 13h.01M9.8 16h4.4"/></symbol>
   <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+  <symbol id="i-nav" viewBox="0 0 24 24"><path d="M20 4 3.5 11.2l7 2.3 2.3 7z"/></symbol>
   <symbol id="i-send" viewBox="0 0 24 24"><path d="M20.5 3.5 10.5 13.5M20.5 3.5l-6.5 17-3.5-7-7-3.5z"/></symbol>
 </svg>
 
@@ -423,19 +456,20 @@ const SB_URL = 'https://tgrfwgzfjrwgkkvpgbqq.supabase.co';
 // chave pública (anon): pode ficar no navegador; quem protege os dados de cada usuário é o RLS do banco
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ3Z3pmanJ3Z2trdnBnYnFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2OTMxMDYsImV4cCI6MjExMDI2OTEwNn0.O2xXMY9NAQSeuxYmbOvT20u9UXaFp9Fr73W2HMcju4Q';
 const sb = window.supabase.createClient(SB_URL, SB_KEY);
-const CATS = {lembrete:'Novo lembrete',compromisso:'Compromisso próximo',vencer:'Conta a vencer',vencida:'Conta vencida',pendente:'Tarefa pendente',concluida:'Tarefa concluída',resposta:'Resposta da IA',resumo:'Resumo diário',prioritario:'Alerta prioritário'};
+const CATS = {lembrete:'Novo lembrete',compromisso:'Compromisso próximo',vencer:'Conta a vencer',vencida:'Conta vencida',pendente:'Tarefa pendente',concluida:'Tarefa concluída',resposta:'Resposta da IA',resumo:'Resumo diário',sair:'Hora de sair',prioritario:'Alerta prioritário'};
 const defCats = () => Object.fromEntries(Object.keys(CATS).map(k=>[k,true]));
 const LOCAL = 'meudia.local';
 let session = null;
-const blankState = () => ({ name:'', sounds:true, quiet_start:'', quiet_end:'', event_adv:30, summary_time:'07:30', cats:defCats(), example:false, fired:{}, chat:[], chatLoaded:false, events:[], tasks:[], fin:[], rems:[] });
+const blankState = () => ({ name:'', sounds:true, quiet_start:'', quiet_end:'', event_adv:30, summary_time:'07:30', home:{addr:''}, work:{addr:''}, travel_on:true, travel_arrive:30, cats:defCats(), example:false, fired:{}, chat:[], chatLoaded:false, events:[], tasks:[], fin:[], rems:[] });
 let S = blankState();
 try { S.fired = (JSON.parse(localStorage.getItem(LOCAL)) || {}).fired || {}; } catch(e) {}
 const save = () => { try { localStorage.setItem(LOCAL, JSON.stringify({ fired: S.fired })); } catch(e) {} };
 const tm = v => (v || '').slice(0,5);
 const MAP = {
   ev:   { table:'events',
-          to: r => ({id:r.id, title:r.title, date:r.date, time:tm(r.start_time), end:tm(r.end_time), place:r.place||'', cat:r.category, done:r.done}),
-          from: o => ({title:o.title, date:o.date, start_time:o.time, end_time:o.end || null, place:o.place || '', category:o.cat || 'pessoal', done:!!o.done}) },
+          to: r => ({id:r.id, title:r.title, date:r.date, time:tm(r.start_time), end:tm(r.end_time), place:r.place||'', cat:r.category, done:r.done,
+                from:r.travel_from||'auto', plat:r.place_lat ?? null, plon:r.place_lon ?? null, plabel:r.place_label||'', tmin:r.travel_min ?? null, leave:r.leave_at||null, torig:r.travel_origin||'', tsrc:r.travel_source||''}),
+          from: o => ({title:o.title, date:o.date, start_time:o.time, end_time:o.end || null, place:o.place || '', category:o.cat || 'pessoal', done:!!o.done, travel_from:o.from || 'auto'}) },
   task: { table:'tasks',
           to: r => ({id:r.id, title:r.title, due:r.due_date || '', pri:r.priority, cat:r.category, done:r.done}),
           from: o => ({title:o.title, due_date:o.due || null, priority:o.pri || 'media', category:o.cat || 'pessoal', done:!!o.done, done_at:o.done ? new Date().toISOString() : null}) },
@@ -448,7 +482,7 @@ const MAP = {
 };
 async function loadAll(){
   const [p, ev, tk, fn, rm] = await Promise.all([
-    sb.from('profiles').select('name,sounds,sound_cats,quiet_start,quiet_end,event_advance_min,summary_time').maybeSingle(),
+    sb.from('profiles').select('name,sounds,sound_cats,quiet_start,quiet_end,event_advance_min,summary_time,home_addr,home_lat,home_lon,work_addr,work_lat,work_lon,travel_on,travel_arrive_min').maybeSingle(),
     sb.from('events').select('*').order('date'),
     sb.from('tasks').select('*'),
     sb.from('finance_entries').select('*').order('date'),
@@ -458,6 +492,8 @@ async function loadAll(){
   if (p.data){
     S.name = p.data.name || ''; S.sounds = p.data.sounds; S.cats = Object.assign(defCats(), p.data.sound_cats || {});
     S.quiet_start = tm(p.data.quiet_start); S.quiet_end = tm(p.data.quiet_end); S.event_adv = p.data.event_advance_min ?? 30; S.summary_time = tm(p.data.summary_time) || '07:30';
+    S.home = { addr:p.data.home_addr || '', lat:p.data.home_lat, lon:p.data.home_lon }; S.work = { addr:p.data.work_addr || '', lat:p.data.work_lat, lon:p.data.work_lon };
+    S.travel_on = p.data.travel_on !== false; S.travel_arrive = p.data.travel_arrive_min || 30;
   }
   S.events = ev.data.map(MAP.ev.to); S.tasks = tk.data.map(MAP.task.to); S.fin = fn.data.map(MAP.fin.to); S.rems = rm.data.map(MAP.rem.to);
 }
@@ -472,14 +508,14 @@ const persist = p => Promise.resolve(p).catch(fail);
 let profT;
 function saveProfile(){
   clearTimeout(profT);
-  profT = setTimeout(() => persist(sb.from('profiles').update({ name:S.name, sounds:S.sounds, sound_cats:S.cats, quiet_start:S.quiet_start || null, quiet_end:S.quiet_end || null, event_advance_min:Number(S.event_adv) || 0, summary_time:S.summary_time || '07:30' }).eq('id', session.user.id).then(r => { if (r.error) throw r.error; })), 500);
+  profT = setTimeout(() => persist(sb.from('profiles').update({ name:S.name, sounds:S.sounds, sound_cats:S.cats, quiet_start:S.quiet_start || null, quiet_end:S.quiet_end || null, event_advance_min:Number(S.event_adv) || 0, summary_time:S.summary_time || '07:30', travel_on:!!S.travel_on, travel_arrive_min:Number(S.travel_arrive) || 30 }).eq('id', session.user.id).then(r => { if (r.error) throw r.error; })), 500);
 }
 
 /* ---------- sons (originais, gerados no aparelho) ---------- */
 const TONES = {
   lembrete:[[880,0],[1318,.12]], compromisso:[[659,0],[880,.13],[988,.26]], vencer:[[523,0],[659,.15]],
   vencida:[[440,0],[349,.2]], pendente:[[740,0],[740,.16]], concluida:[[784,0],[1047,.1]],
-  resposta:[[1175,0]], resumo:[[523,0],[659,.12],[784,.24],[1047,.36]], prioritario:[[988,0],[988,.17],[988,.34]],
+  resposta:[[1175,0]], resumo:[[523,0],[659,.12],[784,.24],[1047,.36]], prioritario:[[988,0],[988,.17],[988,.34]], sair:[[587,0],[784,.12],[988,.24],[784,.36]],
 };
 let actx = null;
 function play(cat, force){
@@ -529,7 +565,7 @@ $('#fab').onclick = () => openNewMenu();
 
 function render(){
   document.querySelectorAll('#tabs [data-v]').forEach(b => { if (b.dataset.v===view) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
-  const V = {inicio:vHome, agenda:vAgenda, assistente:vAssist, tarefas:vTasks, financas:vFin, lembretes:vRems, ajustes:vSettings, admin:vAdmin}[view] || vHome;
+  const V = {inicio:vHome, agenda:vAgenda, assistente:vAssist, tarefas:vTasks, financas:vFin, lembretes:vRems, ajustes:vSettings, admin:vAdmin, clima:vClima}[view] || vHome;
   const m = $('#view'); m.classList.toggle('chat', view==='assistente');
   m.innerHTML = `<div class="wrap">${V()}</div>`;
   bindView();
@@ -551,7 +587,7 @@ function progItems(d){
 }
 function itemSub(i){
   const r = i.ref;
-  if (i.k==='ev') return `${r.time}${r.end?'–'+r.end:''}${r.place?' · '+esc(r.place):''}`;
+  if (i.k==='ev') return `${r.time}${r.end?'–'+r.end:''}${r.place?' · '+esc(r.place):''}${leaveTxt(r)}`;
   if (i.k==='task') return i.late ? `<span style="color:var(--bad)">Atrasada · ${rel(r.due)}</span>` : `Tarefa · prioridade ${PRI[r.pri].toLowerCase()}`;
   return `${r.time} · Lembrete`;
 }
@@ -579,7 +615,7 @@ function vHome(){
     return `<div class="tcard ${i.done?'done':''}">
       <span class="bar ${bar}"></span>
       <button class="main" data-edit="${i.k}:${r.id}"><div class="t">${esc(r.title)}</div><div class="s">${itemSub(i)}</div></button>
-      <button class="check2 ${i.done?'on':''}" data-toggle="${i.k}:${r.id}" aria-label="${i.done?'Reabrir':'Concluir'} ${esc(r.title)}">${i.done?ic('ok'):''}</button>
+      ${i.k==='ev' ? routeBtn(r) : ''}<button class="check2 ${i.done?'on':''}" data-toggle="${i.k}:${r.id}" aria-label="${i.done?'Reabrir':'Concluir'} ${esc(r.title)}">${i.done?ic('ok'):''}</button>
     </div>`;
   };
   return `
@@ -591,6 +627,7 @@ function vHome(){
     <div class="date">${DOWL[n.getDay()].replace(/^./,c=>c.toUpperCase())}, ${n.getDate()} de ${MONL[n.getMonth()]}</div>
     <h1 class="hello">${hi}, <span class="nw">${esc((S.name||'você').split(' ')[0])}${ph.svg}</span></h1>
   </div>
+  ${nextLeave()}
   <div class="wx-wrap">${wxCard()}
   ${fam && fam.group && fam.members.length > 1 ? `<button class="famline" data-go="ajustes" aria-label="Minha família"><span class="fam-dots">${fam.members.slice(0,5).map(m => `<span class="fam-av sm">${esc(m.name[0] || '?')}</span>`).join('')}</span><span>${esc(fam.group.name)} · ${fam.members.map(m => esc(m.name.split(' ')[0])).join(', ')}</span></button>` : ''}</div>
 
@@ -682,8 +719,8 @@ function timeline(d){
   const cardOf = i => { const r = i.ref;
     return `<div class="ev ${i.k==='rem'?'rem':''} ${i.done?'done':''}">
       <button class="main" data-edit="${i.k}:${r.id}"><div class="t">${esc(r.title)}</div>
-        <div class="s">${i.k==='ev' ? `${r.time}${r.end?'–'+r.end:''}${r.place?' · '+esc(r.place):''}` : `Lembrete · ${r.time} · avisar ${ADV[r.adv]}`}</div></button>
-      ${same.has(r.id) ? '<span class="chip warn">Conflito</span>' : ''}
+        <div class="s">${i.k==='ev' ? `${r.time}${r.end?'–'+r.end:''}${r.place?' · '+esc(r.place):''}${leaveTxt(r)}` : `Lembrete · ${r.time} · avisar ${ADV[r.adv]}`}</div></button>
+      ${same.has(r.id) ? '<span class="chip warn">Conflito</span>' : ''}${i.k==='ev' ? routeBtn(r) : ''}
       <button class="check2 ${i.done?'on':''}" data-toggle="${i.k}:${r.id}" aria-label="${i.done?'Reabrir':'Concluir'} ${esc(r.title)}">${i.done?ic('ok'):''}</button>
     </div>`; };
   const line = `<div class="nowline" role="img" aria-label="Agora, ${now}"></div>`;
@@ -818,6 +855,7 @@ function vSettings(){
     <div class="group"><label class="row" for="set-name"><span style="flex:none">Nome completo</span><input class="field-in" id="set-name" value="${esc(S.name)}" maxlength="70" autocapitalize="characters"></label></div>
   </section>
   ${famSection()}
+  ${travelSection()}
   <section>
     <div class="sh">Alertas no celular</div>
     <div class="group">
@@ -907,6 +945,7 @@ function bindView(){
     if (a==='logout'){ unsubscribePush().finally(() => sb.auth.signOut()); }
     if (a==='push-on'){ enablePush(); }
     if (a==='wx-on'){ loadWeather(true); }
+    if (a==='wx-refresh'){ wxFull = null; wxFullState = 'idle'; try { localStorage.removeItem('meudia.wxfull'); } catch(e) {} loadWeatherFull(true); render(); }
     if (a==='fam-create'){ famCall('family_create', { p_name: 'Família ' + ((S.name||'').split(' ').slice(-1)[0] || '') }, 'Família criada. Agora convide as pessoas.'); }
     if (a==='fam-code'){ openJoin(''); }
     if (a==='fam-invite'){ famCall('family_invite').then(code => { if (code) shareInvite(code); }); }
@@ -935,6 +974,12 @@ function bindView(){
     if (!b.dataset.sure){ b.dataset.sure = 1; b.textContent = 'Confirmar'; return; }
     famCall('family_remove', { p_user: b.dataset.famrm }, `${esc(b.dataset.famname)} saiu da família`);
   });
+  V.querySelectorAll('[data-route]').forEach(b => b.onclick = ev => { ev.stopPropagation(); openRoute(b.dataset.route); });
+  V.querySelectorAll('[data-addr]').forEach(b => b.onclick = () => openAddr(b.dataset.addr));
+  V.querySelectorAll('[data-wxtab]').forEach(b => b.onclick = () => { ui.wxTab = b.dataset.wxtab; ui.wxPage = 0; render(); });
+  V.querySelectorAll('[data-wxpage]').forEach(b => b.onclick = () => { ui.wxPage = (ui.wxPage || 0) + Number(b.dataset.wxpage); render(); });
+  const st = $('#set-travel'); if (st) st.onchange = () => { S.travel_on = st.checked; saveProfile(); };
+  const pa = $('#pref-arr'); if (pa) pa.onchange = () => { S.travel_arrive = Number(pa.value); saveProfile(); S.events.forEach(e => { if (e.date >= today() && e.place){ e.tsrc = ''; e.leave = null; } }); persist(sb.from('events').update({ travel_checked_at: null }).gte('date', today()).neq('place', '').then(r => { if (r.error) throw r.error; })); };
   const nm = $('#set-name'); if (nm) nm.oninput = () => { S.name = nm.value.trim().replace(/\s+/g, ' ').toLocaleUpperCase('pt-BR'); saveProfile(); };
   V.querySelectorAll('[data-auser]').forEach(b => b.onclick = () => openUserPlan(b.dataset.auser));
   V.querySelectorAll('[data-apage]').forEach(b => b.onclick = () => { adminPage += Number(b.dataset.apage); render(); $('#view').scrollTop = 0; });
@@ -1024,7 +1069,7 @@ function openForm({title, fields, values={}, onSave, onDelete, saveLabel}){
 }
 
 const FIELDS = {
-  ev: [{k:'title',label:'Título',type:'title',req:1},{type:'break'},{k:'date',label:'Data',type:'date',req:1},{k:'time',label:'Início',type:'time',req:1},{k:'end',label:'Fim',type:'time'},{type:'break'},{k:'place',label:'Local',type:'text',ph:'Opcional'},{k:'cat',label:'Categoria',type:'select',def:'pessoal',options:[['pessoal','Pessoal'],['trabalho','Trabalho']]}],
+  ev: [{k:'title',label:'Título',type:'title',req:1},{type:'break'},{k:'date',label:'Data',type:'date',req:1},{k:'time',label:'Início',type:'time',req:1},{k:'end',label:'Fim',type:'time'},{type:'break'},{k:'place',label:'Local',type:'text',ph:'Ex.: rua, número, cidade'},{k:'from',label:'Sair de',type:'select',def:'auto',options:[['auto','Automático'],['casa','Casa'],['trabalho','Trabalho']]},{k:'cat',label:'Categoria',type:'select',def:'pessoal',options:[['pessoal','Pessoal'],['trabalho','Trabalho']]}],
   task: [{k:'title',label:'Título',type:'title',req:1},{type:'break'},{k:'due',label:'Data',type:'date'},{k:'pri',label:'Prioridade',type:'select',def:'media',options:[['alta','Alta'],['media','Média'],['baixa','Baixa']]},{k:'cat',label:'Categoria',type:'select',def:'pessoal',options:[['pessoal','Pessoal'],['trabalho','Trabalho']]}],
   fin: [{k:'type',label:'Tipo',type:'select',def:'conta',options:[['conta','Conta a pagar'],['despesa','Despesa'],['receita','Receita']]},{k:'title',label:'Descrição',type:'title',req:1},{type:'break'},{k:'cents',label:'Valor',type:'money',req:1},{k:'date',label:'Data ou vencimento',type:'date',req:1}],
   rem: [{k:'title',label:'Título',type:'title',req:1},{type:'break'},{k:'date',label:'Data',type:'date',req:1},{k:'time',label:'Hora',type:'time',req:1},{k:'adv',label:'Avisar',type:'select',def:0,options:Object.entries(ADV)}],
@@ -1037,11 +1082,13 @@ function openEntity(k, id){
   openForm({
     title: it ? NAMES[k][1] : NAMES[k][0], fields: FIELDS[k], values: it || defaults,
     onSave: async v => {
+      let it_new = null;
       if (k==='rem') v.adv = Number(v.adv);
       if (k==='fin' && !it) v.paid = v.type!=='conta';
       if (!it) v.done = false;
       if (it) { const prev = {...it}; Object.assign(it, v); try { await dbSave(k, it, false); } catch(e) { Object.assign(it, prev); throw e; } if (k==='rem') delete S.fired[it.id]; }
-      else { const rec = await dbSave(k, v, true); arr.push(rec); play(k==='rem'?'lembrete':'resposta'); }
+      else { const rec = await dbSave(k, v, true); arr.push(rec); play(k==='rem'?'lembrete':'resposta'); if (k==='ev') it_new = rec; }
+      const evT = it || it_new; if (k==='ev' && evT && evT.place){ if (it){ evT.leave = null; evT.tsrc = ''; } setTimeout(() => calcTravel(evT, true), 0); }
       if (k==='ev'){ const c = conflictWith(v.date, v.time, it && it.id); if (c) return `Atenção: conflita com <b>${esc(c.title)}</b> às ${c.time}`; }
       return it ? 'Alterações salvas' : `${NAMES[k][1]} adicionado`.replace('Tarefa adicionado','Tarefa adicionada');
     },
@@ -1241,6 +1288,8 @@ async function startApp(){
   } else if (!S.isAdmin && navAdm) navAdm.remove();
   view = 'inicio'; render(); checkReminders();
   fam = null; loadFamily().then(checkPendingInvite);
+  saveLocationSoon();
+  if (pendingRoute){ const r = pendingRoute; pendingRoute = null; setTimeout(() => openRoute(r), 300); }
   refreshPush().then(() => { if (pushOn && (view === 'inicio' || view === 'ajustes')) render(); });
 }
 sb.auth.onAuthStateChange((event, s) => {
@@ -1267,17 +1316,17 @@ const WX_ICON = {
   neblina: '<g stroke="#9AA0B8" stroke-width="1.8" stroke-linecap="round"><path d="M4 9h16"/><path d="M6 13h12"/><path d="M4 17h16"/></g>',
   neve: '<path d="M7 14h10a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.5 1.7A3.2 3.2 0 0 0 7 14z" fill="#B7BDD6"/><g fill="#8FB4F0"><circle cx="8" cy="18" r="1.2"/><circle cx="12" cy="20" r="1.2"/><circle cx="16" cy="18" r="1.2"/></g>',
 };
-const wxIcon = (c, night) => `<svg class="wx-ic" viewBox="0 0 24 24" aria-hidden="true">${night && c === 'sol' ? '<path d="M15 4a8 8 0 1 0 5 13A6.5 6.5 0 0 1 15 4z" fill="#8F9DF0"/>' : (WX_ICON[c] || WX_ICON.nublado)}</svg>`;
+const wxIcon = (c, night) => `<svg class="wx-ic" viewBox="0 0 24 24" aria-hidden="true">${night && c === 'sol' ? '<path d="M15 4a8 8 0 1 0 5 13A6.5 6.5 0 0 1 15 4z" fill="#8F9DF0"/>' : night && c === 'parcial' ? '<path d="M10 3.5a5 5 0 1 0 4 8A4 4 0 0 1 10 3.5z" fill="#8F9DF0"/><path d="M8 19h9a3.5 3.5 0 0 0 0-7 5 5 0 0 0-9.5 1.5A3 3 0 0 0 8 19z" fill="#C9CEE3"/>' : (WX_ICON[c] || WX_ICON.nublado)}</svg>`;
 let wx = null, wxState = 'idle';
 try { const c = JSON.parse(localStorage.getItem('meudia.wx') || 'null'); if (c && Date.now() - c.at < 30 * 60e3) { wx = c.data; wxState = 'ok'; } } catch(e) {}
 function wxCard(){
   if (wxState === 'off') return `<button class="wx wx-off" data-act="wx-on">${wxIcon('parcial')}<span>Toque para ver a previsão do tempo</span></button>`;
   if (!wx) return '';
-  return `<div class="wx" role="group" aria-label="Previsão do tempo">
+  return `<button class="wx" data-go="clima" aria-label="Abrir previsão do tempo">
     ${wxIcon(wx.cond, !wx.is_day)}
     <div class="wx-main"><b>${wx.temp}°C</b><span>${esc(wx.desc)}${wx.city ? ' · ' + esc(wx.city) : ''}</span></div>
     <div class="wx-side"><span>máx ${wx.max}° · mín ${wx.min}°</span><span>chuva ${wx.rain}%</span></div>
-  </div><div class="wx-src">Dados: ${esc(wx.source)}</div>`;
+  </button><div class="wx-src">Dados: ${esc(wx.source)}</div>`;
 }
 function loadWeather(ask){
   if (wxState === 'loading' || !navigator.geolocation || (wxState === 'err' && !ask)) return;
@@ -1286,7 +1335,8 @@ function loadWeather(ask){
   if (!asked && !ask){ wxState = 'off'; return; }
   wxState = 'loading';
   navigator.geolocation.getCurrentPosition(async pos => {
-    try { localStorage.setItem('meudia.wxok', '1'); } catch(e) {}
+    try { localStorage.setItem('meudia.wxok', '1'); localStorage.setItem('meudia.wxpos', JSON.stringify({ lat: pos.coords.latitude, lon: pos.coords.longitude })); } catch(e) {}
+    sb.rpc('save_location', { p_lat: pos.coords.latitude, p_lon: pos.coords.longitude }); try { localStorage.setItem('meudia.locat', String(Date.now())); } catch(e) {}
     const { data, error } = await sb.functions.invoke('clima', { body:{ lat: pos.coords.latitude, lon: pos.coords.longitude } });
     if (error || !data || data.error){ wxState = 'err'; return; }
     wx = data; wxState = 'ok';
@@ -1365,6 +1415,172 @@ async function checkPendingInvite(){
   toast(`${esc(data.owner)} convidou você para a família ${esc(data.group)}`);
   openJoin(code);
 }
+
+/* ---------- previsão completa (tela Previsão do tempo) ---------- */
+let wxFull = null, wxFullState = 'idle';
+try { const c = JSON.parse(localStorage.getItem('meudia.wxfull') || 'null'); if (c && Date.now() - c.at < 30 * 60e3) wxFull = c.data; } catch(e) {}
+const wxPos = () => { try { return JSON.parse(localStorage.getItem('meudia.wxpos') || 'null'); } catch(e) { return null; } };
+function loadWeatherFull(force){
+  if (wxFullState === 'loading' || (wxFull && !force)) return;
+  const run = async p => {
+    const { data, error } = await sb.functions.invoke('clima', { body:{ lat:p.lat, lon:p.lon, full:true } });
+    if (error || !data || data.error || !data.days){ wxFullState = 'err'; if (view === 'clima') render(); return; }
+    wxFull = data; wxFullState = 'ok';
+    try { localStorage.setItem('meudia.wxfull', JSON.stringify({ at: Date.now(), data })); } catch(e) {}
+    if (view === 'clima') render();
+  };
+  wxFullState = 'loading';
+  const p = wxPos();
+  if (p) return run(p);
+  if (!navigator.geolocation){ wxFullState = 'err'; return; }
+  navigator.geolocation.getCurrentPosition(pos => { const q = { lat: pos.coords.latitude, lon: pos.coords.longitude }; try { localStorage.setItem('meudia.wxpos', JSON.stringify(q)); localStorage.setItem('meudia.wxok', '1'); } catch(e) {} run(q); },
+    () => { wxFullState = 'err'; if (view === 'clima') render(); }, { timeout:10000, maximumAge:30 * 60e3 });
+}
+const DOW3 = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+function dayLabel(s){ const d = fromIso(s); if (s === today()) return 'Hoje'; if (s === iso(addDays(new Date(),1))) return 'Amanhã'; return `${DOW3[d.getDay()]} ${pad(d.getDate())}/${pad(d.getMonth()+1)}`; }
+function vClima(){
+  if (!ui.wxTab) ui.wxTab = 'hoje';
+  const head = `${back()}<div class="head"><div><h1 class="lt">Previsão do tempo</h1><div class="sub">${wxFull && wxFull.city ? esc(wxFull.city) : 'Onde você está'}</div></div>
+    <button class="icon-btn" data-act="wx-refresh" aria-label="Atualizar">${ic('refresh')}</button></div>`;
+  if (!wxFull){
+    loadWeatherFull();
+    return head + `<div class="card empty">${wxFullState === 'err' ? 'Não foi possível carregar a previsão. Confira se a localização está liberada e toque em atualizar.' : 'Carregando…'}</div>`;
+  }
+  const w = wxFull, days = w.days || [], hours = w.hours || [];
+  const tab = ui.wxTab, per = 8;
+  let list = '';
+  if (tab === 'hoje'){
+    const pages = Math.max(1, Math.ceil(hours.length / per)); ui.wxPage = Math.min(Math.max(ui.wxPage || 0, 0), pages - 1);
+    const rows = hours.slice(ui.wxPage * per, ui.wxPage * per + per);
+    list = `<div class="group">${rows.map(h => `<div class="row wx-row"><span class="wx-t">${esc(h.t)}</span>${wxIcon(h.cond, !h.is_day)}<span class="wx-rain">${h.rain}%</span><b class="wx-temp">${h.temp}°C</b></div>`).join('')}</div>
+      ${pages > 1 ? `<div class="pager" style="margin-top:10px"><button class="icon-btn" data-wxpage="-1" aria-label="Horas anteriores" ${ui.wxPage === 0 ? 'disabled' : ''}>${ic('l')}</button><span class="lbl" style="text-transform:none">${esc(rows[0].t)} às ${esc(rows[rows.length-1].t)}</span><button class="icon-btn" data-wxpage="1" aria-label="Próximas horas" ${ui.wxPage >= pages - 1 ? 'disabled' : ''}>${ic('r')}</button></div>` : ''}`;
+  } else {
+    const sel = tab === '7' ? days.slice(0, 7) : days.slice(7, 15);
+    if (!sel.length) list = `<div class="card empty">A fonte atual mostra só ${days.length} dias.</div>`;
+    else {
+      const lo = Math.min(...sel.map(d => d.min)), hi = Math.max(...sel.map(d => d.max)), span = Math.max(hi - lo, 1);
+      list = `<div class="group">${sel.map(d => `<div class="row wx-row"><span class="wx-d">${dayLabel(d.date)}</span>${wxIcon(d.cond)}<span class="wx-rain">${d.rain}%</span>
+        <span class="wx-range"><span class="wx-min">${d.min}°</span><span class="wx-bar"><span style="left:${(d.min - lo) / span * 100}%;right:${(hi - d.max) / span * 100}%"></span></span><span class="wx-max">${d.max}°</span></span></div>`).join('')}</div>`;
+    }
+  }
+  return `${head}
+  <div class="card wx-now">${wxIcon(w.cond, !w.is_day)}<div class="wx-main"><b>${w.temp}°C</b><span>${esc(w.desc)}</span></div>
+    <div class="wx-side"><span>sensação ${w.feels}°C</span>${w.humidity != null ? `<span>umidade ${w.humidity}%</span>` : ''}${w.wind != null ? `<span>vento ${w.wind} km/h</span>` : ''}</div></div>
+  <div class="seg" role="group" aria-label="Período">${[['hoje','Hoje'],['7','7 dias'],['15','15 dias']].map(([k,l]) => `<button data-wxtab="${k}" aria-pressed="${tab === k}">${l}</button>`).join('')}</div>
+  <section>${list}<div class="foot">${tab === 'hoje' ? 'Hora, chance de chuva (%) e temperatura (°C).' : tab === '15' ? 'Dias 8 a 15: quanto mais distante, menos precisa é a previsão.' : 'Chance de chuva (%), mínima e máxima (°C).'} Dados: ${esc(w.source)}</div></section>`;
+}
+
+/* ---------- hora de sair (deslocamento até o compromisso) ---------- */
+const hm = iso2 => { const d = new Date(iso2); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+const ORIG = { casa:'de casa', trabalho:'do trabalho', atual:'de onde você está' };
+const hasLeave = e => e && e.leave && e.date >= today() && !e.done;
+const leaveTxt = e => hasLeave(e) ? ` · <span class="leave">sair ${hm(e.leave)}</span>` : '';
+const routeBtn = e => e.place ? `<button class="route-btn" data-route="${e.id}" aria-label="Como chegar em ${esc(e.place)}">${ic('nav')}</button>` : '';
+const wazeUrl = e => e.plat != null ? `https://waze.com/ul?ll=${e.plat},${e.plon}&navigate=yes` : `https://waze.com/ul?q=${encodeURIComponent(e.place)}&navigate=yes`;
+const gmapsUrl = e => `https://www.google.com/maps/dir/?api=1&travelmode=driving&destination=${e.plat != null ? `${e.plat},${e.plon}` : encodeURIComponent(e.place)}`;
+function applyTravel(e, r){
+  if (!r) return;
+  e.plat = r.place_lat ?? null; e.plon = r.place_lon ?? null; e.plabel = r.place_label || '';
+  e.tmin = r.travel_min ?? null; e.leave = r.leave_at || null; e.torig = r.travel_origin || ''; e.tsrc = r.travel_source || '';
+}
+async function calcTravel(e, quiet){
+  if (!e || !e.place) return;
+  const { data, error } = await sb.functions.invoke('rota', { body:{ action:'calc', id:e.id } });
+  if (error || !data){ if (!quiet) toast('Não foi possível calcular o trajeto agora.'); return; }
+  applyTravel(e, data); render();
+  const sh = $('#sheet'); if (!sh.hidden && sh.dataset.route === e.id) openRoute(e.id);
+}
+function openRoute(id){
+  const e = S.events.find(x => x.id === id); if (!e) return;
+  const el = $('#sheet');
+  const when = `${rel(e.date)} às ${e.time}`;
+  let info;
+  if (hasLeave(e)) info = `<div class="route-big"><span>Saia às</span><b>${hm(e.leave)}</b></div>
+      <div class="group">
+        <div class="row"><span class="main t">Tempo de viagem</span><span class="n">${e.tmin} min</span></div>
+        <div class="row"><span class="main t">Saindo</span><span class="s2">${ORIG[e.torig] || '—'}</span></div>
+        <div class="row"><span class="main t">Chegada</span><span class="s2">${S.travel_arrive} min antes</span></div>
+      </div>
+      <div class="foot">${e.tsrc === 'tomtom' ? 'Calculado com o trânsito previsto para o horário. Recalculo perto da hora e aviso se mudar.' : 'Estimativa sem trânsito (com folga). Com a chave do serviço de rotas, passa a considerar o trânsito.'}</div>`;
+  else if (e.tsrc === 'perto') info = `<div class="card empty">Você já está perto desse local.</div>`;
+  else if (e.tsrc === 'sem_origem') info = `<div class="card empty">Cadastre o endereço de Casa ou Trabalho em Ajustes para eu calcular a hora de sair.</div>`;
+  else if (e.tsrc === 'sem_local') info = `<div class="card empty">Não encontrei esse local no mapa. Edite o compromisso com rua, número e cidade.</div>`;
+  else info = `<div class="card empty">${e.date < today() ? 'Esse compromisso já passou.' : 'Calculando o trajeto…'}</div>`;
+  el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="Como chegar">
+    <div class="bar"><span style="min-width:70px"></span><b>Como chegar</b><button class="save" data-x>Fechar</button></div>
+    <div class="body">
+      <div><div class="route-t">${esc(e.title)}</div><div class="route-s">${esc(when)} · ${esc(e.place)}</div>${e.plabel ? `<div class="route-s">No mapa: ${esc(e.plabel)}</div>` : ''}</div>
+      ${info}
+      <div class="route-go">
+        <a class="btn-go waze" href="${wazeUrl(e)}" target="_blank" rel="noopener">${ic('nav')}Abrir no Waze</a>
+        <a class="btn-go" href="${gmapsUrl(e)}" target="_blank" rel="noopener">${ic('nav')}Abrir no Google Maps</a>
+      </div>
+      ${e.date >= today() ? '<button class="linkbtn" data-recalc>Recalcular agora</button>' : ''}
+    </div></div>`;
+  el.dataset.route = e.id; el.hidden = false;
+  const close = () => { el.hidden = true; el.innerHTML = ''; delete el.dataset.route; };
+  el.onclick = ev => { if (ev.target === el) close(); };
+  el.querySelector('[data-x]').onclick = close;
+  const rc = el.querySelector('[data-recalc]'); if (rc) rc.onclick = () => { rc.textContent = 'Calculando…'; rc.disabled = true; calcTravel(e); };
+  if (!e.tsrc && e.date >= today()) calcTravel(e, true);
+}
+// cartão no Início: próxima saída nas próximas 18 h
+function nextLeave(){
+  const now = Date.now();
+  const e = S.events.filter(x => hasLeave(x) && new Date(x.leave).getTime() > now - 30 * 60e3 && new Date(x.leave).getTime() < now + 18 * 3600e3)
+    .sort((a, b) => a.leave.localeCompare(b.leave))[0];
+  if (!e) return '';
+  const late = new Date(e.leave).getTime() < now;
+  return `<button class="leave-card ${late ? 'late' : ''}" data-route="${e.id}"><span class="lc-ic">${ic('nav')}</span>
+    <span class="main"><span class="lc-t">${late ? 'Já passou da hora de sair' : `Sair ${rel(iso(new Date(e.leave))) === 'hoje' ? '' : rel(iso(new Date(e.leave))) + ' '}às ${hm(e.leave)}`}</span><span class="lc-s">${esc(e.title)} · ${e.tmin} min de viagem</span></span>
+    <span class="lc-go">Waze</span></button>`;
+}
+function addrRow(k, label){
+  const a = S[k];
+  return `<button class="row" data-addr="${k}"><span class="main"><div class="t">${label}</div><div class="s">${a.addr ? esc(a.addr) : 'Toque para cadastrar o endereço'}</div></span>${ic('r','i chev')}</button>`;
+}
+function travelSection(){
+  return `<section><div class="sh">Hora de sair</div><div class="group">
+    <div class="row"><span class="main"><div class="t">Avisar a hora de sair</div><div class="s">Para compromissos com local</div></span><label class="switch"><input type="checkbox" id="set-travel" ${S.travel_on ? 'checked' : ''} aria-label="Avisar a hora de sair"><span></span></label></div>
+    <label class="row" for="pref-arr"><span class="main t">Chegar antes</span>
+      <select class="field-in" id="pref-arr">${[10,15,30,45,60].map(v => `<option value="${v}" ${Number(S.travel_arrive) === v ? 'selected' : ''}>${v} min</option>`).join('')}</select></label>
+    ${addrRow('home', 'Casa')}${addrRow('work', 'Trabalho')}
+  </div><div class="foot">Calculo o tempo de viagem com trânsito e aviso no celular 10 min antes da hora de sair, com o atalho para o Waze. Em dia útil das 10h às 18h considero a saída do Trabalho; nos outros horários, de Casa. Se você abriu o app nas últimas 2 horas, uso onde você está. Cada compromisso pode escolher "Sair de".</div></section>`;
+}
+function openAddr(k){
+  const label = k === 'home' ? 'Casa' : 'Trabalho';
+  openForm({
+    title: `Endereço de ${label}`, saveLabel: 'Salvar',
+    fields: [{ k:'addr', label:'Rua, número, bairro e cidade', type:'title' }],
+    values: { addr: S[k].addr },
+    onSave: async v => {
+      const pre = k === 'home' ? 'home' : 'work';
+      if (!v.addr){
+        const { error } = await sb.from('profiles').update({ [pre+'_addr']:'', [pre+'_lat']:null, [pre+'_lon']:null }).eq('id', session.user.id); if (error) throw error;
+        S[k] = { addr:'', lat:null, lon:null }; return `Endereço de ${label} removido`;
+      }
+      const p = wxPos();
+      const { data, error } = await sb.functions.invoke('rota', { body:{ action:'geocode', q:v.addr, lat:p && p.lat, lon:p && p.lon } });
+      if (error || !data || data.error) throw Object.assign(new Error('geo'), { userMsg: 'Não encontrei esse endereço. Tente com rua, número e cidade.' });
+      const { error: e2 } = await sb.from('profiles').update({ [pre+'_addr']:v.addr, [pre+'_lat']:data.lat, [pre+'_lon']:data.lon }).eq('id', session.user.id); if (e2) throw e2;
+      S[k] = { addr:v.addr, lat:data.lat, lon:data.lon };
+      S.events.forEach(e => { if (e.date >= today() && e.place){ e.tsrc = ''; calcTravel(e, true); } });
+      return `Endereço de ${label} salvo: ${esc(data.label || '')}`;
+    },
+  });
+}
+// guarda onde o aparelho está (arredondado), no máximo a cada 15 min, para calcular a saída "de onde você está"
+function saveLocationSoon(){
+  let ok = false, last = 0; try { ok = localStorage.getItem('meudia.wxok') === '1'; last = Number(localStorage.getItem('meudia.locat') || 0); } catch(e) {}
+  if (!ok || !navigator.geolocation || Date.now() - last < 15 * 60e3) return;
+  navigator.geolocation.getCurrentPosition(pos => {
+    const q = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+    try { localStorage.setItem('meudia.locat', String(Date.now())); localStorage.setItem('meudia.wxpos', JSON.stringify(q)); } catch(e) {}
+    sb.rpc('save_location', { p_lat: q.lat, p_lon: q.lon });
+  }, () => {}, { timeout:10000, maximumAge:10 * 60e3 });
+}
+let pendingRoute = null;
+try { const r = new URLSearchParams(location.search).get('rota'); if (r){ pendingRoute = r; history.replaceState(null, '', location.pathname); } } catch(e) {}
 
 /* ---------- painel do administrador ---------- */
 let adminData = null, adminErr = '', adminLoading = false, adminPage = 0;
@@ -1471,7 +1687,7 @@ function openBudget(){
 
 /* ---------- alertas no celular (Web Push) ---------- */
 const VAPID_PUB = 'BDgwg6S3VsklJoKIWEaW5-z7AoGakq7C3AiwFy5TrjgAbpbB9Uq0o7DVFlDkSOLHkK7OYRed_DzTjZ5fz7t-39A';
-const PUSH_KINDS = ['lembrete','compromisso','vencer','vencida','pendente','resumo'];
+const PUSH_KINDS = ['lembrete','sair','compromisso','vencer','vencida','pendente','resumo'];
 const PUSH_TXT = {
   ativo: 'Você recebe os alertas mesmo com o app fechado.',
   desligado: 'Toque em Ativar e permita as notificações.',
@@ -1536,6 +1752,7 @@ async function testPush(){
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => {
   const d = e.data || {};
   if (d.type === 'push' && document.visibilityState === 'visible' && TONES[d.kind]) play(d.kind);
+  if (d.type === 'open' && d.url){ const r = new URL(d.url, location.origin).searchParams.get('rota'); if (r) openRoute(r); }
 });
 
 function checkReminders(){
