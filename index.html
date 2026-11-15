@@ -430,6 +430,42 @@ a.row.news .t{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp
 .wx-place{display:inline-flex;align-items:center;gap:5px;margin-top:4px;padding:6px 12px 6px 10px;border-radius:999px;background:var(--pill);font:inherit;font-size:14px;font-weight:600;color:var(--fg);border:0;max-width:100%}
 .wx-place span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .wx-place .i{width:15px;height:15px;flex:none;color:var(--accent)}
+.hero{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px}
+.hero-tx{min-width:0;padding-top:4px}
+.hero-bt{display:flex;gap:10px;flex:none}
+.hero .round{width:44px;height:44px}
+.tkband{display:flex;align-items:center;gap:10px;width:100%;margin-top:4px;padding:10px 0 10px 12px;border-radius:16px;background:var(--card);box-shadow:var(--shadow);border:0;font:inherit;color:inherit;overflow:hidden;text-align:left}
+.tk-live{flex:none;display:flex;flex-direction:column;align-items:flex-start;font-size:10.5px;font-weight:800;letter-spacing:.06em;color:var(--now);padding-right:10px;border-right:1px solid var(--sep)}
+.tk-live i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--now);margin:0 0 3px;animation:blink 1.4s infinite}
+.tk-live small{font-size:10.5px;font-weight:600;letter-spacing:0;color:var(--fg2)}
+.tk-win{flex:1;min-width:0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent);mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent)}
+.tk-run{display:inline-flex;align-items:center;gap:12px;white-space:nowrap;animation:tick linear infinite}
+.tkband:active .tk-run,.tkband:hover .tk-run{animation-play-state:paused}
+.tk{display:inline-flex;align-items:baseline;gap:6px;padding:3px 6px;border-radius:8px;transition:background .6s}
+.tk-l{font-size:12px;color:var(--fg2);font-weight:600}
+.tk b{font-size:14px;font-variant-numeric:tabular-nums}
+.tk-p{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums} .tk-p.up{color:var(--good)} .tk-p.down{color:var(--bad)}
+.tk-sep{color:var(--fg3)}
+.fl-up{animation:flup 1.6s ease} .fl-down{animation:fldown 1.6s ease}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes blink{50%{opacity:.25}}
+@keyframes flup{0%,40%{background:color-mix(in srgb,var(--good) 28%,transparent)}100%{background:transparent}}
+@keyframes fldown{0%,40%{background:color-mix(in srgb,var(--bad) 28%,transparent)}100%{background:transparent}}
+@media (prefers-reduced-motion: reduce){.tk-run{animation:none}.tk-live i{animation:none}}
+.live-h{display:inline-flex;align-items:center;gap:6px}
+.live-h i{width:7px;height:7px;border-radius:50%;background:var(--now);animation:blink 1.4s infinite}
+.news-big{display:block;border-radius:18px;overflow:hidden;background:var(--card);box-shadow:var(--shadow);text-decoration:none;color:var(--fg)}
+.nb-img{display:block;position:relative;aspect-ratio:16/9;background:var(--fill)}
+.nb-img img{width:100%;height:100%;object-fit:cover;display:block}
+.nb-img small{position:absolute;right:8px;bottom:6px;font-size:10px;color:#fff;background:rgba(0,0,0,.45);padding:1px 6px;border-radius:6px}
+.nb-tx{display:flex;flex-direction:column;gap:6px;padding:12px 14px 14px}
+.nb-tx b{font-size:17px;line-height:1.3;font-weight:700}
+.nb-tx small{font-size:12.5px;color:var(--fg2)}
+.nb-tx .mk-new{align-self:flex-start}
+.nthumb{width:64px;height:48px;border-radius:10px;object-fit:cover;flex:none;background:var(--fill)}
+a.row.news .mk-new{margin-right:6px;vertical-align:1px}
+.slogo{width:30px;height:30px;border-radius:8px;flex:none;background:#fff;object-fit:contain}
+button.card:active,button.tile:active,.news-big:active,.tkband:active,.wx:active,a.row:active,button.row:active{transform:scale(.985);transition:transform .08s}
 </style>
 </head>
 <body>
@@ -682,18 +718,20 @@ function vHome(){
     </div>`;
   };
   return `
-  <div class="topbar">
-    <button class="round" data-go="assistente" aria-label="Abrir assistente">${ic('search')}</button>
-    <button class="round avatar" data-go="ajustes" aria-label="Ajustes">${esc(ini)}</button>
+  <div class="hero">
+    <div class="hero-tx">
+      <div class="date">${DOWL[n.getDay()].replace(/^./,c=>c.toUpperCase())}, ${n.getDate()} de ${MONL[n.getMonth()]} · <span data-clock>${nowHM()}</span></div>
+      <h1 class="hello">${hi}, <span class="nw">${esc((S.name||'você').split(' ')[0])}${ph.svg}</span></h1>
+    </div>
+    <div class="hero-bt">
+      <button class="round" data-go="assistente" aria-label="Abrir assistente">${ic('search')}</button>
+      <button class="round avatar" data-go="ajustes" aria-label="Ajustes">${esc(ini)}</button>
+    </div>
   </div>
-  ${mktStrip()}
-  <div style="margin-top:-12px">
-    <div class="date">${DOWL[n.getDay()].replace(/^./,c=>c.toUpperCase())}, ${n.getDate()} de ${MONL[n.getMonth()]}</div>
-    <h1 class="hello">${hi}, <span class="nw">${esc((S.name||'você').split(' ')[0])}${ph.svg}</span></h1>
-  </div>
-  ${nextLeave()}
   <div class="wx-wrap">${wxCard()}
   ${fam && fam.group && fam.members.length > 1 ? `<button class="famline" data-go="ajustes" aria-label="Minha família"><span class="fam-dots">${fam.members.slice(0,5).map(m => `<span class="fam-av sm">${esc(m.name[0] || '?')}</span>`).join('')}</span><span>${esc(fam.group.name)} · ${fam.members.map(m => esc(m.name.split(' ')[0])).join(', ')}</span></button>` : ''}</div>
+  ${nextLeave()}
+  ${tickerBand()}
 
   <form class="askbox" id="ask" aria-label="Assistente">
     ${ic('spark')}
@@ -732,7 +770,8 @@ function vHome(){
     <div class="list">
       ${items.length ? items.map(card).join('') : `<div class="card empty">Nada para hoje${ui.filter!=='todas'?' neste filtro':''}. Toque no + para adicionar.</div>`}
     </div>
-  </section>`;
+  </section>
+  ${newsBlock()}`;
 }
 
 /* ---------- Agenda ---------- */
@@ -1044,6 +1083,7 @@ function bindView(){
   V.querySelectorAll('[data-route]').forEach(b => b.onclick = ev => { ev.stopPropagation(); openRoute(b.dataset.route); });
   V.querySelectorAll('[data-addr]').forEach(b => b.onclick = () => openAddr(b.dataset.addr));
   V.querySelectorAll('[data-newsopen]').forEach(a => a.addEventListener('click', () => { markNewsSeen(a.dataset.newsopen); setTimeout(render, 300); }));
+  V.querySelectorAll('[data-bolsatab]').forEach(b => b.onclick = () => { ui.bolsaTab = b.dataset.bolsatab; render(); });
   V.querySelectorAll('[data-newstab]').forEach(b => b.onclick = () => { ui.newsTab = b.dataset.newstab; ui.newsPage = 0; render(); });
   V.querySelectorAll('[data-newspage]').forEach(b => b.onclick = () => { ui.newsPage = (ui.newsPage || 0) + Number(b.dataset.newspage); render(); });
   V.querySelectorAll('[data-wxtab]').forEach(b => b.onclick = () => { ui.wxTab = b.dataset.wxtab; ui.wxPage = 0; render(); });
@@ -1708,6 +1748,11 @@ function saveLocationSoon(){
     sb.rpc('save_location', { p_lat: q.lat, p_lon: q.lon });
   }, () => {}, { timeout:10000, maximumAge:10 * 60e3 });
 }
+setInterval(() => {
+  document.querySelectorAll('[data-clock]').forEach(e => e.textContent = nowHM());
+  document.querySelectorAll('[data-ago]').forEach(e => e.textContent = agoTxt(e.dataset.ago));
+}, 20e3);
+setInterval(() => { if (session && document.visibilityState === 'visible' && (view === 'inicio' || view === 'mercado') && $('#sheet').hidden) loadMarket(true); }, 60e3);
 let pendingRoute = null;
 try { const r = new URLSearchParams(location.search).get('rota'); if (r){ pendingRoute = r; history.replaceState(null, '', location.pathname); } } catch(e) {}
 
@@ -1775,15 +1820,18 @@ function bindPlace(inp){
 }
 
 /* ---------- mercado e notícias ---------- */
-let mkt = null, mktAt = 0;
+let mkt = null, mktAt = 0, mktSig = '';
 try { const c = JSON.parse(localStorage.getItem('meudia.mkt') || 'null'); if (c){ mkt = c.data; mktAt = c.at; } } catch(e) {}
 async function loadMarket(force){
   if (!force && mkt && Date.now() - mktAt < 10 * 60e3) return;
   const { data, error } = await sb.from('market_cache').select('key,data,updated_at');
   if (error || !data) return;
+  const sig = data.map(r => r.key + r.updated_at).sort().join('|'), changed = sig !== mktSig; mktSig = sig;
   mkt = Object.fromEntries(data.map(r => [r.key, { ...r.data, updated_at: r.updated_at }])); mktAt = Date.now();
   try { localStorage.setItem('meudia.mkt', JSON.stringify({ at: mktAt, data: mkt })); } catch(e) {}
-  if (view === 'inicio' || view === 'mercado') render();
+  // só redesenha se chegou dado novo e a pessoa não está digitando
+  const typing = document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+  if (changed && !typing && (view === 'inicio' || view === 'mercado')) render();
 }
 const n2 = (v, d = 2) => Number(v).toLocaleString('pt-BR', { minimumFractionDigits: d, maximumFractionDigits: d });
 const pctTxt = p => `${p > 0 ? '▲' : p < 0 ? '▼' : ''} ${n2(Math.abs(p))}%`;
@@ -1803,6 +1851,45 @@ function mktStrip(){
   ${top ? `<a class="mk-news" href="${esc(top.link)}" target="_blank" rel="noopener" data-newsopen="${esc(top.at || '')}">
       ${isNew ? '<span class="mk-new">Nova</span>' : `<span class="mk-tag">${ic('news')}</span>`}<span class="mk-txt"><span class="mk-when">Últimas notícias · atualizado às ${hm(mkt.noticias.updated_at)}</span><span class="mk-head">${esc(top.title)}</span></span>${ic('r','i chev')}</a>` : ''}
   <button class="mk-more" data-go="mercado">Ver mais notícias e indicadores${ic('r','i')}</button></div>`;
+}
+// faixa de cotações que corre sozinha (como nos sites de mercado); pisca quando o valor muda
+let tickPrev = {};
+function tickItems(){
+  if (!mkt) return [];
+  const m = mkt.moedas, j = mkt.juros, b = mkt.bolsa, out = [];
+  if (b && b.ibov) out.push({ k:'IBOV', l:'Ibovespa', v:`${n2(b.ibov.price, 0)} pts`, p:b.ibov.pct, raw:b.ibov.price });
+  if (m){ out.push({ k:'USD', l:'Dólar', v:`R$ ${n2(m.usd.value, 4)}`, p:m.usd.pct, raw:m.usd.value }); out.push({ k:'EUR', l:'Euro', v:`R$ ${n2(m.eur.value, 4)}`, p:m.eur.pct, raw:m.eur.value });
+    if (m.btc) out.push({ k:'BTC', l:'Bitcoin', v:`R$ ${n2(m.btc.value, 0)}`, p:m.btc.pct, raw:m.btc.value }); }
+  if (j){ out.push({ k:'SELIC', l:'Selic', v:`${n2(j.selic.value)}% a.a.` }); out.push({ k:'CDI', l:'CDI', v:`${n2(j.cdi.value)}% a.a.` }); out.push({ k:'IPCA', l:'IPCA 12m', v:`${n2(j.ipca12.value)}%` }); }
+  if (b){ (b.altas || []).slice(0, 3).concat((b.quedas || []).slice(0, 3)).forEach(x => out.push({ k:x.symbol, l:x.symbol, v:`R$ ${n2(x.price)}`, p:x.pct, raw:x.price })); }
+  return out;
+}
+function tickerBand(){
+  if (!mkt){ loadMarket(); return ''; }
+  const items = tickItems(); if (!items.length) return '';
+  const flash = {};
+  items.forEach(i => { if (i.raw != null && tickPrev[i.k] != null && tickPrev[i.k] !== i.raw) flash[i.k] = i.raw > tickPrev[i.k] ? 'fl-up' : 'fl-down'; if (i.raw != null) tickPrev[i.k] = i.raw; });
+  const one = items.map(i => `<span class="tk ${flash[i.k] || ''}"><span class="tk-l">${esc(i.l)}</span><b>${esc(i.v)}</b>${i.p != null ? `<span class="tk-p ${pctCls(i.p)}">${pctTxt(i.p)}</span>` : ''}</span>`).join('<span class="tk-sep">•</span>');
+  const upd = mkt.moedas && mkt.moedas.updated_at;
+  return `<button class="tkband" data-go="mercado" aria-label="Abrir mercado e notícias">
+    <span class="tk-live"><i></i>AO VIVO<small data-ago="${esc(upd || '')}">${agoTxt(upd)}</small></span>
+    <span class="tk-win"><span class="tk-run" style="animation-duration:${Math.max(items.length * 4, 20)}s">${one}<span class="tk-sep">•</span>${one}<span class="tk-sep">•</span></span></span>
+  </button>`;
+}
+function newsBlock(){
+  const nw = mkt && mkt.noticias; if (!nw) return '';
+  const list = [...(nw.brasil || []), ...(nw.economia || [])].sort((a, b) => String(b.at).localeCompare(String(a.at)))
+    .filter((x, i, l) => l.findIndex(y => y.link === x.link) === i).slice(0, 3);
+  if (!list.length) return '';
+  const seen = newsSeen(), [top, ...rest] = list;
+  const badge = n => n.at && n.at > seen ? '<span class="mk-new">Nova</span>' : '';
+  return `<section><div class="sh"><span class="live-h"><i></i>Últimas notícias · atualizado às ${hm(nw.updated_at)}</span><button data-go="mercado">Ver mais</button></div>
+    <a class="news-big" href="${esc(top.link)}" target="_blank" rel="noopener" data-newsopen="${esc(top.at || '')}">
+      ${top.img ? `<span class="nb-img"><img src="${esc(top.img)}" alt="" loading="lazy" onerror="this.parentNode.remove()"><small>Foto: Agência Brasil</small></span>` : ''}
+      <span class="nb-tx">${badge(top)}<b>${esc(top.title)}</b><small>${agoTxt(top.at)} · Agência Brasil</small></span></a>
+    <div class="group" style="margin-top:10px">${rest.map(n => `<a class="row news" href="${esc(n.link)}" target="_blank" rel="noopener" data-newsopen="${esc(n.at || '')}">
+      ${n.img ? `<img class="nthumb" src="${esc(n.img)}" alt="" loading="lazy" onerror="this.remove()">` : ''}<span class="main"><div class="t">${badge(n)}${esc(n.title)}</div><div class="s">${agoTxt(n.at)} · Agência Brasil</div></span></a>`).join('')}</div>
+  </section>`;
 }
 // manchete mais nova (Brasil ou Economia) e o que a pessoa já viu (neste aparelho)
 function latestNews(){ const nw = mkt && mkt.noticias; if (!nw) return null; return [...(nw.brasil || []), ...(nw.economia || [])].sort((a, b) => String(b.at).localeCompare(String(a.at)))[0] || null; }
@@ -1836,9 +1923,9 @@ function vMercado(){
   </div></section>
   <section><div class="sh">Notícias</div>
     <div class="seg" role="group" aria-label="Notícias">${[['brasil','Brasil'],['economia','Economia'],['internacional','Internacional']].map(([k,l]) => `<button data-newstab="${k}" aria-pressed="${tab === k}">${l}</button>`).join('')}</div>
-    <div class="group" style="margin-top:10px">${items.map(n => `<a class="row news" href="${esc(n.link)}" target="_blank" rel="noopener"><span class="main"><div class="t">${esc(n.title)}</div><div class="s">${agoTxt(n.at)} · Agência Brasil</div></span>${ic('r','i chev')}</a>`).join('') || '<div class="empty">Sem notícias agora.</div>'}</div>
+    <div class="group" style="margin-top:10px">${items.map(n => `<a class="row news" href="${esc(n.link)}" target="_blank" rel="noopener">${n.img ? `<img class="nthumb" src="${esc(n.img)}" alt="" loading="lazy" onerror="this.remove()">` : ''}<span class="main"><div class="t">${esc(n.title)}</div><div class="s">${agoTxt(n.at)} · Agência Brasil</div></span>${ic('r','i chev')}</a>`).join('') || '<div class="empty">Sem notícias agora.</div>'}</div>
     ${pages > 1 ? `<div class="pager" style="margin-top:10px"><button class="icon-btn" data-newspage="-1" aria-label="Notícias anteriores" ${ui.newsPage === 0 ? 'disabled' : ''}>${ic('l')}</button><span class="lbl" style="text-transform:none">Página ${ui.newsPage + 1} de ${pages}</span><button class="icon-btn" data-newspage="1" aria-label="Próximas notícias" ${ui.newsPage >= pages - 1 ? 'disabled' : ''}>${ic('r')}</button></div>` : ''}
-    <div class="foot">Manchetes da Agência Brasil (EBC). Tocando, abre a matéria no site.</div>
+    <div class="foot">Manchetes e fotos da Agência Brasil (EBC). Tocando, abre a matéria no site.</div>
   </section>`;
 }
 const mesRef = d => { const [, mm, yy] = String(d).split('/'); return mm ? `${MON[Number(mm) - 1]}/${yy}` : esc(d); };
@@ -1852,12 +1939,18 @@ function spark(pts, up){
   return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Ibovespa ao longo do dia"><path d="${d}L${w},${h}L0,${h}Z" fill="${col}" opacity=".12"/><path d="${d}" fill="none" stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>
     <div class="spark-ax"><span>${pad(t0.getHours())}h</span><span>mín ${n2(lo, 0)} · máx ${n2(hi, 0)} pts</span><span>${pad(t1.getHours())}h</span></div>`;
 }
+const tcase = t => String(t || '').toLowerCase().replace(/(^|\s)(\S)/g, (m, a, b) => a + b.toUpperCase()).replace(/\b(De|Da|Do|Das|Dos|E)\b/g, w => w.toLowerCase());
 function bolsaSection(bo){
   const ib = bo.ibov;
+  if (!ui.bolsaTab) ui.bolsaTab = 'altas';
+  const tabs = [['altas','▲ Altas'],['quedas','▼ Quedas'],['negociadas','Mais negociadas']].filter(([k]) => (bo[k] || []).length);
+  if (tabs.length && !tabs.some(([k]) => k === ui.bolsaTab)) ui.bolsaTab = tabs[0][0];
+  const list = bo[ui.bolsaTab] || [];
   return `<section><div class="sh">Bolsa (B3)</div>
     ${ib ? `<div class="card ibov"><div class="ibov-top"><span><span class="mk-l">Ibovespa</span><b>${n2(ib.price, 2)} pts</b></span><span class="chip ${ib.pct >= 0 ? 'good' : 'bad'}">${ib.pct > 0 ? '+' : ''}${n2(ib.pct)}%</span></div>${spark(ib.chart, ib.pct >= 0)}</div>` : ''}
-    ${bo.stocks && bo.stocks.length ? `<div class="group" style="margin-top:10px">${bo.stocks.map(x => `<div class="row"><span class="main"><div class="t">${esc(x.symbol)}</div><div class="s">${esc(x.name)}</div></span><span class="mk-r">${accN(x.price, 2)}<span class="mk-s ${pctCls(x.pct)}">${pctTxt(x.pct)}</span></span></div>`).join('')}</div>` : ''}
-    <div class="foot">Ações em destaque em R$ por ação, variação do dia em %. Cotações com atraso de cerca de ${bo.delay_min || 30} min (B3 em tempo real é serviço pago). Atualizado às ${hm(bo.updated_at)}. Dados: ${esc(bo.source)}</div></section>`;
+    ${tabs.length ? `<div class="seg" role="group" aria-label="Ações" style="margin-top:${ib ? 10 : 0}px">${tabs.map(([k,l]) => `<button data-bolsatab="${k}" aria-pressed="${ui.bolsaTab === k}">${l}</button>`).join('')}</div>
+    <div class="group" style="margin-top:10px">${list.map(x => `<div class="row stock">${x.logo ? `<img class="slogo" src="${esc(x.logo)}" alt="" loading="lazy" onerror="this.remove()">` : ''}<span class="main"><div class="t">${esc(x.symbol)}</div><div class="s">${esc(tcase(x.name))}</div></span><span class="mk-r">${accN(x.price, 2)}<span class="mk-s ${pctCls(x.pct)}">${pctTxt(x.pct)}</span></span></div>`).join('')}</div>` : ''}
+    <div class="foot">Entre as 100 ações mais negociadas do dia. Preço em R$ por ação, variação do dia em %. Atraso de cerca de ${bo.delay_min || 30} min (B3 em tempo real é serviço pago). Atualizado às ${hm(bo.updated_at)}. Dados: ${esc(bo.source)}</div></section>`;
 }
 const accTxt = (v, d) => `R$ ${n2(v, d)}`;
 
