@@ -7,7 +7,8 @@
 <meta name="description" content="Seu dia organizado. Sua vida mais leve. Assistente pessoal com IA para agenda, tarefas, contas e lembretes.">
 <meta name="theme-color" content="#DEE2FB">
 <link rel="manifest" href="/manifest.webmanifest">
-<link rel="icon" type="image/png" href="/icon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -75,7 +76,7 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
   #app{flex-direction:row}
   #tabs{position:static;width:240px;flex:none;display:flex;flex-direction:column;align-items:stretch;gap:2px;border-radius:0;box-shadow:none;
     border-right:1px solid var(--sep);padding:22px 12px}
-  #tabs .brand{display:block;order:-2;font-size:12px;font-weight:800;letter-spacing:.16em;color:var(--accent);padding:4px 12px 14px}
+  #tabs .brand{display:block;order:-2;padding:4px 10px 16px}
   #tabs .side-only{display:flex}
   #tabs [data-v]{flex-direction:row;gap:12px;font-size:15px;padding:10px 12px;border-radius:12px;color:var(--fg)}
   #tabs [data-v] svg{color:var(--fg2)}
@@ -285,6 +286,12 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 
 /* ---------- login ---------- */
 body{margin:0}
+.lockup{display:inline-flex;align-items:center;gap:10px;color:var(--fg)}
+.lockup .wm{font-size:19px;font-weight:800;letter-spacing:-.03em}
+.lockup .ia{font-size:11px;font-weight:800;color:#fff;background:#5868D4;padding:2px 7px;border-radius:999px;letter-spacing:0}
+.lockup-lg{gap:12px}.lockup-lg .wm{font-size:30px}.lockup-lg .ia{font-size:14px;padding:3px 9px}
+:root[data-theme="dark"] .lockup .ia{background:#A9B4F5;color:#15161B}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .lockup .ia{background:#A9B4F5;color:#15161B}}
 .eyebrow{font-size:12px;font-weight:800;letter-spacing:.16em;color:var(--accent)}
 #auth{height:100%;overflow-y:auto;display:flex;align-items:center;justify-content:center;
   padding:calc(24px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
@@ -329,7 +336,7 @@ button:disabled{cursor:default}
 <div id="auth" hidden></div>
 <div id="app" hidden>
   <nav id="tabs" aria-label="Seções">
-    <div class="brand">MEU DIA IA</div>
+    <div class="brand"><span class="lockup"><svg width="30" height="30" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="lg-side" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9CA8EF"/><stop offset="1" stop-color="#5E6DD8"/></linearGradient></defs><rect width="100" height="100" rx="23" fill="url(#lg-side)"/><path d="M30 64 A20 20 0 0 1 70 64 Z" fill="#FFFFFF"/><path d="M18 64 H82" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/><path d="M34 76 H66" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-opacity="0.7"/><g stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round"><path d="M50 38 V31"/><path d="M37 41.5 L33.5 35.4"/><path d="M27.5 51 L21.4 47.5"/><path d="M72.5 51 L78.6 47.5"/></g><path d="M68 18 Q68 28 78 28 Q68 28 68 38 Q68 28 58 28 Q68 28 68 18 Z" fill="#FFFFFF"/></svg><span class="wm">Meu Dia</span><span class="ia">IA</span></span></div>
     <button data-v="inicio"><svg class="i"><use href="#i-home"/></svg>Início</button>
     <button data-v="agenda"><svg class="i"><use href="#i-cal"/></svg>Agenda</button>
     <div class="fab-cell"><button id="fab" aria-label="Adicionar"><svg class="i"><use href="#i-plus"/></svg><span>Adicionar</span></button></div>
@@ -1080,8 +1087,8 @@ function showAuth(){ $('#app').hidden = true; $('#sheet').hidden = true; $('#aut
 function renderAuth(){
   const M = { entrar:['Entrar','Acesse sua conta'], criar:['Criar conta','Comece grátis em 1 minuto'], esqueci:['Recuperar senha','Enviaremos um link para o seu e-mail'], nova:['Nova senha','Escolha uma nova senha para sua conta'] }[authMode];
   $('#auth').innerHTML = `<div class="auth-card">
-    <div class="eyebrow">MEU DIA IA</div>
-    <h1 class="hello">${M[0]}</h1>
+    <div class="lockup lockup-lg"><svg width="52" height="52" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="lg-auth" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9CA8EF"/><stop offset="1" stop-color="#5E6DD8"/></linearGradient></defs><rect width="100" height="100" rx="23" fill="url(#lg-auth)"/><path d="M30 64 A20 20 0 0 1 70 64 Z" fill="#FFFFFF"/><path d="M18 64 H82" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/><path d="M34 76 H66" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-opacity="0.7"/><g stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round"><path d="M50 38 V31"/><path d="M37 41.5 L33.5 35.4"/><path d="M27.5 51 L21.4 47.5"/><path d="M72.5 51 L78.6 47.5"/></g><path d="M68 18 Q68 28 78 28 Q68 28 68 38 Q68 28 58 28 Q68 28 68 18 Z" fill="#FFFFFF"/></svg><span class="wm">Meu Dia</span><span class="ia">IA</span></div>
+    <h1 class="hello" style="margin-top:18px">${M[0]}</h1>
     <p class="sub" style="margin:0">${M[1]}</p>
     <form id="auth-form" class="auth-form" novalidate>
       ${authMode === 'criar' ? `<label for="a-name">Seu nome<input id="a-name" autocomplete="given-name" maxlength="40" required></label>` : ''}
