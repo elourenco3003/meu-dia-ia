@@ -106,7 +106,7 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 
 /* tipografia e cabeçalhos */
 .date{color:var(--fg2);font-size:15px;font-weight:500}
-.hello{font-size:31px;line-height:1.15;font-weight:600;letter-spacing:-.025em;margin:4px 0 0;text-wrap:balance}
+.hello{font-size:25px;line-height:1.15;font-weight:600;letter-spacing:-.025em;margin:4px 0 0;text-wrap:balance}
 .lt{font-size:30px;line-height:1.15;font-weight:600;letter-spacing:-.025em;margin:2px 0 0}
 .h2{font-size:22px;font-weight:600;letter-spacing:-.015em;margin:0}
 .sub{color:var(--fg2);font-size:14.5px;margin-top:4px}
@@ -328,7 +328,7 @@ body{margin:0}
 .auth-msg{font-size:14px;line-height:1.4;color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,transparent);border-radius:12px;padding:10px 12px}
 .auth-msg.ok{color:var(--good);background:color-mix(in srgb,var(--good) 12%,transparent)}
 .auth-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.upper,#set-name{text-transform:uppercase}
+.upper,#set-name{text-transform:capitalize}
 .auth-links{display:flex;justify-content:space-between;gap:12px;margin-top:14px;flex-wrap:wrap}
 .auth-links button{color:var(--accent);font-weight:600;font-size:14px}
 button:disabled{cursor:default}
@@ -440,7 +440,7 @@ a.row.news .t{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp
 .tk-live small{font-size:10.5px;font-weight:600;letter-spacing:0;color:var(--fg2)}
 .tk-win{flex:1;min-width:0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent);mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent)}
 .tk-run{display:inline-flex;align-items:center;gap:12px;white-space:nowrap;animation:tick linear infinite}
-.tkband:active .tk-run,.tkband:hover .tk-run{animation-play-state:paused}
+.tk-win:active .tk-run,.tk-win:hover .tk-run{animation-play-state:paused!important}
 .tk{display:inline-flex;align-items:baseline;gap:6px;padding:3px 6px;border-radius:8px;transition:background .6s}
 .tk-l{font-size:12px;color:var(--fg2);font-weight:600}
 .tk b{font-size:14px;font-variant-numeric:tabular-nums}
@@ -466,13 +466,20 @@ a.row.news .t{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp
 a.row.news .mk-new{margin-right:6px;vertical-align:1px}
 .slogo{width:30px;height:30px;border-radius:8px;flex:none;background:#fff;object-fit:contain}
 button.card:active,button.tile:active,.news-big:active,.tkband:active,.wx:active,a.row:active,button.row:active{transform:scale(.985);transition:transform .08s}
-.tk-run{animation:tick linear infinite!important;will-change:transform}
+.tk-run{animation-name:tick!important;animation-duration:var(--dur,40s)!important;animation-timing-function:linear!important;animation-iteration-count:infinite!important;will-change:transform}
 .tk-more{flex:none;display:flex;align-items:center;gap:2px;font-size:12.5px;font-weight:700;color:var(--accent);padding:0 10px 0 4px}
 .tk-more .i{width:13px;height:13px}
 .sugs-run{margin:-10px -16px 0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent);mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent)}
-.sugs-track{display:inline-flex;gap:8px;padding:2px 16px;white-space:nowrap;animation:tick 40s linear infinite!important;will-change:transform}
+.sugs-track{display:inline-flex;gap:8px;padding:2px 16px;white-space:nowrap;animation-name:tick!important;animation-duration:45s!important;animation-timing-function:linear!important;animation-iteration-count:infinite!important;will-change:transform}
 .sugs-run:active .sugs-track,.sugs-run:hover .sugs-track{animation-play-state:paused!important}
 .sugs-track .sug{white-space:nowrap}
+.tk{cursor:pointer}
+.tk-more{border:0;background:none;font:inherit;cursor:pointer}
+.i.ib{width:14px;height:14px;vertical-align:-2px;color:var(--fg3)}
+button.row{width:100%;text-align:left;font:inherit;color:inherit;background:none;border:0}
+.info-top{display:flex;flex-direction:column;gap:2px}
+.info-v{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-top:6px}
+.info-row .s{line-height:1.45;font-size:14.5px}
 </style>
 </head>
 <body>
@@ -495,6 +502,7 @@ button.card:active,button.tile:active,.news-big:active,.tkband:active,.wx:active
   <symbol id="i-bot" viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="11" rx="4"/><path d="M12 4.5V8M9.5 13h.01M14.5 13h.01M9.8 16h4.4"/></symbol>
   <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5.5M12 7.6v.2"/></symbol>
   <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></symbol>
   <symbol id="i-news" viewBox="0 0 24 24"><rect x="4" y="5" width="13" height="14" rx="2"/><path d="M17 9h2.5a.5.5 0 0 1 .5.5V17a2 2 0 0 1-2 2H6M7.5 9h6M7.5 12.5h6M7.5 16h3.5"/></symbol>
   <symbol id="i-nav" viewBox="0 0 24 24"><path d="M20 4 3.5 11.2l7 2.3 2.3 7z"/></symbol>
@@ -728,7 +736,7 @@ function vHome(){
   <div class="hero">
     <div class="hero-tx">
       <div class="date">${DOWL[n.getDay()].replace(/^./,c=>c.toUpperCase())}, ${n.getDate()} de ${MONL[n.getMonth()]} · <span data-clock>${nowHM()}</span></div>
-      <h1 class="hello">${hi}, <span class="nw">${esc((S.name||'você').split(' ')[0])}${ph.svg}</span></h1>
+      <h1 class="hello">${hi}, <span class="nw">${esc(firstName())}${ph.svg}</span></h1>
     </div>
     <div class="hero-bt">
       <button class="round" data-go="assistente" aria-label="Abrir assistente">${ic('search')}</button>
@@ -736,7 +744,7 @@ function vHome(){
     </div>
   </div>
   <div class="wx-wrap">${wxCard()}
-  ${fam && fam.group && fam.members.length > 1 ? `<button class="famline" data-go="ajustes" aria-label="Minha família"><span class="fam-dots">${fam.members.slice(0,5).map(m => `<span class="fam-av sm">${esc(m.name[0] || '?')}</span>`).join('')}</span><span>${esc(fam.group.name)} · ${fam.members.map(m => esc(m.name.split(' ')[0])).join(', ')}</span></button>` : ''}</div>
+  ${fam && fam.group && fam.members.length > 1 ? `<button class="famline" data-go="ajustes" aria-label="Minha família"><span class="fam-dots">${fam.members.slice(0,5).map(m => `<span class="fam-av sm">${esc(m.name[0] || '?')}</span>`).join('')}</span><span>${esc(fam.group.name)} · ${fam.members.map(m => esc(nameCase(m.name.split(' ')[0]))).join(', ')}</span></button>` : ''}</div>
   ${nextLeave()}
   ${tickerBand()}
 
@@ -962,7 +970,7 @@ function vSettings(){
   ${back()}<div class="head"><div><h1 class="lt">Ajustes</h1></div></div>
   <section>
     <div class="sh">Perfil</div>
-    <div class="group"><label class="row" for="set-name"><span style="flex:none">Nome completo</span><input class="field-in" id="set-name" value="${esc(S.name)}" maxlength="70" autocapitalize="characters"></label></div>
+    <div class="group"><label class="row" for="set-name"><span style="flex:none">Nome completo</span><input class="field-in" id="set-name" value="${esc(nameCase(S.name))}" maxlength="70" autocapitalize="words"></label></div>
   </section>
   ${famSection()}
   ${travelSection()}
@@ -1091,6 +1099,7 @@ function bindView(){
   V.querySelectorAll('[data-route]').forEach(b => b.onclick = ev => { ev.stopPropagation(); openRoute(b.dataset.route); });
   V.querySelectorAll('[data-addr]').forEach(b => b.onclick = () => openAddr(b.dataset.addr));
   V.querySelectorAll('[data-newsopen]').forEach(a => a.addEventListener('click', () => { markNewsSeen(a.dataset.newsopen); setTimeout(render, 300); }));
+  V.querySelectorAll('[data-ind]').forEach(b => b.onclick = ev => { ev.stopPropagation(); openInfo(b.dataset.ind); });
   V.querySelectorAll('[data-bolsatab]').forEach(b => b.onclick = () => { ui.bolsaTab = b.dataset.bolsatab; render(); });
   V.querySelectorAll('[data-newstab]').forEach(b => b.onclick = () => { ui.newsTab = b.dataset.newstab; ui.newsPage = 0; render(); });
   V.querySelectorAll('[data-newspage]').forEach(b => b.onclick = () => { ui.newsPage = (ui.newsPage || 0) + Number(b.dataset.newspage); render(); });
@@ -1101,7 +1110,7 @@ function bindView(){
     try { localStorage.setItem('meudia.theme', JSON.stringify(c)); } catch(e) {} applyTheme(); render(); }; });
   const st = $('#set-travel'); if (st) st.onchange = () => { S.travel_on = st.checked; saveProfile(); };
   const pa = $('#pref-arr'); if (pa) pa.onchange = () => { S.travel_arrive = Number(pa.value); saveProfile(); S.events.forEach(e => { if (e.date >= today() && e.place){ e.tsrc = ''; e.leave = null; } }); persist(sb.from('events').update({ travel_checked_at: null }).gte('date', today()).neq('place', '').then(r => { if (r.error) throw r.error; })); };
-  const nm = $('#set-name'); if (nm) nm.oninput = () => { S.name = nm.value.trim().replace(/\s+/g, ' ').toLocaleUpperCase('pt-BR'); saveProfile(); };
+  const nm = $('#set-name'); if (nm) nm.oninput = () => { S.name = nameCase(nm.value); saveProfile(); };
   V.querySelectorAll('[data-auser]').forEach(b => b.onclick = () => openUserPlan(b.dataset.auser));
   V.querySelectorAll('[data-apage]').forEach(b => b.onclick = () => { adminPage += Number(b.dataset.apage); render(); $('#view').scrollTop = 0; });
   V.querySelectorAll('[data-pref]').forEach(inp => inp.onchange = () => { S[inp.dataset.pref] = inp.value; saveProfile(); toast('Preferência salva'); });
@@ -1348,8 +1357,8 @@ function renderAuth(){
     <p class="sub" style="margin:0">${M[1]}</p>
     <form id="auth-form" class="auth-form" novalidate>
       ${authMode === 'criar' ? `<div class="auth-row">
-        <label for="a-first">Nome<input id="a-first" class="upper" autocomplete="given-name" autocapitalize="characters" maxlength="30" required></label>
-        <label for="a-last">Sobrenome<input id="a-last" class="upper" autocomplete="family-name" autocapitalize="characters" maxlength="40" required></label>
+        <label for="a-first">Nome<input id="a-first" class="upper" autocomplete="given-name" autocapitalize="words" maxlength="30" required></label>
+        <label for="a-last">Sobrenome<input id="a-last" class="upper" autocomplete="family-name" autocapitalize="words" maxlength="40" required></label>
       </div>` : ''}
       ${authMode !== 'nova' ? `<label for="a-email">E-mail<input id="a-email" type="email" autocomplete="email" inputmode="email" required></label>` : ''}
       ${authMode !== 'esqueci' ? `<label for="a-pass">Senha<input id="a-pass" type="password" autocomplete="${authMode === 'entrar' ? 'current-password' : 'new-password'}" minlength="8" required></label>` : ''}
@@ -1368,7 +1377,7 @@ function renderAuth(){
 async function submitAuth(e){
   e.preventDefault();
   const v = id => ($('#' + id) || {}).value || '';
-  const up = t => t.trim().replace(/\s+/g, ' ').toLocaleUpperCase('pt-BR');
+  const up = t => nameCase(t);
   const first = up(v('a-first')), last = up(v('a-last')), name = `${first} ${last}`.trim();
   const email = v('a-email').trim(), password = v('a-pass');
   const show = (t, ok = false) => { authMsg = t; authOk = ok; const el = $('#a-msg'); el.textContent = t; el.className = 'auth-msg' + (ok ? ' ok' : ''); el.hidden = false; };
@@ -1491,8 +1500,8 @@ function famSection(){
   const owner = fam.role === 'dono', count = fam.members.length, open = (fam.invites || []).length;
   return `<section><div class="sh">${esc(g.name)} (${count} de ${fam.max} pessoas)</div><div class="group">
     ${fam.members.map(m => `<div class="row"><span class="fam-av" aria-hidden="true">${esc(m.name.split(' ').map(w => w[0]).slice(0,2).join(''))}</span>
-      <span class="main"><div class="t">${esc(m.name)}</div><div class="s">${m.role === 'dono' ? 'Criou a família' : 'Integrante'}${m.is_me ? ' · você' : ''}</div></span>
-      ${owner && !m.is_me ? `<button class="test" data-famrm="${m.user_id}" data-famname="${esc(m.name)}">Remover</button>` : ''}</div>`).join('')}
+      <span class="main"><div class="t">${esc(nameCase(m.name))}</div><div class="s">${m.role === 'dono' ? 'Criou a família' : 'Integrante'}${m.is_me ? ' · você' : ''}</div></span>
+      ${owner && !m.is_me ? `<button class="test" data-famrm="${m.user_id}" data-famname="${esc(nameCase(m.name))}">Remover</button>` : ''}</div>`).join('')}
     ${(fam.invites || []).map(i => `<div class="row"><span class="main"><div class="t">Convite ${esc(i.code)}</div><div class="s">Aguardando · vence em ${new Date(i.expires_at).toLocaleDateString('pt-BR')}</div></span>
       <button class="test" data-famshare="${esc(i.code)}">Enviar</button><button class="test danger" data-famcancel="${esc(i.code)}">Cancelar</button></div>`).join('')}
     ${owner && count + open < fam.max ? `<button class="row" data-act="fam-invite"><span class="main t" style="color:var(--accent)">Convidar pessoa</span>${ic('plus','i chev')}</button>` : ''}
@@ -1502,7 +1511,7 @@ function famSection(){
 }
 const inviteLink = code => `${location.origin}/?convite=${encodeURIComponent(code)}`;
 async function shareInvite(code){
-  const url = inviteLink(code), text = `${S.name ? S.name.split(' ')[0] : 'Eu'} convidou você para a família no Meu Dia IA. Código: ${code}`;
+  const url = inviteLink(code), text = `${S.name ? firstName() : 'Eu'} convidou você para a família no Meu Dia IA. Código: ${code}`;
   if (navigator.share){ try { await navigator.share({ title:'Convite Meu Dia IA', text, url }); return; } catch(e) { if (e && e.name === 'AbortError') return; } }
   try { await navigator.clipboard.writeText(`${text}\n${url}`); toast('Link do convite copiado. Cole no WhatsApp ou onde preferir.'); }
   catch(e) { toast(`Código do convite: <b>${esc(code)}</b>`); }
@@ -1536,7 +1545,7 @@ async function checkPendingInvite(){
   try { localStorage.removeItem('meudia.convite'); } catch(e) {}
   const { data } = await sb.rpc('family_invite_info', { p_code: code });
   if (!data || !data.valid){ toast('Esse convite de família não vale mais. Peça um novo.'); return; }
-  toast(`${esc(data.owner)} convidou você para a família ${esc(data.group)}`);
+  toast(`${esc(nameCase(data.owner))} convidou você para a família ${esc(data.group)}`);
   openJoin(code);
 }
 
@@ -1869,6 +1878,15 @@ function tickItems(){
   if (m){ out.push({ k:'USD', l:'Dólar', v:`R$ ${n2(m.usd.value, 4)}`, p:m.usd.pct, raw:m.usd.value }); out.push({ k:'EUR', l:'Euro', v:`R$ ${n2(m.eur.value, 4)}`, p:m.eur.pct, raw:m.eur.value });
     if (m.btc) out.push({ k:'BTC', l:'Bitcoin', v:`R$ ${n2(m.btc.value, 0)}`, p:m.btc.pct, raw:m.btc.value }); }
   if (j){ out.push({ k:'SELIC', l:'Selic', v:`${n2(j.selic.value)}% a.a.` }); out.push({ k:'CDI', l:'CDI', v:`${n2(j.cdi.value)}% a.a.` }); out.push({ k:'IPCA', l:'IPCA 12m', v:`${n2(j.ipca12.value)}%` }); }
+  const mc = mkt.macro;
+  if (mc){
+    if (mc.ipp) out.push({ k:'IPP', l:'IPP', v:`${n2(mc.ipp.value)}% mês` });
+    if (mc.comercio) out.push({ k:'COMERCIO', l:'Comércio', v:`${mc.comercio.value > 0 ? '+' : ''}${n2(mc.comercio.value, 1)}% mês` });
+    if (mc.igpm) out.push({ k:'IGPM', l:'IGP-M', v:`${n2(mc.igpm.value)}% mês` });
+    if (mc.incc) out.push({ k:'INCC', l:'INCC', v:`${n2(mc.incc.value)}% mês` });
+    if (mc.desemprego) out.push({ k:'DESEMP', l:'Desemprego', v:`${n2(mc.desemprego.value, 1)}%` });
+    if (mc.ibcbr) out.push({ k:'IBCBR', l:'IBC-Br', v:`${mc.ibcbr.value > 0 ? '+' : ''}${n2(mc.ibcbr.value)}% mês` });
+  }
   if (b){ (b.altas || []).slice(0, 3).concat((b.quedas || []).slice(0, 3)).forEach(x => out.push({ k:x.symbol, l:x.symbol, v:`R$ ${n2(x.price)}`, p:x.pct, raw:x.price })); }
   return out;
 }
@@ -1877,13 +1895,68 @@ function tickerBand(){
   const items = tickItems(); if (!items.length) return '';
   const flash = {};
   items.forEach(i => { if (i.raw != null && tickPrev[i.k] != null && tickPrev[i.k] !== i.raw) flash[i.k] = i.raw > tickPrev[i.k] ? 'fl-up' : 'fl-down'; if (i.raw != null) tickPrev[i.k] = i.raw; });
-  const one = items.map(i => `<span class="tk ${flash[i.k] || ''}"><span class="tk-l">${esc(i.l)}</span><b>${esc(i.v)}</b>${i.p != null ? `<span class="tk-p ${pctCls(i.p)}">${pctTxt(i.p)}</span>` : ''}</span>`).join('<span class="tk-sep">•</span>');
+  const one = items.map(i => `<span class="tk ${flash[i.k] || ''}" data-ind="${esc(i.k)}" role="button" tabindex="0"><span class="tk-l">${esc(i.l)}</span><b>${esc(i.v)}</b>${i.p != null ? `<span class="tk-p ${pctCls(i.p)}">${pctTxt(i.p)}</span>` : ''}</span>`).join('<span class="tk-sep">•</span>');
   const upd = mkt.moedas && mkt.moedas.updated_at;
-  return `<button class="tkband" data-go="mercado" aria-label="Abrir mercado e notícias">
+  return `<div class="tkband" aria-label="Indicadores ao vivo">
     <span class="tk-live"><i></i>AO VIVO<small data-ago="${esc(upd || '')}">${agoTxt(upd)}</small></span>
-    <span class="tk-win"><span class="tk-run" style="animation-duration:${Math.max(items.length * 4, 20)}s">${one}<span class="tk-sep">•</span>${one}<span class="tk-sep">•</span></span></span>
-    <span class="tk-more">Ver mais${ic('r','i')}</span>
-  </button>`;
+    <span class="tk-win"><span class="tk-run" style="--dur:${Math.max(items.length * 3.5, 24)}s">${one}<span class="tk-sep">•</span>${one}<span class="tk-sep">•</span></span></span>
+    <button class="tk-more" data-go="mercado">Ver mais${ic('r','i')}</button>
+  </div>`;
+}
+const IND = {
+  USD:{ t:'Dólar comercial', d:'Quanto custa 1 dólar americano em reais no mercado. Afeta preço de importados, combustível, eletrônicos e viagens.', r:'Subindo: produtos importados tendem a ficar mais caros.' },
+  EUR:{ t:'Euro', d:'Quanto custa 1 euro em reais. Importante para quem viaja ou compra da Europa.', r:'Subindo: viagens e produtos europeus ficam mais caros.' },
+  BTC:{ t:'Bitcoin', d:'Preço de 1 bitcoin (criptomoeda) em reais. Varia muito ao longo do dia.', r:'É um ativo de alto risco: grandes altas e quedas são comuns.' },
+  IBOV:{ t:'Ibovespa', d:'Principal índice da Bolsa brasileira (B3). Mostra o desempenho médio das ações mais negociadas, em pontos.', r:'Subindo: em geral as ações das grandes empresas valorizaram no dia.' },
+  SELIC:{ t:'Selic', d:'Taxa básica de juros do país, definida pelo Copom (Banco Central) a cada 45 dias. Serve de base para todos os outros juros.', r:'Alta: empréstimos e financiamentos ficam mais caros e a renda fixa rende mais. Baixa: crédito mais barato.' },
+  CDI:{ t:'CDI', d:'Taxa que os bancos usam para emprestar entre si. Fica muito perto da Selic e é a referência da maioria dos investimentos de renda fixa (CDB, LCI, LCA).', r:'Um CDB que paga 100% do CDI rende o valor desta taxa ao ano.' },
+  IPCA:{ t:'IPCA', d:'Inflação oficial do Brasil, medida pelo IBGE. Mostra quanto subiram os preços do que as famílias compram: comida, aluguel, transporte, saúde.', r:'Em 12 meses: quanto os preços subiram no último ano. A meta do governo é perto de 3%.' },
+  IPP:{ t:'IPP · Índice de Preços ao Produtor', d:'Mede a variação dos preços na porta da fábrica (sem impostos e frete), na indústria. Calculado pelo IBGE.', r:'Costuma antecipar a inflação: quando a indústria paga e cobra mais, isso chega às lojas depois.' },
+  COMERCIO:{ t:'Comércio varejista (PMC)', d:'Pesquisa Mensal de Comércio do IBGE: mostra se o volume de vendas das lojas cresceu ou caiu em relação ao mês anterior.', r:'Positivo: as pessoas estão comprando mais. Indica o ritmo do consumo e da economia.' },
+  IGPM:{ t:'IGP-M', d:'Índice Geral de Preços da FGV. Mistura preços no atacado, ao consumidor e da construção.', r:'É o índice mais usado para reajustar aluguel e contratos.' },
+  INCC:{ t:'INCC · Custo da construção', d:'Índice Nacional de Custo da Construção (FGV): variação dos preços de materiais e mão de obra da construção civil.', r:'Usado para corrigir parcelas de imóveis na planta. Interessa a quem vende ou compra material de construção.' },
+  DESEMP:{ t:'Desemprego', d:'Taxa de desocupação da PNAD (IBGE): parte das pessoas que procuram trabalho e não encontram.', r:'Caindo: mais gente empregada e mais renda circulando.' },
+  IBCBR:{ t:'IBC-Br', d:'Índice de Atividade Econômica do Banco Central. É uma prévia mensal do PIB.', r:'Positivo: a economia cresceu em relação ao mês anterior.' },
+};
+function indValue(k){
+  const m = mkt && mkt.moedas, j = mkt && mkt.juros, mc = (mkt && mkt.macro) || {}, b = mkt && mkt.bolsa;
+  const f = (v, unit, ref) => ({ v, unit, ref });
+  switch (k){
+    case 'USD': return m && f(`R$ ${n2(m.usd.value, 4)}`, `variação do dia ${pctTxt(m.usd.pct)}`, m.usd.at);
+    case 'EUR': return m && f(`R$ ${n2(m.eur.value, 4)}`, `variação do dia ${pctTxt(m.eur.pct)}`, m.eur.at);
+    case 'BTC': return m && m.btc && f(`R$ ${n2(m.btc.value, 0)}`, `variação do dia ${pctTxt(m.btc.pct)}`, m.btc.at);
+    case 'IBOV': return b && b.ibov && f(`${n2(b.ibov.price, 0)} pts`, `variação do dia ${pctTxt(b.ibov.pct)}`, '');
+    case 'SELIC': return j && f(`${n2(j.selic.value)}%`, 'ao ano', 'meta definida pelo Copom');
+    case 'CDI': return j && f(`${n2(j.cdi.value)}%`, 'ao ano', j.cdi.date);
+    case 'IPCA': return j && f(`${n2(j.ipca12.value)}%`, `em 12 meses · ${n2(j.ipca.value)}% no mês`, mesRef(j.ipca.date));
+    case 'IPP': return mc.ipp && f(`${n2(mc.ipp.value)}%`, `no mês${mc.ipp.y12 != null ? ` · ${n2(mc.ipp.y12)}% em 12 meses` : ''}`, mc.ipp.ref);
+    case 'COMERCIO': return mc.comercio && f(`${mc.comercio.value > 0 ? '+' : ''}${n2(mc.comercio.value, 1)}%`, `vendas no mês${mc.comercio.y12 != null ? ` · ${n2(mc.comercio.y12, 1)}% em 12 meses` : ''}`, mc.comercio.ref);
+    case 'IGPM': return mc.igpm && f(`${n2(mc.igpm.value)}%`, 'no mês', mesRef(mc.igpm.date));
+    case 'INCC': return mc.incc && f(`${n2(mc.incc.value)}%`, 'no mês', mesRef(mc.incc.date));
+    case 'DESEMP': return mc.desemprego && f(`${n2(mc.desemprego.value, 1)}%`, 'da força de trabalho', 'trimestre até ' + mesRef(mc.desemprego.date));
+    case 'IBCBR': return mc.ibcbr && f(`${mc.ibcbr.value > 0 ? '+' : ''}${n2(mc.ibcbr.value)}%`, 'em relação ao mês anterior', mesRef(mc.ibcbr.date));
+  }
+  return null;
+}
+function openInfo(k){
+  const s0 = (mkt && mkt.bolsa && [...(mkt.bolsa.altas || []), ...(mkt.bolsa.quedas || []), ...(mkt.bolsa.negociadas || [])].find(x => x.symbol === k)) || null;
+  const inf = IND[k] || (s0 && { t:`${s0.symbol} · ${tcase(s0.name)}`, d:'Ação negociada na Bolsa brasileira (B3). O preço muda ao longo do pregão, conforme compra e venda.', r:'Cotação com atraso de cerca de 30 min.' });
+  if (!inf) return;
+  const val = IND[k] ? indValue(k) : { v:`R$ ${n2(s0.price)}`, unit:`variação do dia ${pctTxt(s0.pct)}`, ref:'' };
+  const el = $('#sheet');
+  el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="${esc(inf.t)}">
+    <div class="bar"><span style="min-width:70px"></span><b>Indicador</b><button class="save" data-x>Fechar</button></div>
+    <div class="body">
+      <div class="info-top"><div class="route-t">${esc(inf.t)}</div>${val ? `<div class="info-v">${esc(val.v)}</div><div class="route-s">${esc(val.unit)}${val.ref ? ' · ' + esc(val.ref) : ''}</div>` : ''}</div>
+      <div class="group"><div class="row info-row"><span class="main"><div class="t">O que mede</div><div class="s">${esc(inf.d)}</div></span></div>
+        <div class="row info-row"><span class="main"><div class="t">Como ler</div><div class="s">${esc(inf.r)}</div></span></div></div>
+      <button class="btn-go" data-allind>Ver todos os indicadores${ic('r','i')}</button>
+    </div></div>`;
+  el.hidden = false;
+  const close = () => { el.hidden = true; el.innerHTML = ''; };
+  el.onclick = ev => { if (ev.target === el) close(); };
+  el.querySelector('[data-x]').onclick = close;
+  el.querySelector('[data-allind]').onclick = () => { close(); go('mercado'); };
 }
 function newsBlock(){
   const nw = mkt && mkt.noticias; if (!nw) return '';
@@ -1910,20 +1983,23 @@ function vMercado(){
     <button class="icon-btn" data-act="mkt-refresh" aria-label="Atualizar">${ic('refresh')}</button></div>`;
   if (!mkt) return head + '<div class="card empty">Carregando…</div>';
   const m = mkt.moedas, j = mkt.juros, nw = mkt.noticias;
-  const row = (t, s, right) => `<div class="row"><span class="main"><div class="t">${t}</div>${s ? `<div class="s">${s}</div>` : ''}</span>${right}</div>`;
-  const cur = (name, x, d) => row(name, x.high ? `Máx ${accTxt(x.high, d)} · mín ${accTxt(x.low, d)}` : `Fechamento de ${esc(x.at || '')}`,
-    `<span class="mk-r">${accN(x.value, d)}<span class="mk-s ${pctCls(x.pct)}">${pctTxt(x.pct)}</span></span>`);
+  const row = (t, s, right, k) => `<${k ? `button data-ind="${k}"` : 'div'} class="row"><span class="main"><div class="t">${t}${k ? ` ${ic('info','i ib')}` : ''}</div>${s ? `<div class="s">${s}</div>` : ''}</span>${right}</${k ? 'button' : 'div'}>`;
+  const cur = (name, x, d, k) => row(name, x.high ? `Máx ${accTxt(x.high, d)} · mín ${accTxt(x.low, d)}` : `Fechamento de ${esc(x.at || '')}`,
+    `<span class="mk-r">${accN(x.value, d)}<span class="mk-s ${pctCls(x.pct)}">${pctTxt(x.pct)}</span></span>`, k);
   const pctR = (v, unit) => `<span class="mk-r"><b class="n">${n2(v)}%</b><span class="mk-s">${unit}</span></span>`;
   const bo = mkt.bolsa;
   return `${head}
   ${bo ? bolsaSection(bo) : ''}
   <section><div class="sh">Moedas</div><div class="group">
-    ${m ? cur('Dólar comercial', m.usd, 4) + cur('Euro', m.eur, 4) + (m.btc ? cur('Bitcoin', m.btc, 2) : '') : '<div class="empty">Sem dados agora.</div>'}
+    ${m ? cur('Dólar comercial', m.usd, 4, 'USD') + cur('Euro', m.eur, 4, 'EUR') + (m.btc ? cur('Bitcoin', m.btc, 2, 'BTC') : '') : '<div class="empty">Sem dados agora.</div>'}
   </div><div class="foot">Valores em R$ por unidade da moeda. Variação do dia em %. Dados: ${esc((m && m.source) || '')}</div></section>
   <section><div class="sh">Juros e inflação</div><div class="group">
-    ${j ? row('Selic (meta)', 'Definida pelo Copom', pctR(j.selic.value, 'ao ano')) + row('CDI', esc(j.cdi.date), pctR(j.cdi.value, 'ao ano'))
-      + row('IPCA no mês', mesRef(j.ipca.date), pctR(j.ipca.value, 'no mês')) + row('IPCA em 12 meses', 'Até ' + mesRef(j.ipca12.date), pctR(j.ipca12.value, '12 meses')) : '<div class="empty">Sem dados agora.</div>'}
+    ${j ? row('Selic (meta)', 'Definida pelo Copom', pctR(j.selic.value, 'ao ano'), 'SELIC') + row('CDI', esc(j.cdi.date), pctR(j.cdi.value, 'ao ano'), 'CDI')
+      + row('IPCA no mês', mesRef(j.ipca.date), pctR(j.ipca.value, 'no mês'), 'IPCA') + row('IPCA em 12 meses', 'Até ' + mesRef(j.ipca12.date), pctR(j.ipca12.value, '12 meses'), 'IPCA') : '<div class="empty">Sem dados agora.</div>'}
   </div></section>
+  ${mkt.macro ? `<section><div class="sh">Atividade e preços</div><div class="group">
+    ${[['IPP','IPP (indústria)'],['COMERCIO','Comércio varejista'],['IGPM','IGP-M'],['INCC','INCC (construção)'],['DESEMP','Desemprego'],['IBCBR','IBC-Br (prévia do PIB)']].map(([k, l]) => { const v = indValue(k); return v ? row(l, esc(v.ref || ''), `<span class="mk-r"><b class="n">${esc(v.v)}</b><span class="mk-s">${esc(v.unit.split(' · ')[0])}</span></span>`, k) : ''; }).join('')}
+  </div><div class="foot">Toque em um indicador para ver o que ele mede. Dados: ${esc(mkt.macro.source)}</div></section>` : ''}
   <button class="mk-more" data-go="noticias">Ver notícias de economia${ic('r','i')}</button>`;
 }
 function vNoticias(){
@@ -1956,6 +2032,10 @@ function spark(pts, up){
   return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="Ibovespa ao longo do dia"><path d="${d}L${w},${h}L0,${h}Z" fill="${col}" opacity=".12"/><path d="${d}" fill="none" stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>
     <div class="spark-ax"><span>${pad(t0.getHours())}h</span><span>mín ${n2(lo, 0)} · máx ${n2(hi, 0)} pts</span><span>${pad(t1.getHours())}h</span></div>`;
 }
+// "EDUARDO LOURENÇO" → "Eduardo Lourenço" (da, de, do, das, dos, e ficam minúsculos)
+const nameCase = t => String(t || '').trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR').split(' ')
+  .map((w, i) => i > 0 && /^(da|de|do|das|dos|e|di|du)$/.test(w) ? w : w.charAt(0).toLocaleUpperCase('pt-BR') + w.slice(1)).join(' ');
+const firstName = () => nameCase((S.name || 'você').split(' ')[0]);
 const tcase = t => String(t || '').toLowerCase().replace(/(^|\s)(\S)/g, (m, a, b) => a + b.toUpperCase()).replace(/\b(De|Da|Do|Das|Dos|E)\b/g, w => w.toLowerCase());
 function bolsaSection(bo){
   const ib = bo.ibov;
@@ -2040,7 +2120,7 @@ function vAdmin(){
     <div class="sh">Usuários (${d.list.length} un)</div>
     <div class="group">
       ${rows.map(u => `<button class="row" data-auser="${u.id}">
-        <span class="main"><div class="t">${esc(u.name || '(sem nome)')}${u.is_admin ? ' <span class="chip tint">admin</span>' : ''}${u.confirmed ? '' : ' <span class="chip warn">e-mail não confirmado</span>'}</div>
+        <span class="main"><div class="t">${esc(nameCase(u.name) || '(sem nome)')}${u.is_admin ? ' <span class="chip tint">admin</span>' : ''}${u.confirmed ? '' : ' <span class="chip warn">e-mail não confirmado</span>'}</div>
           <div class="s">${esc(u.email || '')} · desde ${fmtD(u.created_at)} · ${u.msgs_30d} msg em 30 dias · ${u.devices} aparelho${u.devices == 1 ? '' : 's'} com alerta</div></span>
         <span class="right"><span class="chip ${u.plan === 'free' ? '' : 'good'}">${PLAN_NAME[u.plan] || u.plan}${u.plan !== 'free' && u.plan_source !== 'assinatura' ? (u.plan_source === 'familia' ? ' · via família' : ' · cortesia') : ''}</span><span style="font-size:12.5px;color:var(--fg2);font-variant-numeric:tabular-nums">${usd(u.cost_30d)}</span></span>
       </button>`).join('') || '<div class="empty">Nenhum usuário.</div>'}
