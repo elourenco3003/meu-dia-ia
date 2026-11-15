@@ -372,13 +372,26 @@ button:disabled{cursor:default}
 .place-wrap{display:block}
 .place-in{display:flex;flex-direction:column;gap:6px;width:100%}
 .phint{font-size:12.5px;color:var(--accent)}
-.sugs{display:flex;flex-direction:column;border-top:1px solid var(--sep);margin:2px -4px 0;padding-top:4px}
+.psugs{display:flex;flex-direction:column;border-top:1px solid var(--sep);margin:2px -4px 0;padding-top:4px}
+.psugs[hidden]{display:none}
 .sug-it{display:flex;align-items:flex-start;gap:10px;padding:9px 4px;text-align:left;font:inherit;color:var(--fg);border-radius:10px;width:100%}
 .sug-it:active{background:var(--fill)}
 .sug-it .i{width:16px;height:16px;flex:none;margin-top:2px;color:var(--accent)}
 .sug-it span{display:flex;flex-direction:column;min-width:0}
 .sug-it b{font-weight:600;font-size:15px} .sug-it small{font-size:13px;color:var(--fg2)}
 .sug-wait{font-size:13px;color:var(--fg2);padding:8px 4px}
+.place-line{display:flex;align-items:center;gap:8px}
+.place-line .full{flex:1;min-width:0}
+#sheet input.pnum{flex:none;width:64px;text-align:center;color:var(--fg);background:var(--fill);border-radius:10px;padding:6px 4px}
+.mk-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;width:100%;margin:-14px 0 18px;padding:10px 8px;border-radius:16px;background:var(--pill);border:0;font:inherit;color:inherit;text-align:left}
+.mk-c{display:flex;flex-direction:column;align-items:center;min-width:0;gap:1px}
+.mk-c b{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mk-l{font-size:11px;color:var(--fg2);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.mk-s{font-size:11px;color:var(--fg2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.mk-s.up{color:var(--good)} .mk-s.down{color:var(--bad)}
+.mk-r{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none}
+a.row.news{text-decoration:none;color:inherit}
+a.row.news .t{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
 </style>
 </head>
 <body>
@@ -575,7 +588,7 @@ $('#fab').onclick = () => openNewMenu();
 
 function render(){
   document.querySelectorAll('#tabs [data-v]').forEach(b => { if (b.dataset.v===view) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
-  const V = {inicio:vHome, agenda:vAgenda, assistente:vAssist, tarefas:vTasks, financas:vFin, lembretes:vRems, ajustes:vSettings, admin:vAdmin, clima:vClima}[view] || vHome;
+  const V = {inicio:vHome, agenda:vAgenda, assistente:vAssist, tarefas:vTasks, financas:vFin, lembretes:vRems, ajustes:vSettings, admin:vAdmin, clima:vClima, mercado:vMercado}[view] || vHome;
   const m = $('#view'); m.classList.toggle('chat', view==='assistente');
   m.innerHTML = `<div class="wrap">${V()}</div>`;
   bindView();
@@ -633,6 +646,7 @@ function vHome(){
     <button class="round" data-go="assistente" aria-label="Abrir assistente">${ic('search')}</button>
     <button class="round avatar" data-go="ajustes" aria-label="Ajustes">${esc(ini)}</button>
   </div>
+  ${mktStrip()}
   <div style="margin-top:-12px">
     <div class="date">${DOWL[n.getDay()].replace(/^./,c=>c.toUpperCase())}, ${n.getDate()} de ${MONL[n.getMonth()]}</div>
     <h1 class="hello">${hi}, <span class="nw">${esc((S.name||'você').split(' ')[0])}${ph.svg}</span></h1>
@@ -955,6 +969,7 @@ function bindView(){
     if (a==='logout'){ unsubscribePush().finally(() => sb.auth.signOut()); }
     if (a==='push-on'){ enablePush(); }
     if (a==='wx-on'){ loadWeather(true); }
+    if (a==='mkt-refresh'){ loadMarket(true); }
     if (a==='wx-refresh'){ wxFull = null; wxFullState = 'idle'; try { localStorage.removeItem('meudia.wxfull'); } catch(e) {} loadWeatherFull(true); render(); }
     if (a==='fam-create'){ famCall('family_create', { p_name: 'Família ' + ((S.name||'').split(' ').slice(-1)[0] || '') }, 'Família criada. Agora convide as pessoas.'); }
     if (a==='fam-code'){ openJoin(''); }
@@ -986,6 +1001,8 @@ function bindView(){
   });
   V.querySelectorAll('[data-route]').forEach(b => b.onclick = ev => { ev.stopPropagation(); openRoute(b.dataset.route); });
   V.querySelectorAll('[data-addr]').forEach(b => b.onclick = () => openAddr(b.dataset.addr));
+  V.querySelectorAll('[data-newstab]').forEach(b => b.onclick = () => { ui.newsTab = b.dataset.newstab; ui.newsPage = 0; render(); });
+  V.querySelectorAll('[data-newspage]').forEach(b => b.onclick = () => { ui.newsPage = (ui.newsPage || 0) + Number(b.dataset.newspage); render(); });
   V.querySelectorAll('[data-wxtab]').forEach(b => b.onclick = () => { ui.wxTab = b.dataset.wxtab; ui.wxPage = 0; render(); });
   V.querySelectorAll('[data-wxpage]').forEach(b => b.onclick = () => { ui.wxPage = (ui.wxPage || 0) + Number(b.dataset.wxpage); render(); });
   const st = $('#set-travel'); if (st) st.onchange = () => { S.travel_on = st.checked; saveProfile(); };
@@ -1034,7 +1051,7 @@ function openForm({title, fields, values={}, onSave, onDelete, saveLabel}){
   const f = fd => {
     const v = values[fd.k] ?? fd.def ?? '';
     if (fd.type==='title') return `<div class="row"><input class="full" id="f-${fd.k}" placeholder="${esc(fd.label)}" value="${esc(v)}" aria-label="${esc(fd.label)}"></div>`;
-    if (fd.type==='place') return `<div class="row place-wrap"><div class="place-in"><input class="full" id="f-${fd.k}" data-place autocomplete="off" placeholder="${esc(fd.ph || fd.label)}" value="${esc(v)}" aria-label="${esc(fd.label)}"><div class="phint" id="h-${fd.k}" hidden></div><div class="sugs" id="s-${fd.k}" hidden></div></div></div>`;
+    if (fd.type==='place') return `<div class="row place-wrap"><div class="place-in"><div class="place-line"><input class="full" id="f-${fd.k}" data-place autocomplete="off" placeholder="${esc(fd.ph || fd.label)}" value="${esc(v)}" aria-label="${esc(fd.label)}"><input class="pnum" id="n-${fd.k}" inputmode="numeric" maxlength="10" placeholder="Nº" aria-label="Número"></div><div class="phint" id="h-${fd.k}" hidden></div><div class="psugs" id="s-${fd.k}" hidden></div></div></div>`;
     if (fd.type==='select') return `<label class="row" for="f-${fd.k}"><span class="lab">${fd.label}</span><select id="f-${fd.k}">${fd.options.map(([o,l])=>`<option value="${o}" ${String(o)===String(v)?'selected':''}>${l}</option>`).join('')}</select></label>`;
     if (fd.type==='money') return `<label class="row" for="f-${fd.k}"><span class="lab">${fd.label}</span><input id="f-${fd.k}" data-money data-cents="${Number(v)||0}" inputmode="numeric" autocomplete="off" placeholder="R$ 0,00" value="${v ? 'R$ ' + brl(v) : ''}"></label>`;
     return `<label class="row" for="f-${fd.k}"><span class="lab">${fd.label}</span><input id="f-${fd.k}" type="${fd.type}" value="${esc(v)}" ${fd.ph?`placeholder="${esc(fd.ph)}"`:''}></label>`;
@@ -1069,7 +1086,7 @@ function openForm({title, fields, values={}, onSave, onDelete, saveLabel}){
   el.querySelector('[data-x]').onclick = close;
   el.querySelector('[data-s]').onclick = () => {
     const vals = {};
-    fields.filter(x=>x.type!=='break').forEach(fd => { const inp = $('#f-'+fd.k); vals[fd.k] = fd.type==='money' ? (Number(inp.dataset.cents) || 0) : inp.value.trim(); if (fd.type==='place' && inp.dataset.lat) vals[fd.k+'_geo'] = { lat:Number(inp.dataset.lat), lon:Number(inp.dataset.lon), label:inp.dataset.label || '' }; });
+    fields.filter(x=>x.type!=='break').forEach(fd => { const inp = $('#f-'+fd.k); vals[fd.k] = fd.type==='money' ? (Number(inp.dataset.cents) || 0) : inp.value.trim(); if (fd.type==='place'){ const nn = ($('#n-'+fd.k).value || '').trim(); if (nn) vals[fd.k] = withNumber(vals[fd.k], nn); if (inp.dataset.lat && !nn) vals[fd.k+'_geo'] = { lat:Number(inp.dataset.lat), lon:Number(inp.dataset.lon), label:inp.dataset.label || '' }; } });
     const miss = fields.find(fd => fd.req && !vals[fd.k]);
     if (miss){ const er = $('#f-err'); er.textContent = `Preencha: ${miss.label.toLowerCase()}.`; er.hidden = false; return; }
     const btn = el.querySelector('[data-s]'); if (btn.disabled) return; btn.disabled = true; btn.textContent = 'Salvando…';
@@ -1301,7 +1318,7 @@ async function startApp(){
   } else if (!S.isAdmin && navAdm) navAdm.remove();
   view = 'inicio'; render(); checkReminders();
   fam = null; loadFamily().then(checkPendingInvite);
-  saveLocationSoon();
+  saveLocationSoon(); loadMarket();
   if (pendingRoute){ const r = pendingRoute; pendingRoute = null; setTimeout(() => openRoute(r), 300); }
   refreshPush().then(() => { if (pushOn && (view === 'inicio' || view === 'ajustes')) render(); });
 }
@@ -1596,6 +1613,14 @@ let pendingRoute = null;
 try { const r = new URLSearchParams(location.search).get('rota'); if (r){ pendingRoute = r; history.replaceState(null, '', location.pathname); } } catch(e) {}
 
 /* ---------- busca de local: nome do lugar, endereço ou CEP ---------- */
+// coloca o número logo depois do nome da rua: "Rua X, Bairro, Cidade" + 120 → "Rua X, 120, Bairro, Cidade"
+function withNumber(addr, n){
+  n = String(n).trim(); if (!n) return addr;
+  const parts = addr.split(', ');
+  if (parts.some(p => p.trim() === n)) return addr;
+  if (parts.length === 1) return `${addr}, ${n}`;
+  parts.splice(1, 0, n); return parts.join(', ');
+}
 const cepOf = q => { const d = String(q).replace(/\D/g, ''); return /^\s*\d{5}-?\d{3}\s*$/.test(q) ? d : ''; };
 async function viaCep(cep){
   try {
@@ -1617,8 +1642,8 @@ function bindPlace(inp){
       if (it.cep){
         // CEP: preenche rua, bairro e cidade; a pessoa completa o número
         inp.value = [it.street, it.district, it.city && `${it.city} - ${it.uf}`].filter(Boolean).join(', ');
-        clearGeo(); hint.textContent = 'Acrescente o número depois do nome da rua.'; hint.hidden = false;
-        inp.focus(); const pos = (it.street || '').length; inp.setSelectionRange(pos, pos);
+        clearGeo(); hint.textContent = 'Agora digite o número no campo Nº.'; hint.hidden = false;
+        const nf = document.getElementById('n-' + inp.id.slice(2)); if (nf) nf.focus();
       } else {
         inp.value = it.address && it.address !== it.name ? `${it.name} - ${it.address}` : it.name;
         inp.dataset.lat = it.lat; inp.dataset.lon = it.lon; inp.dataset.label = it.name;
@@ -1649,6 +1674,65 @@ function bindPlace(inp){
     }, 450);
   });
 }
+
+/* ---------- mercado e notícias ---------- */
+let mkt = null, mktAt = 0;
+try { const c = JSON.parse(localStorage.getItem('meudia.mkt') || 'null'); if (c){ mkt = c.data; mktAt = c.at; } } catch(e) {}
+async function loadMarket(force){
+  if (!force && mkt && Date.now() - mktAt < 10 * 60e3) return;
+  const { data, error } = await sb.from('market_cache').select('key,data,updated_at');
+  if (error || !data) return;
+  mkt = Object.fromEntries(data.map(r => [r.key, { ...r.data, updated_at: r.updated_at }])); mktAt = Date.now();
+  try { localStorage.setItem('meudia.mkt', JSON.stringify({ at: mktAt, data: mkt })); } catch(e) {}
+  if (view === 'inicio' || view === 'mercado') render();
+}
+const n2 = (v, d = 2) => Number(v).toLocaleString('pt-BR', { minimumFractionDigits: d, maximumFractionDigits: d });
+const pctTxt = p => `${p > 0 ? '▲' : p < 0 ? '▼' : ''} ${n2(Math.abs(p))}%`;
+const pctCls = p => p > 0 ? 'up' : p < 0 ? 'down' : '';
+const accN = (v, d) => `<span class="acc"><span>R$</span><span>${n2(v, d)}</span></span>`;
+function mktStrip(){
+  if (!mkt) { loadMarket(); return ''; }
+  const m = mkt.moedas, j = mkt.juros;
+  const cell = (lab, val, sub, cls) => `<span class="mk-c"><span class="mk-l">${lab}</span><b>${val}</b>${sub ? `<span class="mk-s ${cls || ''}">${sub}</span>` : ''}</span>`;
+  return `<button class="mk-strip" data-go="mercado" aria-label="Abrir mercado e notícias">
+    ${m ? cell('Dólar', `R$ ${n2(m.usd.value)}`, pctTxt(m.usd.pct), pctCls(m.usd.pct)) : ''}
+    ${m ? cell('Euro', `R$ ${n2(m.eur.value)}`, pctTxt(m.eur.pct), pctCls(m.eur.pct)) : ''}
+    ${j ? cell('Selic', `${n2(j.selic.value)}%`, 'ao ano') : ''}
+    ${j ? cell('IPCA', `${n2(j.ipca12.value)}%`, '12 meses') : ''}
+  </button>`;
+}
+const agoTxt = s => { if (!s) return ''; const m = Math.round((Date.now() - new Date(s).getTime()) / 60e3); return m < 60 ? `há ${Math.max(m, 1)} min` : m < 1440 ? `há ${Math.round(m / 60)} h` : new Date(s).toLocaleDateString('pt-BR'); };
+function vMercado(){
+  if (!ui.newsTab) ui.newsTab = 'brasil';
+  loadMarket();
+  const head = `${back()}<div class="head"><div><h1 class="lt">Mercado e notícias</h1><div class="sub">${mkt && mkt.moedas ? 'Atualizado ' + agoTxt(mkt.moedas.updated_at) : 'Indicadores do dia'}</div></div>
+    <button class="icon-btn" data-act="mkt-refresh" aria-label="Atualizar">${ic('refresh')}</button></div>`;
+  if (!mkt) return head + '<div class="card empty">Carregando…</div>';
+  const m = mkt.moedas, j = mkt.juros, nw = mkt.noticias;
+  const row = (t, s, right) => `<div class="row"><span class="main"><div class="t">${t}</div>${s ? `<div class="s">${s}</div>` : ''}</span>${right}</div>`;
+  const cur = (name, x, d) => row(name, x.high ? `Máx ${accTxt(x.high, d)} · mín ${accTxt(x.low, d)}` : `Fechamento de ${esc(x.at || '')}`,
+    `<span class="mk-r">${accN(x.value, d)}<span class="mk-s ${pctCls(x.pct)}">${pctTxt(x.pct)}</span></span>`);
+  const pctR = (v, unit) => `<span class="mk-r"><b class="n">${n2(v)}%</b><span class="mk-s">${unit}</span></span>`;
+  const tab = ui.newsTab, list = (nw && nw[tab]) || [], per = 6, pages = Math.max(1, Math.ceil(list.length / per));
+  ui.newsPage = Math.min(Math.max(ui.newsPage || 0, 0), pages - 1);
+  const items = list.slice(ui.newsPage * per, ui.newsPage * per + per);
+  return `${head}
+  <section><div class="sh">Moedas</div><div class="group">
+    ${m ? cur('Dólar comercial', m.usd, 4) + cur('Euro', m.eur, 4) + (m.btc ? cur('Bitcoin', m.btc, 2) : '') : '<div class="empty">Sem dados agora.</div>'}
+  </div><div class="foot">Valores em R$ por unidade da moeda. Variação do dia em %. Dados: ${esc((m && m.source) || '')}</div></section>
+  <section><div class="sh">Juros e inflação</div><div class="group">
+    ${j ? row('Selic (meta)', 'Definida pelo Copom', pctR(j.selic.value, 'ao ano')) + row('CDI', esc(j.cdi.date), pctR(j.cdi.value, 'ao ano'))
+      + row('IPCA no mês', mesRef(j.ipca.date), pctR(j.ipca.value, 'no mês')) + row('IPCA em 12 meses', 'Até ' + mesRef(j.ipca12.date), pctR(j.ipca12.value, '12 meses')) : '<div class="empty">Sem dados agora.</div>'}
+  </div></section>
+  <section><div class="sh">Notícias</div>
+    <div class="seg" role="group" aria-label="Notícias">${[['brasil','Brasil'],['economia','Economia'],['internacional','Internacional']].map(([k,l]) => `<button data-newstab="${k}" aria-pressed="${tab === k}">${l}</button>`).join('')}</div>
+    <div class="group" style="margin-top:10px">${items.map(n => `<a class="row news" href="${esc(n.link)}" target="_blank" rel="noopener"><span class="main"><div class="t">${esc(n.title)}</div><div class="s">${agoTxt(n.at)} · Agência Brasil</div></span>${ic('r','i chev')}</a>`).join('') || '<div class="empty">Sem notícias agora.</div>'}</div>
+    ${pages > 1 ? `<div class="pager" style="margin-top:10px"><button class="icon-btn" data-newspage="-1" aria-label="Notícias anteriores" ${ui.newsPage === 0 ? 'disabled' : ''}>${ic('l')}</button><span class="lbl" style="text-transform:none">Página ${ui.newsPage + 1} de ${pages}</span><button class="icon-btn" data-newspage="1" aria-label="Próximas notícias" ${ui.newsPage >= pages - 1 ? 'disabled' : ''}>${ic('r')}</button></div>` : ''}
+    <div class="foot">Manchetes da Agência Brasil (EBC). Tocando, abre a matéria no site.</div>
+  </section>`;
+}
+const mesRef = d => { const [, mm, yy] = String(d).split('/'); return mm ? `${MON[Number(mm) - 1]}/${yy}` : esc(d); };
+const accTxt = (v, d) => `R$ ${n2(v, d)}`;
 
 /* ---------- painel do administrador ---------- */
 let adminData = null, adminErr = '', adminLoading = false, adminPage = 0;
