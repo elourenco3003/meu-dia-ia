@@ -2143,7 +2143,7 @@ function bindInvest(){
     inp.disabled = false;
     if (error || !data || !data.found){ toast(`Não encontrei ${esc(sym)} na bolsa. Confira o código.`); inp.focus(); return; }
     const ins = await sb.from('watchlist').insert({ symbol: sym }).select().single();
-    if (ins.error){ toast(/row-level/.test(ins.error.message || '') ? 'Limite de 40 ativos acompanhados.' : 'Não consegui adicionar agora.'); return; }
+    if (ins.error){ toast(/limite/.test(ins.error.message || '') ? 'Limite de 40 ativos acompanhados.' : 'Não consegui adicionar agora.'); return; }
     S.watch.push(ins.data); S.quotes = { ...(S.quotes || {}), [sym]: data.quote }; inp.value = ''; render(); toast(`${sym} adicionado`);
   };
   $('#view').querySelectorAll('[data-invtab]').forEach(b => b.onclick = () => { ui.invTab = b.dataset.invtab; render(); });
