@@ -297,7 +297,11 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 #alarm .al-go{display:flex;flex-direction:column;gap:10px;width:100%;max-width:380px;margin-top:10px}
 #alarm .al-go a,#alarm .al-go button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:54px;border-radius:16px;font-size:17px;font-weight:700}
 #alarm .al-waze{background:#fff;color:var(--bad);text-decoration:none}
-#alarm .al-stop{background:rgba(0,0,0,.22);color:#fff}
+#alarm .al-slide{position:relative;height:64px;border-radius:32px;background:rgba(0,0,0,.24);display:flex;align-items:center;padding:4px;touch-action:none;user-select:none;-webkit-user-select:none}
+#alarm .al-slide-t{position:absolute;inset:0;display:grid;place-items:center;font-size:17px;font-weight:700;color:#fff;padding-left:40px;pointer-events:none}
+#alarm .al-knob{width:56px;height:56px;border-radius:50%;background:#fff;color:var(--bad);display:grid;place-items:center;flex:none;cursor:grab;box-shadow:0 4px 14px rgba(0,0,0,.25);touch-action:none;position:relative;z-index:1}
+#alarm .al-knob svg{width:28px;height:28px}
+#alarm .al-knob:focus-visible{outline:3px solid #fff;outline-offset:3px}
 @keyframes alarmpulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
 @media (prefers-reduced-motion:reduce){#alarm{animation:none}}
 #sheet{position:fixed;inset:0;z-index:60;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center}
@@ -483,6 +487,17 @@ a.row.news .t{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp
 .hero-tx{min-width:0;padding-top:4px}
 .hero-bt{display:flex;gap:10px;flex:none}
 .hero .round{width:44px;height:44px}
+.bellbtn{position:relative}
+.nbadge{position:absolute;top:-3px;right:-3px;min-width:19px;height:19px;padding:0 5px;border-radius:999px;background:var(--bad);color:#fff;font-size:11.5px;font-weight:800;display:grid;place-items:center;font-variant-numeric:tabular-nums;box-shadow:0 0 0 2px var(--bg)}
+.inb{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:none;border:0;font:inherit;color:inherit;padding:12px 14px}
+.inb+.inb{border-top:1px solid var(--sep)}
+.inb .ib-ic{width:36px;height:36px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}
+.inb .ib-ic svg{width:19px;height:19px}
+.inb.urg .ib-ic{background:color-mix(in srgb,var(--bad) 15%,transparent);color:var(--bad)}
+.inb .main{flex:1;min-width:0}
+.inb .ib-t{font-weight:700;font-size:15px;line-height:1.3}
+.inb .ib-s{font-size:14px;color:var(--fg2);line-height:1.35;margin-top:2px}
+.inb .ib-w{font-size:12px;color:var(--fg2);margin-top:4px}
 .tkband{display:flex;align-items:center;gap:10px;width:100%;margin-top:4px;padding:10px 0 10px 12px;border-radius:16px;background:var(--card);box-shadow:var(--shadow);border:0;font:inherit;color:inherit;overflow:hidden;text-align:left}
 .tk-live{flex:none;display:flex;flex-direction:column;align-items:flex-start;font-size:10.5px;font-weight:800;letter-spacing:.06em;color:var(--now);padding-right:10px;border-right:1px solid var(--sep)}
 .tk-live i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--now);margin:0 0 3px;animation:blink 1.4s infinite}
@@ -721,21 +736,38 @@ function play(cat, force){
 /* ---------- alarme "Saia já": som alto e insistente ---------- */
 // sirene de dois tons gerada no aparelho (onda quadrada: soa mais alto). Toca por <audio>, que no iPhone
 // ignora a chave de silencioso enquanto o app está aberto.
-let alarmEl = null, alarmReady = false, alarmUrl = null, alarmVib = null, alarmStopT = null;
-function sirenUrl(){
-  if (alarmUrl) return alarmUrl;
-  const sr = 22050, n = sr * 2, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
+let alarmEl = null, alarmReady = false, alarmVib = null, alarmStopT = null;
+// toques do alarme, todos gerados no aparelho (2 s, repetem em loop). O app não tem acesso aos toques do celular.
+const ALARM_TONES = { sirene:'Sirene', despertador:'Despertador', bipe:'Bipe digital', sino:'Sino', marimba:'Marimba', subida:'Subida' };
+const alarmTone = () => { try { const t = localStorage.getItem('meudia.alarmTone'); return ALARM_TONES[t] ? t : 'sirene'; } catch(e) { return 'sirene'; } };
+const toneCache = {};
+function toneSamples(kind, sr){
+  const n = sr * 2, out = new Float32Array(n), TAU = 2 * Math.PI, sq = x => Math.sign(Math.sin(x));
+  const bell = (t, t0, f, d) => t < t0 ? 0 : Math.exp(-d * (t - t0)) * (Math.sin(TAU * f * (t - t0)) + .5 * Math.sin(TAU * 2.76 * f * (t - t0)) + .25 * Math.sin(TAU * 5.4 * f * (t - t0)));
+  let ph = 0;
+  for (let i = 0; i < n; i++){
+    const t = i / sr; let v = 0;
+    if (kind === 'sirene'){ const k = t % .25, f = Math.floor(t / .25) % 2 ? 1450 : 960; ph += TAU * f / sr; v = sq(ph) * (k < .01 ? k / .01 : k > .22 ? 0 : 1); }
+    else if (kind === 'despertador'){ const on = (t < .35) || (t >= .5 && t < .85); ph += TAU * 2200 / sr; v = on ? sq(ph) * (Math.floor(t * 50) % 2) : 0; }
+    else if (kind === 'bipe'){ const k = t % .18, on = t < .72 && k < .1; ph += TAU * 1800 / sr; v = on ? sq(ph) : 0; }
+    else if (kind === 'sino'){ v = bell(t, 0, 880, 3) + bell(t, .6, 660, 3) + bell(t, 1.2, 880, 3); }
+    else if (kind === 'marimba'){ [523, 659, 784, 1047, 784, 659].forEach((f, j) => { const t0 = j * .17; if (t >= t0) v += Math.exp(-9 * (t - t0)) * Math.sin(TAU * f * (t - t0)); }); }
+    else if (kind === 'subida'){ const k = t % 1, f = 500 + 1100 * Math.min(k / .8, 1); ph += TAU * f / sr; v = k < .8 ? Math.max(-1, Math.min(1, 2.2 * Math.sin(ph))) : 0; }
+    out[i] = v;
+  }
+  let pk = 0; out.forEach(x => { if (Math.abs(x) > pk) pk = Math.abs(x); });
+  if (pk) for (let i = 0; i < n; i++) out[i] = out[i] / pk * .95;
+  return out;
+}
+function sirenUrl(kind){
+  kind = kind || alarmTone();
+  if (toneCache[kind]) return toneCache[kind];
+  const sr = 22050, smp = toneSamples(kind, sr), n = smp.length, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
   const w = (o, t) => [...t].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
   w(0,'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8,'WAVE'); w(12,'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
   v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36,'data'); v.setUint32(40, n * 2, true);
-  let ph = 0;
-  for (let i = 0; i < n; i++){
-    const t = i / sr, k = t % 0.25, f = Math.floor(t / 0.25) % 2 ? 1450 : 960;
-    ph += 2 * Math.PI * f / sr;
-    const env = k < 0.01 ? k / 0.01 : k > 0.22 ? 0 : 1;
-    v.setInt16(44 + i * 2, Math.sign(Math.sin(ph)) * env * 31000, true);
-  }
-  return alarmUrl = URL.createObjectURL(new Blob([buf], { type:'audio/wav' }));
+  for (let i = 0; i < n; i++) v.setInt16(44 + i * 2, smp[i] * 32767, true);
+  return toneCache[kind] = URL.createObjectURL(new Blob([buf], { type:'audio/wav' }));
 }
 // o celular só libera o som depois de um toque na tela: preparo no primeiro toque
 function unlockAlarm(){
@@ -761,16 +793,39 @@ function alarmFire(e, test){
   el.innerHTML = `<div class="al-ic">${ic('nav')}</div><div class="al-big">Saia já!</div>
     ${e ? `<div class="al-t">${esc(e.title)}</div><div class="al-s">${e.tmin ? `${e.tmin} min de viagem até ${esc(e.plabel || e.place)}. ` : ''}Começa às ${arrive}.</div>` : '<div class="al-s">Teste do alarme. É assim que ele toca na hora de sair.</div>'}
     <div class="al-go">${e ? `<a class="al-waze" href="${wazeUrl(e)}" target="_blank" rel="noopener" data-al="waze">${ic('nav')}Abrir no Waze</a>` : ''}
-      <button class="al-stop" data-al="stop">Parar alarme</button></div>`;
+      <div class="al-slide" id="al-slide"><span class="al-slide-t">Deslize para parar</span><span class="al-knob" role="slider" tabindex="0" aria-label="Deslize para a direita para parar o alarme" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">${ic('r')}</span></div></div>`;
   el.hidden = false;
-  el.querySelectorAll('[data-al]').forEach(b => b.onclick = () => alarmStop(test ? null : e));
+  const stop = () => alarmStop(test ? null : e);
+  el.querySelectorAll('[data-al]').forEach(b => b.onclick = stop);
+  bindSlide(el.querySelector('#al-slide'), stop);
   try {
     alarmEl = alarmEl || Object.assign(new Audio(sirenUrl()), { loop:true, preload:'auto' });
+    if (alarmEl.src !== sirenUrl()) alarmEl.src = sirenUrl();
     alarmEl.dataset.on = '1'; alarmEl.muted = false; alarmEl.volume = 1; alarmEl.currentTime = 0;
     alarmEl.play().catch(() => play('sair', true));
   } catch(x) { play('sair', true); }
   if (navigator.vibrate){ navigator.vibrate([700, 250, 700, 250, 700]); clearInterval(alarmVib); alarmVib = setInterval(() => navigator.vibrate([700, 250, 700, 250, 700]), 3000); }
   clearTimeout(alarmStopT); alarmStopT = setTimeout(() => alarmStop(null), test ? 6000 : 3 * 60e3); // não toca para sempre
+}
+// amostra de 3 s do toque escolhido
+let previewT = null;
+function previewTone(kind){
+  try {
+    alarmEl = alarmEl || Object.assign(new Audio(sirenUrl(kind)), { loop:true, preload:'auto' });
+    alarmEl.src = sirenUrl(kind); alarmEl.muted = false; alarmEl.volume = 1; alarmEl.currentTime = 0; alarmEl.play().catch(() => {});
+    clearTimeout(previewT); previewT = setTimeout(() => { if (!alarmEl.dataset.on){ alarmEl.pause(); alarmEl.currentTime = 0; } }, 3000);
+  } catch(e) {}
+}
+// "deslize para parar", igual ao despertador do celular
+function bindSlide(box, done){
+  const knob = box.querySelector('.al-knob'); let x0 = null, x = 0;
+  const max = () => box.clientWidth - knob.offsetWidth - 8;
+  const set = (v, anim) => { x = Math.max(0, Math.min(v, max())); knob.style.transition = anim ? 'transform .25s ease' : 'none'; knob.style.transform = `translateX(${x}px)`; box.querySelector('.al-slide-t').style.opacity = String(1 - x / max()); knob.setAttribute('aria-valuenow', String(Math.round(x / max() * 100))); };
+  knob.addEventListener('pointerdown', ev => { x0 = ev.clientX - x; knob.setPointerCapture(ev.pointerId); ev.preventDefault(); });
+  knob.addEventListener('pointermove', ev => { if (x0 !== null) set(ev.clientX - x0); });
+  const end = () => { if (x0 === null) return; x0 = null; if (x >= max() * .8){ set(max(), true); setTimeout(done, 150); } else set(0, true); };
+  knob.addEventListener('pointerup', end); knob.addEventListener('pointercancel', end);
+  knob.addEventListener('keydown', ev => { if (['Enter',' ','ArrowRight'].includes(ev.key)){ ev.preventDefault(); done(); } });
 }
 // confere a cada 15 s se chegou a hora exata de sair de algum compromisso
 function alarmCheck(){
@@ -876,6 +931,7 @@ function vHome(){
     </div>
     <div class="hero-bt">
       <button class="round" data-go="assistente" aria-label="Abrir assistente">${ic('search')}</button>
+      <button class="round bellbtn" data-inbox aria-label="Notificações${inbox.length ? ': ' + inbox.length + ' não lidas' : ''}">${ic('bell')}${inbox.length ? `<span class="nbadge">${inbox.length > 9 ? '9+' : inbox.length}</span>` : ''}</button>
       <button class="round avatar" data-go="ajustes" aria-label="Ajustes">${esc(ini)}</button>
     </div>
   </div>
@@ -1207,7 +1263,7 @@ function bindView(){
   V.querySelectorAll('[data-mic]').forEach(b => b.onclick = micNote);
   V.querySelectorAll('[data-act]').forEach(b => b.onclick = () => {
     const a = b.dataset.act;
-    if (a==='logout'){ unsubscribePush().finally(() => sb.auth.signOut()); }
+    if (a==='logout'){ inbox = []; unsubscribePush().finally(() => sb.auth.signOut()); }
     if (a==='push-on'){ enablePush(); }
     if (a==='wx-on'){ loadWeather(true); }
     if (a==='frete-edit'){ openFreteEdit(); }
@@ -1258,6 +1314,7 @@ function bindView(){
     const c = themeCfg(); c[{ 'th-mode':'mode', 'th-dark':'dark', 'th-light':'light' }[id]] = el.value;
     try { localStorage.setItem('meudia.theme', JSON.stringify(c)); } catch(e) {} applyTheme(); render(); }; });
   const at = $('#alarm-test'); if (at) at.onclick = () => alarmFire(null, true);
+  const atn = $('#alarm-tone'); if (atn) atn.onchange = () => { try { localStorage.setItem('meudia.alarmTone', atn.value); } catch(e) {} previewTone(atn.value); };
   const st = $('#set-travel'); if (st) st.onchange = () => { S.travel_on = st.checked; saveProfile(); };
   const pa = $('#pref-arr'); if (pa) pa.onchange = () => { S.travel_arrive = Number(pa.value); saveProfile(); S.events.forEach(e => { if (e.date >= today() && e.place){ e.tsrc = ''; e.leave = null; } }); persist(sb.from('events').update({ travel_checked_at: null }).gte('date', today()).neq('place', '').then(r => { if (r.error) throw r.error; })); };
   const nm = $('#set-name'); if (nm) nm.oninput = () => { S.name = nameCase(nm.value); saveProfile(); };
@@ -1475,7 +1532,7 @@ function devCard(){
 }
 function openPlans(from){
   const el = $('#sheet'), q = quotaGet(), free = (S.plan || 'free') === 'free';
-  const lim = (q && q.limit) || 24, mail = session ? session.user.email : '';
+  const lim = (q && q.limit) || 12, mail = session ? session.user.email : '';
   const li = t => `<li>${ic('ok')}<span>${t}</span></li>`;
   const ask = plano => zapUrl(`Olá, Eduardo! Quero assinar o Meu Dia IA ${plano}. Meu e-mail no app: ${mail}`);
   const head = from === 'limite' && q && q.used >= q.limit
@@ -1487,7 +1544,7 @@ function openPlans(from){
       <div><div class="plans-h">${head[0]}</div><div class="plans-s">${head[1]}</div></div>
       <div class="plan">
         <div class="plan-top"><span class="plan-n">Plus</span>${`<span class="pl-price"><span>R$</span><b>${brl(PLAN_PRICE.plus)}</b><small>/mês</small></span>`}</div>
-        <ul>${li(`<b>100 mensagens por dia</b>: anote tudo, a qualquer hora, sem contar (no grátis são ${lim}, cerca de 1 por hora)`)}${li('Organize o dia e registre contas e compromissos falando')}${li('Hora de sair com alarme "Saia já" e atalho para o Waze')}${li('Memória: ele guarda o que você pedir para lembrar')}</ul>
+        <ul>${li(`<b>100 mensagens por dia</b>: anote tudo, a qualquer hora, sem contar (mais de 8 vezes as ${lim} do grátis)`)}${li('Organize o dia e registre contas e compromissos falando')}${li('Hora de sair com alarme "Saia já" e atalho para o Waze')}${li('Memória: ele guarda o que você pedir para lembrar')}</ul>
         <a class="plan-go" href="${ask('Plus')}" target="_blank" rel="noopener">${ic('chat')}Assinar o Plus pelo WhatsApp</a>
         <div class="plan-yr">ou <b>R$ ${brl(PLAN_YEAR.plus)} por ano</b>: 2 meses grátis · <a href="${ask('Plus anual')}" target="_blank" rel="noopener">assinar o anual</a></div>
       </div>
@@ -1506,6 +1563,50 @@ function openPlans(from){
   el.querySelector('[data-x]').onclick = close;
 }
 document.addEventListener('click', ev => { const b = ev.target.closest('[data-plans]'); if (b) openPlans(b.dataset.plans); });
+/* ---------- sino: caixa de notificações (lidas são apagadas) ---------- */
+let inbox = [];
+const INB_IC = { lembrete:'bell', sair:'nav', sairja:'nav', compromisso:'cal', vencer:'fin', vencida:'fin', pendente:'task', resumo:'spark', noticia:'news' };
+async function loadInbox(){
+  if (!session) return;
+  const { data, error } = await sb.from('inbox').select('id,kind,ref,title,body,url,created_at').order('created_at', { ascending:false }).limit(60);
+  if (error || !data) return;
+  const changed = data.length !== inbox.length || (data[0] && inbox[0] && data[0].id !== inbox[0].id);
+  inbox = data;
+  if (changed && view === 'inicio' && $('#sheet').hidden) render();
+}
+function inboxGo(n){
+  if (n.kind === 'sair' || n.kind === 'sairja'){ if (S.events.some(e => e.id === n.ref)) openRoute(n.ref); else go('agenda'); return; }
+  if (n.kind === 'noticia' && /^https?:/.test(n.url || '')){ window.open(n.url, '_blank', 'noopener'); return; }
+  go({ lembrete:'lembretes', compromisso:'agenda', vencer:'financas', vencida:'financas', pendente:'tarefas' }[n.kind] || 'inicio');
+}
+function openInbox(){
+  const el = $('#sheet'), per = 6, seen = new Set();
+  let page = 0;
+  const read = ids => { ids = ids.filter(Boolean); if (!ids.length) return; inbox = inbox.filter(n => !ids.includes(n.id)); sb.from('inbox').delete().in('id', ids).then(() => {}); };
+  const close = (then) => { el.hidden = true; el.innerHTML = ''; read([...seen]); render(); if (then) then(); };
+  const paint = () => {
+    const pages = Math.max(1, Math.ceil(inbox.length / per)); page = Math.min(page, pages - 1);
+    const items = inbox.slice(page * per, page * per + per); items.forEach(n => seen.add(n.id));
+    el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="Notificações">
+      <div class="bar"><span style="min-width:70px"></span><b>Notificações</b><button class="save" data-x>Fechar</button></div>
+      <div class="body">
+        ${inbox.length ? `<div class="group">${items.map((n, i) => `<button class="inb ${n.kind === 'sairja' || n.kind === 'vencida' ? 'urg' : ''}" data-i="${i}">
+          <span class="ib-ic">${ic(INB_IC[n.kind] || 'bell')}</span>
+          <span class="main"><div class="ib-t">${esc(n.title)}</div>${n.body ? `<div class="ib-s">${esc(n.body)}</div>` : ''}<div class="ib-w">${agoTxt(n.created_at)}</div></span>${ic('r','i chev')}</button>`).join('')}</div>
+          ${pages > 1 ? `<div class="pager"><button class="icon-btn" data-pg="-1" aria-label="Anteriores" ${page === 0 ? 'disabled' : ''}>${ic('l')}</button><span class="lbl" style="text-transform:none">Página ${page + 1} de ${pages}</span><button class="icon-btn" data-pg="1" aria-label="Próximas" ${page >= pages - 1 ? 'disabled' : ''}>${ic('r')}</button></div>` : ''}
+          <div class="foot">Toque em um aviso para abrir. Ao fechar, os avisos que você viu são apagados.</div>`
+        : '<div class="card empty">Nenhuma notificação nova.</div>'}
+      </div></div>`;
+    el.querySelector('[data-x]').onclick = () => close();
+    el.querySelectorAll('[data-pg]').forEach(b => b.onclick = () => { page += Number(b.dataset.pg); paint(); });
+    el.querySelectorAll('.inb[data-i]').forEach(b => b.onclick = () => { const n = items[Number(b.dataset.i)]; close(() => inboxGo(n)); });
+  };
+  el.onclick = ev => { if (ev.target === el) close(); };
+  delete el.dataset.route; el.hidden = false; paint();
+}
+document.addEventListener('click', ev => { if (ev.target.closest('[data-inbox]')) openInbox(); });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') loadInbox(); });
+setInterval(() => { if (document.visibilityState === 'visible') loadInbox(); }, 60e3);
 function addReply(r){
   quotaSet(r);
   S.chat.push({ id: r.id || 'l' + uid(), role:'ia', text: r.text || r.error || 'Pode repetir?', action: r.action || null, state: r.action ? 'pending' : null, chips: r.chips || null });
@@ -1654,7 +1755,7 @@ async function startApp(){
   } else if (!S.isAdmin && navAdm) navAdm.remove();
   view = 'inicio'; render(); checkReminders();
   fam = null; loadFamily().then(checkPendingInvite);
-  saveLocationSoon(); loadMarket();
+  saveLocationSoon(); loadMarket(); loadInbox();
   if (pendingRoute){ const r = pendingRoute; pendingRoute = null; setTimeout(() => openRoute(r), 300); }
   refreshPush().then(() => { if (pushOn && (view === 'inicio' || view === 'ajustes')) render(); });
 }
@@ -2029,8 +2130,10 @@ function travelSection(){
     <label class="row" for="pref-arr"><span class="main t">Chegar antes</span>
       <select class="field-in" id="pref-arr">${[10,15,30,45,60].map(v => `<option value="${v}" ${Number(S.travel_arrive) === v ? 'selected' : ''}>${v} min</option>`).join('')}</select></label>
     ${addrRow('home', 'Casa')}${addrRow('work', 'Trabalho')}
-    <button class="row" id="alarm-test"><span class="main"><div class="t">Testar o alarme "Saia já"</div><div class="s">Toca alto por alguns segundos</div></span>${ic('r','i chev')}</button>
-  </div><div class="foot">Na hora exata de sair, o app dispara um alarme alto e insistente até você tocar em parar. Com o app aberto, ele toca mesmo com o celular no silencioso (iPhone). Com o app fechado, chega a notificação com o som do celular. Calculo o tempo de viagem com trânsito e aviso no celular 10 min antes da hora de sair, com o atalho para o Waze. Em dia útil das 10h às 18h considero a saída do Trabalho; nos outros horários, de Casa. Se você abriu o app nas últimas 2 horas, uso onde você está. Cada compromisso pode escolher "Sair de".</div></section>`;
+    <label class="row" for="alarm-tone"><span class="main"><div class="t">Toque do alarme "Saia já"</div><div class="s">Ao trocar, toca uma amostra</div></span>
+      <select class="field-in" id="alarm-tone">${Object.entries(ALARM_TONES).map(([k, l]) => `<option value="${k}" ${alarmTone() === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+    <button class="row" id="alarm-test"><span class="main"><div class="t">Testar o alarme completo</div><div class="s">Tela cheia, som alto e deslize para parar</div></span>${ic('r','i chev')}</button>
+  </div><div class="foot">Na hora exata de sair, o app dispara um alarme alto, com o toque que você escolher, até você deslizar para parar. Com o app aberto, ele toca mesmo com o celular no silencioso (iPhone). Com o app fechado, chega a notificação com o som do celular. Calculo o tempo de viagem com trânsito e aviso no celular 10 min antes da hora de sair, com o atalho para o Waze. Em dia útil das 10h às 18h considero a saída do Trabalho; nos outros horários, de Casa. Se você abriu o app nas últimas 2 horas, uso onde você está. Cada compromisso pode escolher "Sair de".</div></section>`;
 }
 function openAddr(k){
   const label = k === 'home' ? 'Casa' : 'Trabalho';
@@ -2617,6 +2720,7 @@ async function testPush(){
 }
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => {
   const d = e.data || {};
+  if (d.type === 'push') setTimeout(loadInbox, 1500);
   if (d.type === 'push' && d.kind === 'sairja'){ const ev = S.events.find(x => x.id === d.ref); alarmFire(ev || null); return; }
   if (d.type === 'push' && document.visibilityState === 'visible' && TONES[d.kind]) play(d.kind);
   if (d.type === 'open' && d.url){ const r = new URL(d.url, location.origin).searchParams.get('rota'); if (r) openRoute(r); }
