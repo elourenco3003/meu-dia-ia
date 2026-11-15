@@ -1,7 +1,7 @@
 // Meu Dia IA · service worker
 // 1) Guarda a "casca" do app para abrir rápido e aguentar internet instável (nunca guarda dados do usuário).
 // 2) Recebe os alertas do servidor (Web Push) e mostra a notificação, mesmo com o app fechado.
-const CACHE = 'meudia-v5';
+const CACHE = 'meudia-v6';
 const SHELL = ['/', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png', '/logo.svg', '/favicon-32.png'];
 
 self.addEventListener('install', e => {
@@ -47,6 +47,7 @@ self.addEventListener('notificationclick', e => {
   e.notification.close();
   const url = (e.notification.data && e.notification.data.url) || '/';
   e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(ws => {
+    if (/^https?:/.test(url)) return self.clients.openWindow(url); // notícia: abre a matéria
     const w = ws.find(c => 'focus' in c);
     if (!w) return self.clients.openWindow(url);
     if (url !== '/') w.postMessage({ type: 'open', url }); // ex.: /?rota=ID abre "Como chegar"

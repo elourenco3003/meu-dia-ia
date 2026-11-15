@@ -6,6 +6,20 @@
 <title>Meu Dia IA</title>
 <meta name="description" content="Seu dia organizado. Sua vida mais leve. Assistente pessoal com IA para agenda, tarefas, contas e lembretes.">
 <meta name="theme-color" content="#DEE2FB">
+<script>
+/* tema: automático pelo horário (padrão), claro, escuro ou igual ao celular; guardado neste aparelho */
+function themeCfg(){ try { return Object.assign({ mode:'auto', dark:'18:00', light:'06:00' }, JSON.parse(localStorage.getItem('meudia.theme') || '{}')); } catch(e) { return { mode:'auto', dark:'18:00', light:'06:00' }; } }
+function applyTheme(){
+  const c = themeCfg(), r = document.documentElement, n = new Date(), hm = String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
+  let t = null;
+  if (c.mode === 'claro') t = 'light'; else if (c.mode === 'escuro') t = 'dark';
+  else if (c.mode === 'auto') t = (c.dark > c.light ? (hm >= c.dark || hm < c.light) : (hm >= c.dark && hm < c.light)) ? 'dark' : 'light';
+  if (t) r.setAttribute('data-theme', t); else r.removeAttribute('data-theme');
+  const dark = t ? t === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  const m = document.querySelector('meta[name="theme-color"]'); if (m) m.setAttribute('content', dark ? '#1C2040' : '#DEE2FB');
+}
+applyTheme(); setInterval(applyTheme, 60e3);
+</script>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/svg+xml" href="/logo.svg">
@@ -392,6 +406,17 @@ button:disabled{cursor:default}
 .mk-r{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none}
 a.row.news{text-decoration:none;color:inherit}
 a.row.news .t{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+.mk-box{display:flex;flex-direction:column;gap:6px;margin:-14px 0 18px}
+.mk-box .mk-strip{margin:0}
+.mk-news{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:var(--card);box-shadow:var(--shadow);text-decoration:none;color:var(--fg)}
+.mk-head{flex:1;min-width:0;font-size:14px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.mk-new{flex:none;font-size:11px;font-weight:700;color:#fff;background:var(--now);padding:3px 8px;border-radius:999px;animation:pulse 1.6s ease-in-out 3}
+.mk-tag{flex:none;width:26px;height:26px;border-radius:8px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}
+.mk-tag .i{width:15px;height:15px}
+.mk-news .chev{color:var(--fg3);width:16px;height:16px;flex:none}
+.mk-more{display:flex;align-items:center;justify-content:center;gap:4px;font:inherit;font-size:13px;font-weight:600;color:var(--accent);background:none;border:0;padding:2px}
+.mk-more .i{width:14px;height:14px}
+@keyframes pulse{50%{transform:scale(1.08)}}
 </style>
 </head>
 <body>
@@ -414,6 +439,7 @@ a.row.news .t{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp
   <symbol id="i-bot" viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="11" rx="4"/><path d="M12 4.5V8M9.5 13h.01M14.5 13h.01M9.8 16h4.4"/></symbol>
   <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
+  <symbol id="i-news" viewBox="0 0 24 24"><rect x="4" y="5" width="13" height="14" rx="2"/><path d="M17 9h2.5a.5.5 0 0 1 .5.5V17a2 2 0 0 1-2 2H6M7.5 9h6M7.5 12.5h6M7.5 16h3.5"/></symbol>
   <symbol id="i-nav" viewBox="0 0 24 24"><path d="M20 4 3.5 11.2l7 2.3 2.3 7z"/></symbol>
   <symbol id="i-send" viewBox="0 0 24 24"><path d="M20.5 3.5 10.5 13.5M20.5 3.5l-6.5 17-3.5-7-7-3.5z"/></symbol>
 </svg>
@@ -479,8 +505,8 @@ const SB_URL = 'https://tgrfwgzfjrwgkkvpgbqq.supabase.co';
 // chave pública (anon): pode ficar no navegador; quem protege os dados de cada usuário é o RLS do banco
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ3Z3pmanJ3Z2trdnBnYnFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2OTMxMDYsImV4cCI6MjExMDI2OTEwNn0.O2xXMY9NAQSeuxYmbOvT20u9UXaFp9Fr73W2HMcju4Q';
 const sb = window.supabase.createClient(SB_URL, SB_KEY);
-const CATS = {lembrete:'Novo lembrete',compromisso:'Compromisso próximo',vencer:'Conta a vencer',vencida:'Conta vencida',pendente:'Tarefa pendente',concluida:'Tarefa concluída',resposta:'Resposta da IA',resumo:'Resumo diário',sair:'Hora de sair',prioritario:'Alerta prioritário'};
-const defCats = () => Object.fromEntries(Object.keys(CATS).map(k=>[k,true]));
+const CATS = {lembrete:'Novo lembrete',compromisso:'Compromisso próximo',vencer:'Conta a vencer',vencida:'Conta vencida',pendente:'Tarefa pendente',concluida:'Tarefa concluída',resposta:'Resposta da IA',resumo:'Resumo diário',sair:'Hora de sair',noticia:'Notícia em destaque',prioritario:'Alerta prioritário'};
+const defCats = () => Object.fromEntries(Object.keys(CATS).map(k=>[k, k !== 'noticia']));
 const LOCAL = 'meudia.local';
 let session = null;
 const blankState = () => ({ name:'', sounds:true, quiet_start:'', quiet_end:'', event_adv:30, summary_time:'07:30', home:{addr:''}, work:{addr:''}, travel_on:true, travel_arrive:30, cats:defCats(), example:false, fired:{}, chat:[], chatLoaded:false, events:[], tasks:[], fin:[], rems:[] });
@@ -538,7 +564,7 @@ function saveProfile(){
 const TONES = {
   lembrete:[[880,0],[1318,.12]], compromisso:[[659,0],[880,.13],[988,.26]], vencer:[[523,0],[659,.15]],
   vencida:[[440,0],[349,.2]], pendente:[[740,0],[740,.16]], concluida:[[784,0],[1047,.1]],
-  resposta:[[1175,0]], resumo:[[523,0],[659,.12],[784,.24],[1047,.36]], prioritario:[[988,0],[988,.17],[988,.34]], sair:[[587,0],[784,.12],[988,.24],[784,.36]],
+  resposta:[[1175,0]], resumo:[[523,0],[659,.12],[784,.24],[1047,.36]], prioritario:[[988,0],[988,.17],[988,.34]], sair:[[587,0],[784,.12],[988,.24],[784,.36]], noticia:[[698,0],[880,.14]],
 };
 let actx = null;
 function play(cat, force){
@@ -894,6 +920,7 @@ function vSettings(){
     </div>
     <div class="foot">Contas avisam às 9h: um dia antes, no dia e no dia seguinte, se não estiverem pagas. Tarefas abertas avisam às 18h. No horário silencioso só tocam os lembretes que você marcou.</div>
   </section>
+  ${themeSection()}
   <section>
     <div class="sh">Tipos de alerta e sons</div>
     <div class="group">
@@ -1001,10 +1028,14 @@ function bindView(){
   });
   V.querySelectorAll('[data-route]').forEach(b => b.onclick = ev => { ev.stopPropagation(); openRoute(b.dataset.route); });
   V.querySelectorAll('[data-addr]').forEach(b => b.onclick = () => openAddr(b.dataset.addr));
+  V.querySelectorAll('[data-newsopen]').forEach(a => a.addEventListener('click', () => { markNewsSeen(a.dataset.newsopen); setTimeout(render, 300); }));
   V.querySelectorAll('[data-newstab]').forEach(b => b.onclick = () => { ui.newsTab = b.dataset.newstab; ui.newsPage = 0; render(); });
   V.querySelectorAll('[data-newspage]').forEach(b => b.onclick = () => { ui.newsPage = (ui.newsPage || 0) + Number(b.dataset.newspage); render(); });
   V.querySelectorAll('[data-wxtab]').forEach(b => b.onclick = () => { ui.wxTab = b.dataset.wxtab; ui.wxPage = 0; render(); });
   V.querySelectorAll('[data-wxpage]').forEach(b => b.onclick = () => { ui.wxPage = (ui.wxPage || 0) + Number(b.dataset.wxpage); render(); });
+  ['th-mode','th-dark','th-light'].forEach(id => { const el = $('#'+id); if (el) el.onchange = () => {
+    const c = themeCfg(); c[{ 'th-mode':'mode', 'th-dark':'dark', 'th-light':'light' }[id]] = el.value;
+    try { localStorage.setItem('meudia.theme', JSON.stringify(c)); } catch(e) {} applyTheme(); render(); }; });
   const st = $('#set-travel'); if (st) st.onchange = () => { S.travel_on = st.checked; saveProfile(); };
   const pa = $('#pref-arr'); if (pa) pa.onchange = () => { S.travel_arrive = Number(pa.value); saveProfile(); S.events.forEach(e => { if (e.date >= today() && e.place){ e.tsrc = ''; e.leave = null; } }); persist(sb.from('events').update({ travel_checked_at: null }).gte('date', today()).neq('place', '').then(r => { if (r.error) throw r.error; })); };
   const nm = $('#set-name'); if (nm) nm.oninput = () => { S.name = nm.value.trim().replace(/\s+/g, ' ').toLocaleUpperCase('pt-BR'); saveProfile(); };
@@ -1569,6 +1600,15 @@ function addrRow(k, label){
   const a = S[k];
   return `<button class="row" data-addr="${k}"><span class="main"><div class="t">${label}</div><div class="s">${a.addr ? esc(a.addr) : 'Toque para cadastrar o endereço'}</div></span>${ic('r','i chev')}</button>`;
 }
+function themeSection(){
+  const c = themeCfg(), hrs = [...Array(24)].map((_, h) => `${String(h).padStart(2,'0')}:00`);
+  const opt = (v, cur) => hrs.map(h => `<option value="${h}" ${h === cur ? 'selected' : ''}>${h}</option>`).join('');
+  return `<section><div class="sh">Aparência</div><div class="group">
+    <label class="row" for="th-mode"><span class="main t">Tema</span><select class="field-in" id="th-mode">${[['auto','Automático pelo horário'],['claro','Sempre claro'],['escuro','Sempre escuro'],['sistema','Igual ao celular']].map(([k,l]) => `<option value="${k}" ${c.mode === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+    ${c.mode === 'auto' ? `<label class="row" for="th-dark"><span class="main t">Escuro a partir de</span><select class="field-in" id="th-dark">${opt(0, c.dark)}</select></label>
+    <label class="row" for="th-light"><span class="main t">Claro a partir de</span><select class="field-in" id="th-light">${opt(0, c.light)}</select></label>` : ''}
+  </div><div class="foot">Vale para este aparelho.</div></section>`;
+}
 function travelSection(){
   return `<section><div class="sh">Hora de sair</div><div class="group">
     <div class="row"><span class="main"><div class="t">Avisar a hora de sair</div><div class="s">Para compromissos com local</div></span><label class="switch"><input type="checkbox" id="set-travel" ${S.travel_on ? 'checked' : ''} aria-label="Avisar a hora de sair"><span></span></label></div>
@@ -1694,16 +1734,25 @@ function mktStrip(){
   if (!mkt) { loadMarket(); return ''; }
   const m = mkt.moedas, j = mkt.juros;
   const cell = (lab, val, sub, cls) => `<span class="mk-c"><span class="mk-l">${lab}</span><b>${val}</b>${sub ? `<span class="mk-s ${cls || ''}">${sub}</span>` : ''}</span>`;
-  return `<button class="mk-strip" data-go="mercado" aria-label="Abrir mercado e notícias">
+  const top = latestNews(), seen = newsSeen(), isNew = top && top.at && top.at > seen;
+  return `<div class="mk-box"><button class="mk-strip" data-go="mercado" aria-label="Abrir mercado e notícias">
     ${m ? cell('Dólar', `R$ ${n2(m.usd.value)}`, pctTxt(m.usd.pct), pctCls(m.usd.pct)) : ''}
     ${m ? cell('Euro', `R$ ${n2(m.eur.value)}`, pctTxt(m.eur.pct), pctCls(m.eur.pct)) : ''}
     ${j ? cell('Selic', `${n2(j.selic.value)}%`, 'ao ano') : ''}
     ${j ? cell('IPCA', `${n2(j.ipca12.value)}%`, '12 meses') : ''}
-  </button>`;
+  </button>
+  ${top ? `<a class="mk-news" href="${esc(top.link)}" target="_blank" rel="noopener" data-newsopen="${esc(top.at || '')}">
+      ${isNew ? '<span class="mk-new">Nova</span>' : `<span class="mk-tag">${ic('news')}</span>`}<span class="mk-head">${esc(top.title)}</span>${ic('r','i chev')}</a>` : ''}
+  <button class="mk-more" data-go="mercado">Ver mais notícias e indicadores${ic('r','i')}</button></div>`;
 }
+// manchete mais nova (Brasil ou Economia) e o que a pessoa já viu (neste aparelho)
+function latestNews(){ const nw = mkt && mkt.noticias; if (!nw) return null; return [...(nw.brasil || []), ...(nw.economia || [])].sort((a, b) => String(b.at).localeCompare(String(a.at)))[0] || null; }
+const newsSeen = () => { try { return localStorage.getItem('meudia.newsseen') || ''; } catch(e) { return ''; } };
+const markNewsSeen = at => { try { if (at && at > newsSeen()) localStorage.setItem('meudia.newsseen', at); } catch(e) {} };
 const agoTxt = s => { if (!s) return ''; const m = Math.round((Date.now() - new Date(s).getTime()) / 60e3); return m < 60 ? `há ${Math.max(m, 1)} min` : m < 1440 ? `há ${Math.round(m / 60)} h` : new Date(s).toLocaleDateString('pt-BR'); };
 function vMercado(){
   if (!ui.newsTab) ui.newsTab = 'brasil';
+  { const t = latestNews(); if (t) markNewsSeen(t.at); }
   loadMarket();
   const head = `${back()}<div class="head"><div><h1 class="lt">Mercado e notícias</h1><div class="sub">${mkt && mkt.moedas ? 'Atualizado ' + agoTxt(mkt.moedas.updated_at) : 'Indicadores do dia'}</div></div>
     <button class="icon-btn" data-act="mkt-refresh" aria-label="Atualizar">${ic('refresh')}</button></div>`;
@@ -1839,7 +1888,7 @@ function openBudget(){
 
 /* ---------- alertas no celular (Web Push) ---------- */
 const VAPID_PUB = 'BDgwg6S3VsklJoKIWEaW5-z7AoGakq7C3AiwFy5TrjgAbpbB9Uq0o7DVFlDkSOLHkK7OYRed_DzTjZ5fz7t-39A';
-const PUSH_KINDS = ['lembrete','sair','compromisso','vencer','vencida','pendente','resumo'];
+const PUSH_KINDS = ['lembrete','sair','compromisso','vencer','vencida','pendente','resumo','noticia'];
 const PUSH_TXT = {
   ativo: 'Você recebe os alertas mesmo com o app fechado.',
   desligado: 'Toque em Ativar e permita as notificações.',
