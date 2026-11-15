@@ -1,7 +1,7 @@
 // Meu Dia IA · service worker
 // 1) Guarda a "casca" do app para abrir rápido e aguentar internet instável (nunca guarda dados do usuário).
 // 2) Recebe os alertas do servidor (Web Push) e mostra a notificação, mesmo com o app fechado.
-const CACHE = 'meudia-v15';
+const CACHE = 'meudia-v20';
 const SHELL = ['/', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png', '/logo.svg', '/favicon-32.png'];
 
 self.addEventListener('install', e => {
@@ -29,14 +29,17 @@ self.addEventListener('push', e => {
   const title = d.title || 'Meu Dia IA';
   e.waitUntil((async () => {
     const wins = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
-    wins.forEach(c => c.postMessage({ type: 'push', kind: d.kind, title, body: d.body }));
+    wins.forEach(c => c.postMessage({ type: 'push', kind: d.kind, ref: d.ref, title, body: d.body }));
     await self.registration.showNotification(title, {
       body: d.body || '',
       icon: '/icon-192.png',
       badge: '/icon-192.png',
       tag: d.tag || undefined,
       renotify: !!d.tag,
-      vibrate: [120, 60, 120],
+      // "Saia já": fica na tela até a pessoa tocar e vibra longo
+      requireInteraction: !!d.alarm,
+      silent: false,
+      vibrate: d.alarm ? [900, 250, 900, 250, 900, 250, 900, 250, 1500] : [120, 60, 120],
       data: { url: d.url || '/' },
     });
   })());

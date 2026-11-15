@@ -258,6 +258,12 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 /* assistente */
 .bot{background:var(--card);color:var(--accent)}
 .stamp{text-align:center;font-size:12px;color:var(--fg2);margin-top:-4px}
+.quota{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12.5px;color:var(--fg2);font-variant-numeric:tabular-nums;margin-top:-2px}
+.quota[hidden]{display:none}
+.quota .qb{width:72px;height:6px;border-radius:3px;background:var(--fill);overflow:hidden;flex:none}
+.quota .qb i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.quota.warn{color:var(--warn)}.quota.warn .qb i{background:var(--warn)}
+.quota.full{color:var(--bad);font-weight:600}.quota.full .qb i{background:var(--bad)}
 #msgs{flex:1;min-height:0;overflow-y:auto;margin:0 -4px;padding:4px}
 #msgs .in{display:flex;flex-direction:column;gap:10px}
 .b{max-width:84%;padding:12px 14px;border-radius:18px;font-size:14.5px;line-height:1.45;overflow-wrap:break-word}
@@ -281,6 +287,19 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 .composer .go{background:var(--fill);color:var(--fg)}
 
 /* folha (formulário) */
+#alarm{position:fixed;inset:0;z-index:95;background:var(--bad);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:24px 20px calc(24px + env(safe-area-inset-bottom,0px));text-align:center;animation:alarmpulse 1s ease-in-out infinite}
+#alarm[hidden]{display:none}
+#alarm .al-ic{width:84px;height:84px;border-radius:50%;background:rgba(255,255,255,.18);display:grid;place-items:center}
+#alarm .al-ic svg{width:44px;height:44px}
+#alarm .al-big{font-size:44px;font-weight:800;letter-spacing:-.02em;line-height:1}
+#alarm .al-t{font-size:20px;font-weight:700;max-width:420px}
+#alarm .al-s{font-size:16px;opacity:.92;max-width:420px}
+#alarm .al-go{display:flex;flex-direction:column;gap:10px;width:100%;max-width:380px;margin-top:10px}
+#alarm .al-go a,#alarm .al-go button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:54px;border-radius:16px;font-size:17px;font-weight:700}
+#alarm .al-waze{background:#fff;color:var(--bad);text-decoration:none}
+#alarm .al-stop{background:rgba(0,0,0,.22);color:#fff}
+@keyframes alarmpulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
+@media (prefers-reduced-motion:reduce){#alarm{animation:none}}
 #sheet{position:fixed;inset:0;z-index:60;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center}
 #sheet .pane{background:var(--bg);width:100%;max-width:560px;border-radius:24px 24px 0 0;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));max-height:92%;overflow-y:auto;animation:up .25s ease}
 @media (min-width:640px){#sheet{align-items:center}#sheet .pane{border-radius:24px}}
@@ -359,6 +378,35 @@ button:disabled{cursor:default}
 .route-big{display:flex;align-items:baseline;gap:10px;justify-content:center;padding:6px 0}
 .route-big span{font-size:16px;color:var(--fg2)} .route-big b{font-size:44px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .route-go{display:flex;flex-direction:column;gap:10px}
+.gps{border:1px solid var(--sep);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px;background:var(--card)}
+.gps-h{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.gps-h b{font-size:15px} .gps-h small{color:var(--fg2);font-size:12px}
+.gps-r{font-size:15px;line-height:1.45} .gps-r b{font-variant-numeric:tabular-nums}
+.gps-r .late{color:var(--bad);font-weight:700} .gps-r .ok{color:var(--good);font-weight:700}
+.gps-here{display:flex;gap:6px;align-items:flex-start;margin-bottom:6px}.gps-here svg{width:16px;height:16px;flex:none;margin-top:2px;color:var(--accent)}
+.gps-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:12px;background:var(--accent);color:#fff;font-weight:700;font-size:14px}
+.gps-btn[disabled]{opacity:.6}
+.plans-h{font-size:22px;font-weight:700;line-height:1.2;letter-spacing:-.01em}
+.plans-s{font-size:15px;color:var(--fg2);margin-top:6px;line-height:1.4}
+.plan{background:var(--card);border-radius:18px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px;position:relative}
+.plan.best{outline:2px solid var(--accent)}
+.plan-tag{position:absolute;top:-10px;right:14px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px}
+.plan-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.plan-n{font-size:18px;font-weight:700}
+.pl-price{display:inline-flex;align-items:baseline;gap:4px;font-variant-numeric:tabular-nums}
+.pl-price span{font-size:14px;color:var(--fg2)}.pl-price b{font-size:24px;font-weight:800}.pl-price small{font-size:13px;color:var(--fg2)}
+.plan ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px;font-size:14.5px;line-height:1.35}
+.plan li{display:flex;gap:8px}.plan li svg{width:18px;height:18px;flex:none;color:var(--good);margin-top:1px}
+.plan-go{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border-radius:14px;background:var(--accent);color:#fff;font-weight:700;font-size:16px;text-decoration:none}
+.plan-go svg{width:20px;height:20px}
+.plan-now{font-size:13.5px;color:var(--fg2);text-align:center}
+.dev{background:var(--card);border-radius:18px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.dev-logo{max-width:150px;max-height:56px;object-fit:contain}
+.dev-t{display:flex;flex-direction:column;gap:3px}.dev-t b{font-size:16px}.dev-t span{font-size:14px;color:var(--fg2)}
+.dev-zap{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:999px;background:#25D366;color:#fff;font-weight:700;font-size:15px;text-decoration:none}
+.dev-zap svg{width:20px;height:20px}
+button.quota{width:100%;background:none;border:0;padding:0;cursor:pointer;font:inherit}
+.quota .q-go{color:var(--accent);font-weight:600;white-space:nowrap}
 .btn-go{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:14px;background:var(--card);color:var(--fg);font-weight:600;font-size:16px;text-decoration:none;box-shadow:var(--shadow)}
 .btn-go.waze{background:#33CCFF;color:#062a3a}
 .btn-go .i{width:18px;height:18px}
@@ -520,6 +568,7 @@ button.row{width:100%;text-align:left;font:inherit;color:inherit;background:none
   <symbol id="i-ok" viewBox="0 0 24 24"><path d="m5.5 12.5 4.2 4.2L18.5 8"/></symbol>
   <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3.5 13.8 9l5.7 1.8-5.7 1.8L12 18.5l-1.8-5.9L4.5 10.8 10.2 9z"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 11.5a7.5 7 0 1 1 3.4 5.9L4 18.5l1.1-3.2A6.8 6.8 0 0 1 4 11.5Z"/><path d="M9 11.5h.01M12 11.5h.01M15 11.5h.01"/></symbol>
   <symbol id="i-bot" viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="11" rx="4"/><path d="M12 4.5V8M9.5 13h.01M14.5 13h.01M9.8 16h4.4"/></symbol>
   <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3M19.5 4.5v4h-4"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></symbol>
@@ -617,7 +666,7 @@ const MAP = {
 };
 async function loadAll(){
   const [p, ev, tk, fn, rm] = await Promise.all([
-    sb.from('profiles').select('name,sounds,sound_cats,quiet_start,quiet_end,event_advance_min,summary_time,home_addr,home_lat,home_lon,work_addr,work_lat,work_lon,travel_on,travel_arrive_min').maybeSingle(),
+    sb.from('profiles').select('name,sounds,sound_cats,quiet_start,quiet_end,event_advance_min,summary_time,home_addr,home_lat,home_lon,work_addr,work_lat,work_lon,travel_on,travel_arrive_min,plan').maybeSingle(),
     sb.from('events').select('*').order('date'),
     sb.from('tasks').select('*'),
     sb.from('finance_entries').select('*').order('date'),
@@ -628,7 +677,7 @@ async function loadAll(){
     S.name = p.data.name || ''; S.sounds = p.data.sounds; S.cats = Object.assign(defCats(), p.data.sound_cats || {});
     S.quiet_start = tm(p.data.quiet_start); S.quiet_end = tm(p.data.quiet_end); S.event_adv = p.data.event_advance_min ?? 30; S.summary_time = tm(p.data.summary_time) || '07:30';
     S.home = { addr:p.data.home_addr || '', lat:p.data.home_lat, lon:p.data.home_lon }; S.work = { addr:p.data.work_addr || '', lat:p.data.work_lat, lon:p.data.work_lon };
-    S.travel_on = p.data.travel_on !== false; S.travel_arrive = p.data.travel_arrive_min || 30;
+    S.travel_on = p.data.travel_on !== false; S.travel_arrive = p.data.travel_arrive_min || 30; S.plan = p.data.plan || 'free';
   }
   S.events = ev.data.map(MAP.ev.to); S.tasks = tk.data.map(MAP.task.to); S.fin = fn.data.map(MAP.fin.to); S.rems = rm.data.map(MAP.rem.to);
 }
@@ -667,6 +716,71 @@ function play(cat, force){
     });
   } catch(e) {}
 }
+
+/* ---------- alarme "Saia já": som alto e insistente ---------- */
+// sirene de dois tons gerada no aparelho (onda quadrada: soa mais alto). Toca por <audio>, que no iPhone
+// ignora a chave de silencioso enquanto o app está aberto.
+let alarmEl = null, alarmReady = false, alarmUrl = null, alarmVib = null, alarmStopT = null;
+function sirenUrl(){
+  if (alarmUrl) return alarmUrl;
+  const sr = 22050, n = sr * 2, buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
+  const w = (o, t) => [...t].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+  w(0,'RIFF'); v.setUint32(4, 36 + n * 2, true); w(8,'WAVE'); w(12,'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36,'data'); v.setUint32(40, n * 2, true);
+  let ph = 0;
+  for (let i = 0; i < n; i++){
+    const t = i / sr, k = t % 0.25, f = Math.floor(t / 0.25) % 2 ? 1450 : 960;
+    ph += 2 * Math.PI * f / sr;
+    const env = k < 0.01 ? k / 0.01 : k > 0.22 ? 0 : 1;
+    v.setInt16(44 + i * 2, Math.sign(Math.sin(ph)) * env * 31000, true);
+  }
+  return alarmUrl = URL.createObjectURL(new Blob([buf], { type:'audio/wav' }));
+}
+// o celular só libera o som depois de um toque na tela: preparo no primeiro toque
+function unlockAlarm(){
+  if (alarmReady) return;
+  try {
+    alarmEl = alarmEl || Object.assign(new Audio(sirenUrl()), { loop:true, preload:'auto' });
+    alarmEl.muted = true;
+    alarmEl.play().then(() => { if (!alarmEl.dataset.on){ alarmEl.pause(); alarmEl.currentTime = 0; } alarmEl.muted = false; alarmReady = true; }).catch(() => { alarmEl.muted = false; });
+  } catch(e) {}
+}
+document.addEventListener('pointerdown', unlockAlarm, true);
+const alarmAck = () => { try { return JSON.parse(localStorage.getItem('meudia.alarm') || '{}'); } catch(e) { return {}; } };
+function alarmStop(e){
+  if (e){ const a = alarmAck(); a[e.id] = e.leave; try { localStorage.setItem('meudia.alarm', JSON.stringify(a)); } catch(x) {} }
+  if (alarmEl){ delete alarmEl.dataset.on; alarmEl.pause(); alarmEl.currentTime = 0; }
+  clearInterval(alarmVib); clearTimeout(alarmStopT); if (navigator.vibrate) navigator.vibrate(0);
+  const el = $('#alarm'); if (el){ el.hidden = true; el.innerHTML = ''; }
+}
+function alarmFire(e, test){
+  let el = $('#alarm');
+  if (!el){ el = document.createElement('div'); el.id = 'alarm'; el.setAttribute('role', 'alertdialog'); el.setAttribute('aria-label', 'Hora de sair'); document.body.appendChild(el); }
+  const arrive = e ? `${e.time}` : '';
+  el.innerHTML = `<div class="al-ic">${ic('nav')}</div><div class="al-big">Saia já!</div>
+    ${e ? `<div class="al-t">${esc(e.title)}</div><div class="al-s">${e.tmin ? `${e.tmin} min de viagem até ${esc(e.plabel || e.place)}. ` : ''}Começa às ${arrive}.</div>` : '<div class="al-s">Teste do alarme. É assim que ele toca na hora de sair.</div>'}
+    <div class="al-go">${e ? `<a class="al-waze" href="${wazeUrl(e)}" target="_blank" rel="noopener" data-al="waze">${ic('nav')}Abrir no Waze</a>` : ''}
+      <button class="al-stop" data-al="stop">Parar alarme</button></div>`;
+  el.hidden = false;
+  el.querySelectorAll('[data-al]').forEach(b => b.onclick = () => alarmStop(test ? null : e));
+  try {
+    alarmEl = alarmEl || Object.assign(new Audio(sirenUrl()), { loop:true, preload:'auto' });
+    alarmEl.dataset.on = '1'; alarmEl.muted = false; alarmEl.volume = 1; alarmEl.currentTime = 0;
+    alarmEl.play().catch(() => play('sair', true));
+  } catch(x) { play('sair', true); }
+  if (navigator.vibrate){ navigator.vibrate([700, 250, 700, 250, 700]); clearInterval(alarmVib); alarmVib = setInterval(() => navigator.vibrate([700, 250, 700, 250, 700]), 3000); }
+  clearTimeout(alarmStopT); alarmStopT = setTimeout(() => alarmStop(null), test ? 6000 : 3 * 60e3); // não toca para sempre
+}
+// confere a cada 15 s se chegou a hora exata de sair de algum compromisso
+function alarmCheck(){
+  if (!session || !S.travel_on || ($('#alarm') && !$('#alarm').hidden)) return;
+  const now = Date.now(), ack = alarmAck();
+  const e = S.events.find(x => hasLeave(x) && ack[x.id] !== x.leave && new Date(x.leave).getTime() <= now && new Date(x.leave).getTime() > now - 10 * 60e3
+    && new Date(`${x.date}T${x.time}`).getTime() > now);
+  if (e) alarmFire(e);
+}
+setInterval(alarmCheck, 15e3);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') alarmCheck(); });
 
 /* ---------- aviso rápido ---------- */
 let toastT;
@@ -1033,6 +1147,16 @@ function vSettings(){
     <div class="foot">Seus dados ficam na nuvem, protegidos pelo seu login. Só você tem acesso a eles.</div>
   </section>
   <section>
+    <div class="sh">Seu plano</div>
+    <div class="group">
+      <button class="row" data-plans="ajustes"><span class="main"><div class="t">Plano ${PLAN_NAME[S.plan || 'free'] === 'Free' ? 'grátis' : PLAN_NAME[S.plan] || ''}</div><div class="s">${(S.plan || 'free') === 'free' ? 'Toque para conhecer o Plus e o Família' : 'Obrigado por assinar o Meu Dia IA'}</div></span>${ic('r','i chev')}</button>
+    </div>
+  </section>
+  <section>
+    <div class="sh">Sobre</div>
+    ${devCard()}
+  </section>
+  <section>
     <div class="sh">Conta</div>
     <div class="group">
       <div class="row"><span class="main"><div class="t">E-mail</div></span><span class="s" style="color:var(--fg2);font-size:14px;overflow:hidden;text-overflow:ellipsis">${esc(session ? session.user.email : '')}</span></div>
@@ -1132,6 +1256,7 @@ function bindView(){
   ['th-mode','th-dark','th-light'].forEach(id => { const el = $('#'+id); if (el) el.onchange = () => {
     const c = themeCfg(); c[{ 'th-mode':'mode', 'th-dark':'dark', 'th-light':'light' }[id]] = el.value;
     try { localStorage.setItem('meudia.theme', JSON.stringify(c)); } catch(e) {} applyTheme(); render(); }; });
+  const at = $('#alarm-test'); if (at) at.onclick = () => alarmFire(null, true);
   const st = $('#set-travel'); if (st) st.onchange = () => { S.travel_on = st.checked; saveProfile(); };
   const pa = $('#pref-arr'); if (pa) pa.onchange = () => { S.travel_arrive = Number(pa.value); saveProfile(); S.events.forEach(e => { if (e.date >= today() && e.place){ e.tsrc = ''; e.leave = null; } }); persist(sb.from('events').update({ travel_checked_at: null }).gte('date', today()).neq('place', '').then(r => { if (r.error) throw r.error; })); };
   const nm = $('#set-name'); if (nm) nm.oninput = () => { S.name = nameCase(nm.value); saveProfile(); };
@@ -1243,11 +1368,23 @@ function openEntity(k, id){
       if (k==='ev'){ const g = v.place_geo; delete v.place_geo; if (g){ v.plat = g.lat; v.plon = g.lon; v.plabel = g.label; v.pgeoSet = true; } else if (it && v.place !== it.place){ v.plat = null; v.plon = null; v.plabel = ''; } }
       if (k==='fin' && !it) v.paid = v.type!=='conta';
       if (!it) v.done = false;
-      if (it) { const prev = {...it}; Object.assign(it, v); try { await dbSave(k, it, false); } catch(e) { Object.assign(it, prev); throw e; } if (k==='rem') delete S.fired[it.id]; }
+      let synced = '';
+      if (it) { const prev = {...it}; Object.assign(it, v); try { await dbSave(k, it, false); } catch(e) { Object.assign(it, prev); throw e; } if (k==='rem') delete S.fired[it.id];
+        // lembrete e compromisso com o mesmo nome, no mesmo dia e hora: mudar um muda o outro
+        if ((k==='rem' || k==='ev') && (prev.date !== it.date || prev.time !== it.time)){
+          const norm = t => String(t || '').trim().toLocaleLowerCase('pt-BR');
+          const twin = (k==='rem' ? S.events : S.rems).find(x => norm(x.title) === norm(prev.title) && x.date === prev.date && x.time === prev.time && !x.done);
+          if (twin){
+            const old = {...twin}; twin.date = it.date; twin.time = it.time;
+            try { await dbSave(k==='rem' ? 'ev' : 'rem', twin, false); synced = k==='rem' ? ' O compromisso também mudou de horário.' : ' O lembrete também mudou de horário.';
+              if (k==='rem' && twin.place){ twin.leave = null; twin.tsrc = ''; setTimeout(() => calcTravel(twin, true), 0); } }
+            catch(e) { Object.assign(twin, old); }
+          }
+        } }
       else { const rec = await dbSave(k, v, true); arr.push(rec); play(k==='rem'?'lembrete':'resposta'); if (k==='ev') it_new = rec; }
       const evT = it || it_new; if (evT) delete evT.pgeoSet; if (k==='ev' && evT && evT.place){ if (it){ evT.leave = null; evT.tsrc = ''; } setTimeout(() => calcTravel(evT, true), 0); }
       if (k==='ev'){ const c = conflictWith(v.date, v.time, it && it.id); if (c) return `Atenção: conflita com <b>${esc(c.title)}</b> às ${c.time}`; }
-      return it ? 'Alterações salvas' : `${NAMES[k][1]} adicionado`.replace('Tarefa adicionado','Tarefa adicionada');
+      return it ? 'Alterações salvas.' + synced : `${NAMES[k][1]} adicionado`.replace('Tarefa adicionado','Tarefa adicionada');
     },
     onDelete: it ? async () => { await dbDel(k, it.id); arr.splice(arr.indexOf(it),1); } : null,
   });
@@ -1263,6 +1400,7 @@ function vAssist(){
   <div class="chead"><span class="round bot" aria-hidden="true">${ic('bot')}</span><h1 class="ctitle">Assistente IA</h1>
     <button class="round" data-act="clear-chat" aria-label="Nova conversa">${ic('refresh')}</button></div>
   <div class="stamp">Hoje, ${pad(n.getHours())}:${pad(n.getMinutes())}</div>
+  ${quotaHtml()}
   <div id="msgs"><div class="in" id="msgs-in"></div></div>
   <form class="askbox composer" id="chat-form">
     <input id="chat-in" placeholder="Mensagem…" autocomplete="off" aria-label="Mensagem para o assistente" maxlength="2000">
@@ -1282,7 +1420,7 @@ async function loadChat(){
 let chatP = null, typing = false, busy = false;
 const ensureChat = () => chatP || (chatP = loadChat().catch(e => { console.error(e); S.chatLoaded = true; }));
 function welcome(){
-  if (!S.chat.length) S.chat.push({ id:'local-hello', role:'ia', text:`Oi, ${(S.name || 'tudo bem').split(' ')[0]}! O que você quer organizar? Eu confirmo com você antes de salvar qualquer coisa.`, chips:SUGS });
+  if (!S.chat.length) S.chat.push({ id:'local-hello', role:'ia', text:`Oi, ${S.name ? firstName() : 'tudo bem'}! O que você quer organizar? Eu confirmo com você antes de salvar qualquer coisa.`, chips:SUGS });
 }
 function bindChat(){
   $('#chat-form').onsubmit = e => { e.preventDefault(); const i = $('#chat-in'); send(i.value); i.value = ''; };
@@ -1301,7 +1439,72 @@ async function callAssistant(body){
     return data || { text: 'Sem resposta do assistente.', failed: true };
   } catch(e) { return { text: 'Sem conexão com a internet.', failed: true }; }
 }
+/* limite diário do plano grátis: "Você usou 42% do seu limite" */
+const quotaGet = () => { try { const q = JSON.parse(localStorage.getItem('meudia.quota') || 'null'); return q && Date.now() - q.at < 24 * 3600e3 ? q : null; } catch(e) { return null; } };
+function quotaHtml(){
+  const q = quotaGet(); if (!q || !q.limit) return '<div class="quota" id="quota" hidden></div>';
+  const pct = Math.min(100, Math.round(q.used / q.limit * 100));
+  return `<button class="quota ${pct >= 100 ? 'full' : pct >= 75 ? 'warn' : ''}" id="quota" data-plans="limite" aria-label="Limite do plano grátis. Ver planos">
+    <span class="qb" aria-hidden="true"><i style="width:${pct}%"></i></span>
+    <span>Você usou ${pct}% do limite grátis · ${q.used} de ${q.limit} msg <span class="q-go">Ver planos</span></span></button>`;
+}
+function quotaSet(r){
+  if (r.failed) return;
+  const old = quotaGet();
+  if (!r.quota){ try { localStorage.removeItem('meudia.quota'); } catch(e) {} }
+  else {
+    try { localStorage.setItem('meudia.quota', JSON.stringify({ ...r.quota, at: Date.now() })); } catch(e) {}
+    const pct = Math.round(r.quota.used / r.quota.limit * 100), before = old ? Math.round(old.used / old.limit * 100) : 0;
+    const mark = [100, 75, 50].find(m => pct >= m && before < m);
+    if (mark >= 75) r.chips = [...(r.chips || []), { label: mark === 100 ? 'Conhecer os planos' : 'Ver planos com mais mensagens', act:'plans' }];
+    if (mark === 100) toast(`Você usou 100% do limite do plano grátis (${r.quota.limit} mensagens em 24 h).`);
+    else if (mark) toast(`Você usou ${pct}% do seu limite do plano grátis. Restam ${r.quota.limit - r.quota.used} mensagens.`);
+  }
+  const el = $('#quota'); if (el) el.outerHTML = quotaHtml();
+}
+/* ---------- planos (venda da assinatura) e contato do desenvolvedor ---------- */
+const DEV = { empresa:'ELO Sistemas de Informação', nome:'Eduardo da Silva Lourenço', papel:'Desenvolvedor', zap:'5522992369975', zapTxt:'(22) 99236-9975' };
+const zapUrl = txt => `https://wa.me/${DEV.zap}?text=${encodeURIComponent(txt)}`;
+function devCard(){
+  return `<div class="dev">
+    <img class="dev-logo" src="/logo_elo.png" alt="${DEV.empresa}" onerror="this.remove()">
+    <div class="dev-t"><b>${DEV.empresa}</b><span>Contato: ${DEV.papel} · ${DEV.nome}</span></div>
+    <a class="dev-zap" href="${zapUrl('Olá, Eduardo! Vim pelo app Meu Dia IA.')}" target="_blank" rel="noopener">${ic('chat')}WhatsApp ${DEV.zapTxt}</a>
+  </div>`;
+}
+function openPlans(from){
+  const el = $('#sheet'), q = quotaGet(), free = (S.plan || 'free') === 'free';
+  const lim = (q && q.limit) || 24, mail = session ? session.user.email : '';
+  const li = t => `<li>${ic('ok')}<span>${t}</span></li>`;
+  const ask = plano => zapUrl(`Olá, Eduardo! Quero assinar o Meu Dia IA ${plano}. Meu e-mail no app: ${mail}`);
+  const head = from === 'limite' && q && q.used >= q.limit
+    ? ['Suas mensagens de hoje acabaram', `No plano grátis são ${lim} mensagens ao assistente a cada 24 horas. Com o Plus você continua agora, sem esperar.`]
+    : ['Seu dia organizado, sem limite apertado', 'Fale com o seu secretário pessoal quantas vezes precisar: ele organiza a agenda, registra contas e compromissos e avisa a hora de sair.'];
+  el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="Planos">
+    <div class="bar"><span style="min-width:70px"></span><b>Planos</b><button class="save" data-x>Fechar</button></div>
+    <div class="body">
+      <div><div class="plans-h">${head[0]}</div><div class="plans-s">${head[1]}</div></div>
+      <div class="plan">
+        <div class="plan-top"><span class="plan-n">Plus</span>${`<span class="pl-price"><span>R$</span><b>${brl(PLAN_PRICE.plus)}</b><small>/mês</small></span>`}</div>
+        <ul>${li(`<b>300 mensagens</b> ao assistente por dia (no grátis são ${lim})`)}${li('Organize o dia e registre contas e compromissos falando')}${li('Hora de sair com alarme "Saia já" e atalho para o Waze')}${li('Memória: ele guarda o que você pedir para lembrar')}</ul>
+        <a class="plan-go" href="${ask('Plus')}" target="_blank" rel="noopener">${ic('chat')}Assinar o Plus pelo WhatsApp</a>
+      </div>
+      <div class="plan best"><span class="plan-tag">Melhor custo</span>
+        <div class="plan-top"><span class="plan-n">Família</span>${`<span class="pl-price"><span>R$</span><b>${brl(PLAN_PRICE.familia)}</b><small>/mês</small></span>`}</div>
+        <ul>${li('<b>Até 5 pessoas</b>, cada uma com tudo do Plus')}${li(`Sai por <b>R$ ${brl(Math.round(PLAN_PRICE.familia / 5))}</b> por pessoa ao mês`)}${li('Cada um com a própria agenda, finanças e conversas, separadas e privadas')}</ul>
+        <a class="plan-go" href="${ask('Família')}" target="_blank" rel="noopener">${ic('chat')}Assinar o Família pelo WhatsApp</a>
+      </div>
+      <div class="plan-now">${free ? `Você está no plano grátis: ${lim} mensagens a cada 24 h. Agenda, tarefas, finanças e lembretes continuam liberados.` : `Seu plano atual: ${PLAN_NAME[S.plan] || S.plan}.`}<br>O pagamento é combinado pelo WhatsApp e o plano é liberado na sua conta em seguida.</div>
+      ${devCard()}
+    </div></div>`;
+  el.hidden = false; delete el.dataset.route;
+  const close = () => { el.hidden = true; el.innerHTML = ''; };
+  el.onclick = ev => { if (ev.target === el) close(); };
+  el.querySelector('[data-x]').onclick = close;
+}
+document.addEventListener('click', ev => { const b = ev.target.closest('[data-plans]'); if (b) openPlans(b.dataset.plans); });
 function addReply(r){
+  quotaSet(r);
   S.chat.push({ id: r.id || 'l' + uid(), role:'ia', text: r.text || r.error || 'Pode repetir?', action: r.action || null, state: r.action ? 'pending' : null, chips: r.chips || null });
   if (S.chat.length > 80) S.chat = S.chat.slice(-80);
   if (r.warning) toast(esc(r.warning));
@@ -1336,6 +1539,9 @@ function renderChat(){
   box.querySelectorAll('[data-chip]').forEach(b => b.onclick = async () => {
     const [mid, i] = b.dataset.chip.split(':'); const m = S.chat.find(x => x.id === mid); const c = m.chips[Number(i)];
     if (typeof c === 'string') return send(c);
+    if (c.act === 'go'){ if (c.date){ ui.agendaSel = c.date; ui.weekOff = Math.round((weekStart(fromIso(c.date)) - weekStart(new Date())) / (7 * 864e5)); const d = fromIso(c.date), n = new Date(); ui.monthOff = (d.getFullYear() - n.getFullYear()) * 12 + d.getMonth() - n.getMonth(); } go(c.view || 'agenda'); return; }       // atalhos (não somem)
+    if (c.act === 'route'){ openRoute(c.ref); return; }
+    if (c.act === 'plans'){ openPlans('limite'); return; }
     m.chips = null;
     const ev = S.events.find(e => e.id === c.ref);
     if (!ev){ addReply({ text:'Esse compromisso não existe mais.' }); return; }
@@ -1711,6 +1917,7 @@ function openRoute(id){
     <div class="bar"><span style="min-width:70px"></span><b>Como chegar</b><button class="save" data-x>Fechar</button></div>
     <div class="body">
       <div><div class="route-t">${esc(e.title)}</div><div class="route-s">${esc(when)} · ${esc(e.place)}</div>${e.plabel ? `<div class="route-s">No mapa: ${esc(e.plabel)}</div>` : ''}</div>
+      ${e.date >= today() && !e.done ? `<div class="gps" id="gps-box"><div class="gps-h"><b>Daqui, agora</b><small>pelo GPS do celular</small></div><div class="gps-r" id="gps-r">${gpsTxt(e)}</div><button class="gps-btn" data-gps>${ic('nav')}${gpsMem[e.id] ? 'Atualizar minha localização' : 'Usar minha localização'}</button></div>` : ''}
       ${info}
       <div class="route-go">
         <a class="btn-go waze" href="${wazeUrl(e)}" target="_blank" rel="noopener">${ic('nav')}Abrir no Waze</a>
@@ -1724,6 +1931,70 @@ function openRoute(id){
   el.querySelector('[data-x]').onclick = close;
   const rc = el.querySelector('[data-recalc]'); if (rc) rc.onclick = () => { rc.textContent = 'Calculando…'; rc.disabled = true; calcTravel(e); };
   if (!e.tsrc && e.date >= today()) calcTravel(e, true);
+  const gb = el.querySelector('[data-gps]');
+  if (gb){
+    gb.onclick = () => gpsEta(e, true);
+    // já autorizou a localização e o compromisso é hoje: calcula sozinho
+    const m = gpsMem[e.id];
+    if (!m || (!m.wait && Date.now() - m.at > 2 * 60e3)){
+      const go = () => gpsEta(e, false);
+      if (navigator.permissions && navigator.permissions.query) navigator.permissions.query({ name:'geolocation' }).then(st => { if (st.state !== 'denied') go(); else { gpsMem[e.id] = { err:GPS_OFF, at:Date.now() }; const b = document.getElementById('gps-r'); if (b) b.innerHTML = gpsTxt(e); } }, go);
+      else go();
+    }
+  }
+}
+/* ---------- GPS: tempo até o local saindo de onde a pessoa está agora ---------- */
+const gpsMem = {};
+function gpsTxt(e){
+  const m = gpsMem[e.id];
+  if (!m) return 'Toque no botão para eu ver exatamente onde você está e calcular a que horas você chega.';
+  if (m.wait) return 'Localizando você pelo GPS…';
+  if (m.err) return esc(m.err);
+  const r = m.r;
+  const here = r.here_label ? `<div class="gps-here">${ic('nav')}<span>Você está em <b>${esc(r.here_label)}</b></span></div>` : '';
+  if (r.status === 'chegou') return here + '<span class="ok">Você já está no local.</span>';
+  if (r.status !== 'ok') return 'Não encontrei o local no mapa. Edite o compromisso com rua, número e cidade.';
+  const prec = m.acc ? ` · precisão de ${m.acc < 1000 ? Math.round(m.acc) + ' m' : n1(m.acc / 1000) + ' km'}` : '';
+  const viagem = `${r.travel_min} min de viagem (${n1(r.km)} km)`;
+  const start = new Date(r.start_at).getTime(), now = Date.now();
+  let txt = here + `Saindo agora, você chega às <b>${hm(r.arrive_at)}</b>. ${viagem}.`;
+  if (start < now) txt += ' O compromisso já começou.';
+  else if (r.late_min > 0) txt += ` <span class="late">Chega ${r.late_min} min atrasado.</span>`;
+  else if (new Date(r.leave_by).getTime() <= now + 60e3) txt += ` <span class="late">Saia já para chegar ${S.travel_arrive} min antes.</span>`;
+  else if (e.date === today()) txt += ` <span class="ok">Para chegar ${S.travel_arrive} min antes, saia até ${hm(r.leave_by)}.</span>`;
+  else txt += ` Isso vale para agora; perto do dia eu recalculo de onde você estiver.`;
+  return txt + `<br><small style="color:var(--fg2)">${r.source === 'tomtom' ? 'Com o trânsito de agora' : 'Estimativa sem trânsito, com folga'}${prec} · ${hm(new Date(m.at).toISOString())}</small>`;
+}
+const n1 = v => Number(v).toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+const GPS_OFF = 'Localização bloqueada. Libere a localização para o Meu Dia IA nos ajustes do celular (Safari ou Chrome → Localização → Permitir) e toque de novo.';
+function gpsEta(e, ask){
+  const paint = () => { const b = document.getElementById('gps-r'); if (b && $('#sheet').dataset.route === e.id) b.innerHTML = gpsTxt(e); };
+  if (!navigator.geolocation){ gpsMem[e.id] = { err:'Este aparelho não informa a localização.', at:Date.now() }; paint(); return; }
+  const prev = gpsMem[e.id];
+  gpsMem[e.id] = { wait:true, at:Date.now() }; paint();
+  const onPos = async pos => {
+    const lat = pos.coords.latitude, lon = pos.coords.longitude, acc = pos.coords.accuracy;
+    try { localStorage.setItem('meudia.wxok', '1'); localStorage.setItem('meudia.wxpos', JSON.stringify({ lat, lon })); localStorage.setItem('meudia.locat', String(Date.now())); } catch(x) {}
+    sb.rpc('save_location', { p_lat: lat, p_lon: lon });
+    const { data, error } = await sb.functions.invoke('rota', { body:{ action:'eta', id:e.id, lat, lon } });
+    if (error || !data || data.error){ gpsMem[e.id] = { err:'Não consegui calcular o trajeto agora. Tente de novo.', at:Date.now() }; paint(); return; }
+    gpsMem[e.id] = { r:data, acc, at:Date.now() };
+    // compromisso nas próximas 4 h: a hora de sair passa a contar de onde você está
+    const st = new Date(data.start_at).getTime();
+    if (data.status === 'ok' && st > Date.now() && st - Date.now() < 4 * 3600e3){ e.tmin = data.travel_min; e.leave = new Date(Math.floor(new Date(data.leave_by).getTime() / 60e3) * 60e3).toISOString(); e.torig = 'atual'; e.tsrc = data.source; openRoute(e.id); return; }
+    paint();
+    const gb = document.querySelector('[data-gps]'); if (gb) gb.innerHTML = `${ic('nav')}Atualizar minha localização`;
+  };
+  const onErr = err => {
+    gpsMem[e.id] = err.code === 1 ? { err:GPS_OFF, at:Date.now() }
+      : (prev && prev.r ? prev : { err:'Não consegui pegar o sinal do GPS. Tente perto de uma janela ou ao ar livre.', at:Date.now() });
+    if (!ask && err.code === 1){ try { localStorage.removeItem('meudia.wxok'); } catch(x) {} }
+    paint();
+  };
+  navigator.geolocation.getCurrentPosition(onPos, err => {
+    if (err.code === 1) return onErr(err);
+    navigator.geolocation.getCurrentPosition(onPos, onErr, { enableHighAccuracy:false, timeout:15000, maximumAge:5 * 60e3 });
+  }, { enableHighAccuracy:true, timeout:15000, maximumAge:0 });
 }
 // cartão no Início: próxima saída nas próximas 18 h
 function nextLeave(){
@@ -1755,7 +2026,8 @@ function travelSection(){
     <label class="row" for="pref-arr"><span class="main t">Chegar antes</span>
       <select class="field-in" id="pref-arr">${[10,15,30,45,60].map(v => `<option value="${v}" ${Number(S.travel_arrive) === v ? 'selected' : ''}>${v} min</option>`).join('')}</select></label>
     ${addrRow('home', 'Casa')}${addrRow('work', 'Trabalho')}
-  </div><div class="foot">Calculo o tempo de viagem com trânsito e aviso no celular 10 min antes da hora de sair, com o atalho para o Waze. Em dia útil das 10h às 18h considero a saída do Trabalho; nos outros horários, de Casa. Se você abriu o app nas últimas 2 horas, uso onde você está. Cada compromisso pode escolher "Sair de".</div></section>`;
+    <button class="row" id="alarm-test"><span class="main"><div class="t">Testar o alarme "Saia já"</div><div class="s">Toca alto por alguns segundos</div></span>${ic('r','i chev')}</button>
+  </div><div class="foot">Na hora exata de sair, o app dispara um alarme alto e insistente até você tocar em parar. Com o app aberto, ele toca mesmo com o celular no silencioso (iPhone). Com o app fechado, chega a notificação com o som do celular. Calculo o tempo de viagem com trânsito e aviso no celular 10 min antes da hora de sair, com o atalho para o Waze. Em dia útil das 10h às 18h considero a saída do Trabalho; nos outros horários, de Casa. Se você abriu o app nas últimas 2 horas, uso onde você está. Cada compromisso pode escolher "Sair de".</div></section>`;
 }
 function openAddr(k){
   const label = k === 'home' ? 'Casa' : 'Trabalho';
@@ -2341,6 +2613,7 @@ async function testPush(){
 }
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => {
   const d = e.data || {};
+  if (d.type === 'push' && d.kind === 'sairja'){ const ev = S.events.find(x => x.id === d.ref); alarmFire(ev || null); return; }
   if (d.type === 'push' && document.visibilityState === 'visible' && TONES[d.kind]) play(d.kind);
   if (d.type === 'open' && d.url){ const r = new URL(d.url, location.origin).searchParams.get('rota'); if (r) openRoute(r); }
 });
