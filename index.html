@@ -399,6 +399,7 @@ button:disabled{cursor:default}
 .plan li{display:flex;gap:8px}.plan li svg{width:18px;height:18px;flex:none;color:var(--good);margin-top:1px}
 .plan-go{display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;border-radius:14px;background:var(--accent);color:#fff;font-weight:700;font-size:16px;text-decoration:none}
 .plan-go svg{width:20px;height:20px}
+.plan-yr{font-size:13.5px;color:var(--fg2);text-align:center;font-variant-numeric:tabular-nums}.plan-yr a{color:var(--accent);font-weight:600}
 .plan-now{font-size:13.5px;color:var(--fg2);text-align:center}
 .dev{background:var(--card);border-radius:18px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
 .dev-logo{max-width:150px;max-height:56px;object-fit:contain}
@@ -1486,13 +1487,15 @@ function openPlans(from){
       <div><div class="plans-h">${head[0]}</div><div class="plans-s">${head[1]}</div></div>
       <div class="plan">
         <div class="plan-top"><span class="plan-n">Plus</span>${`<span class="pl-price"><span>R$</span><b>${brl(PLAN_PRICE.plus)}</b><small>/mês</small></span>`}</div>
-        <ul>${li(`<b>300 mensagens</b> ao assistente por dia (no grátis são ${lim})`)}${li('Organize o dia e registre contas e compromissos falando')}${li('Hora de sair com alarme "Saia já" e atalho para o Waze')}${li('Memória: ele guarda o que você pedir para lembrar')}</ul>
+        <ul>${li(`<b>100 mensagens por dia</b>: anote tudo, a qualquer hora, sem contar (no grátis são ${lim}, cerca de 1 por hora)`)}${li('Organize o dia e registre contas e compromissos falando')}${li('Hora de sair com alarme "Saia já" e atalho para o Waze')}${li('Memória: ele guarda o que você pedir para lembrar')}</ul>
         <a class="plan-go" href="${ask('Plus')}" target="_blank" rel="noopener">${ic('chat')}Assinar o Plus pelo WhatsApp</a>
+        <div class="plan-yr">ou <b>R$ ${brl(PLAN_YEAR.plus)} por ano</b>: 2 meses grátis · <a href="${ask('Plus anual')}" target="_blank" rel="noopener">assinar o anual</a></div>
       </div>
-      <div class="plan best"><span class="plan-tag">Melhor custo</span>
+      <div class="plan best"><span class="plan-tag">Para o casal</span>
         <div class="plan-top"><span class="plan-n">Família</span>${`<span class="pl-price"><span>R$</span><b>${brl(PLAN_PRICE.familia)}</b><small>/mês</small></span>`}</div>
-        <ul>${li('<b>Até 5 pessoas</b>, cada uma com tudo do Plus')}${li(`Sai por <b>R$ ${brl(Math.round(PLAN_PRICE.familia / 5))}</b> por pessoa ao mês`)}${li('Cada um com a própria agenda, finanças e conversas, separadas e privadas')}</ul>
+        <ul>${li('<b>2 pessoas</b>, cada uma com 100 mensagens por dia e tudo do Plus')}${li(`<b>R$ ${brl(Math.round(PLAN_PRICE.familia / 2))}</b> por pessoa: economize ${Math.round((1 - PLAN_PRICE.familia / (2 * PLAN_PRICE.plus)) * 100)}% em relação a 2 assinaturas Plus`)}${li('Cada um com a própria agenda, finanças e conversas, separadas e privadas')}</ul>
         <a class="plan-go" href="${ask('Família')}" target="_blank" rel="noopener">${ic('chat')}Assinar o Família pelo WhatsApp</a>
+        <div class="plan-yr">ou <b>R$ ${brl(PLAN_YEAR.familia)} por ano</b>: 2 meses grátis · <a href="${ask('Família anual')}" target="_blank" rel="noopener">assinar o anual</a></div>
       </div>
       <div class="plan-now">${free ? `Você está no plano grátis: ${lim} mensagens a cada 24 h. Agenda, tarefas, finanças e lembretes continuam liberados.` : `Seu plano atual: ${PLAN_NAME[S.plan] || S.plan}.`}<br>O pagamento é combinado pelo WhatsApp e o plano é liberado na sua conta em seguida.</div>
       ${devCard()}
@@ -2447,7 +2450,8 @@ const accTxt = (v, d) => `R$ ${n2(v, d)}`;
 /* ---------- painel do administrador ---------- */
 let adminData = null, adminErr = '', adminLoading = false, adminPage = 0;
 const PLAN_NAME = { free:'Free', plus:'Plus', familia:'Família' };
-const PLAN_PRICE = { plus:1990, familia:2990 };
+const PLAN_PRICE = { plus:1990, familia:3490 };
+const PLAN_YEAR = { plus:19900, familia:34900 }; // anual: 12 meses pelo preço de 10
 const usd = v => 'US$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits:2, maximumFractionDigits:4 });
 const fmtD = s => s ? new Date(s).toLocaleDateString('pt-BR') : '—';
 const fmtHM = s => { const d = new Date(s); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
@@ -2492,7 +2496,7 @@ function vAdmin(){
       <div class="row"><span class="main t">Acesso grátis (cortesia e família)</span><span class="n" style="font-weight:700;font-variant-numeric:tabular-nums">${d.free_access || 0} un</span></div>
       <div class="row"><span class="main"><div class="t">Receita mensal estimada</div><div class="s">Só assinaturas pagas: ${paid.plus} Plus · ${paid.familia} Família</div></span>${acc(mrr)}</div>
     </div>
-    <div class="foot">Plus R$ 19,90 e Família R$ 29,90 por mês. Cortesias (você, a Renata) e quem entra pela família de alguém não geram receita.</div>
+    <div class="foot">Plus R$ 19,90 (100 mensagens por dia) e Família R$ 34,90 (2 pessoas, 100 por dia cada) por mês; anual por 10 mensalidades. Cortesias (você, a Renata) e quem entra pela família de alguém não geram receita.</div>
   </section>
   <section>
     <div class="sh">Inteligência artificial<button data-act="admin-budget">Atualizar crédito</button></div>
