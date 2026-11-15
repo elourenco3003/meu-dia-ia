@@ -313,9 +313,30 @@ body{margin:0}
 .auth-btn:disabled{opacity:.6}
 .auth-msg{font-size:14px;line-height:1.4;color:var(--bad);background:color-mix(in srgb,var(--bad) 10%,transparent);border-radius:12px;padding:10px 12px}
 .auth-msg.ok{color:var(--good);background:color-mix(in srgb,var(--good) 12%,transparent)}
+.auth-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.upper,#set-name{text-transform:uppercase}
 .auth-links{display:flex;justify-content:space-between;gap:12px;margin-top:14px;flex-wrap:wrap}
 .auth-links button{color:var(--accent);font-weight:600;font-size:14px}
 button:disabled{cursor:default}
+.hello .nw{white-space:nowrap}
+.hello .phase{width:32px;height:32px;display:inline-block;vertical-align:-5px;margin-left:8px;color:var(--fg3)}
+.wx-wrap{display:flex;flex-direction:column;margin-top:-6px}
+.wx-wrap:empty{display:none}
+.wx{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--card);border-radius:18px;box-shadow:0 1px 2px rgba(30,30,60,.05);width:100%;text-align:left;font:inherit;color:inherit;border:0}
+.wx-ic{width:40px;height:40px;flex:none}
+.wx-main{display:flex;flex-direction:column;min-width:0;flex:1}
+.wx-main b{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.wx-main span,.wx-side span{font-size:13px;color:var(--fg2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wx-side{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none}
+.wx-off{cursor:pointer;color:var(--accent);font-weight:600;font-size:14.5px}
+.wx-off .wx-ic{width:30px;height:30px}
+.wx-src{font-size:11px;color:var(--fg2);text-align:right;padding:4px 6px 0}
+.fam-av{width:34px;height:34px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:13px}
+.fam-av.sm{width:24px;height:24px;font-size:11px;border:2px solid var(--card);margin-left:-6px}
+.fam-dots{display:flex;padding-left:6px;flex:none}
+.famline{display:flex;align-items:center;gap:8px;margin-top:10px;font:inherit;font-size:13.5px;color:var(--fg2);background:none;border:0;padding:0;text-align:left;min-width:0}
+.famline>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.test.danger{color:var(--bad)}
 </style>
 </head>
 <body>
@@ -544,7 +565,8 @@ function donut(parts){
 /* ---------- Início ---------- */
 function vHome(){
   const n = new Date(), h = n.getHours(), t = today();
-  const hi = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
+  const ph = dayPhase(h), hi = ph.hi;
+  loadWeather();
   const items = progItems(t);
   const doneN = items.filter(i=>i.done).length, lateN = items.filter(i=>i.late).length, leftN = items.length - doneN - lateN;
   const evT = S.events.filter(e=>e.date===t).length;
@@ -567,8 +589,10 @@ function vHome(){
   </div>
   <div style="margin-top:-12px">
     <div class="date">${DOWL[n.getDay()].replace(/^./,c=>c.toUpperCase())}, ${n.getDate()} de ${MONL[n.getMonth()]}</div>
-    <h1 class="hello">${hi}, ${esc((S.name||'você').split(' ')[0])} 👋</h1>
+    <h1 class="hello">${hi}, <span class="nw">${esc((S.name||'você').split(' ')[0])}${ph.svg}</span></h1>
   </div>
+  <div class="wx-wrap">${wxCard()}
+  ${fam && fam.group && fam.members.length > 1 ? `<button class="famline" data-go="ajustes" aria-label="Minha família"><span class="fam-dots">${fam.members.slice(0,5).map(m => `<span class="fam-av sm">${esc(m.name[0] || '?')}</span>`).join('')}</span><span>${esc(fam.group.name)} · ${fam.members.map(m => esc(m.name.split(' ')[0])).join(', ')}</span></button>` : ''}</div>
 
   <form class="askbox" id="ask" aria-label="Assistente">
     ${ic('spark')}
@@ -791,8 +815,9 @@ function vSettings(){
   ${back()}<div class="head"><div><h1 class="lt">Ajustes</h1></div></div>
   <section>
     <div class="sh">Perfil</div>
-    <div class="group"><label class="row" for="set-name"><span style="flex:none">Seu nome</span><input class="field-in" id="set-name" value="${esc(S.name)}" maxlength="40"></label></div>
+    <div class="group"><label class="row" for="set-name"><span style="flex:none">Nome completo</span><input class="field-in" id="set-name" value="${esc(S.name)}" maxlength="70" autocapitalize="characters"></label></div>
   </section>
+  ${famSection()}
   <section>
     <div class="sh">Alertas no celular</div>
     <div class="group">
@@ -881,6 +906,15 @@ function bindView(){
     const a = b.dataset.act;
     if (a==='logout'){ unsubscribePush().finally(() => sb.auth.signOut()); }
     if (a==='push-on'){ enablePush(); }
+    if (a==='wx-on'){ loadWeather(true); }
+    if (a==='fam-create'){ famCall('family_create', { p_name: 'Família ' + ((S.name||'').split(' ').slice(-1)[0] || '') }, 'Família criada. Agora convide as pessoas.'); }
+    if (a==='fam-code'){ openJoin(''); }
+    if (a==='fam-invite'){ famCall('family_invite').then(code => { if (code) shareInvite(code); }); }
+    if (a==='fam-leave' || a==='fam-dissolve'){
+      const k = a==='fam-leave' ? 'famLeave' : 'famDissolve';
+      if (!ui[k]){ ui[k] = true; render(); setTimeout(()=>{ ui[k]=false; if(view==='ajustes') render(); }, 4000); return; }
+      ui[k] = false; famCall(a==='fam-leave' ? 'family_leave' : 'family_dissolve', {}, a==='fam-leave' ? 'Você saiu da família' : 'Família desfeita');
+    }
     if (a==='admin-refresh'){ adminData = null; adminErr = ''; render(); }
     if (a==='admin-budget' && adminData){ openBudget(); }
     if (a==='push-test'){ testPush(); }
@@ -895,7 +929,13 @@ function bindView(){
         .catch(fail);
     }
   });
-  const nm = $('#set-name'); if (nm) nm.oninput = () => { S.name = nm.value.trim(); saveProfile(); };
+  V.querySelectorAll('[data-famshare]').forEach(b => b.onclick = () => shareInvite(b.dataset.famshare));
+  V.querySelectorAll('[data-famcancel]').forEach(b => b.onclick = () => famCall('family_cancel_invite', { p_code: b.dataset.famcancel }, 'Convite cancelado'));
+  V.querySelectorAll('[data-famrm]').forEach(b => b.onclick = () => {
+    if (!b.dataset.sure){ b.dataset.sure = 1; b.textContent = 'Confirmar'; return; }
+    famCall('family_remove', { p_user: b.dataset.famrm }, `${esc(b.dataset.famname)} saiu da família`);
+  });
+  const nm = $('#set-name'); if (nm) nm.oninput = () => { S.name = nm.value.trim().replace(/\s+/g, ' ').toLocaleUpperCase('pt-BR'); saveProfile(); };
   V.querySelectorAll('[data-auser]').forEach(b => b.onclick = () => openUserPlan(b.dataset.auser));
   V.querySelectorAll('[data-apage]').forEach(b => b.onclick = () => { adminPage += Number(b.dataset.apage); render(); $('#view').scrollTop = 0; });
   V.querySelectorAll('[data-pref]').forEach(inp => inp.onchange = () => { S[inp.dataset.pref] = inp.value; saveProfile(); toast('Preferência salva'); });
@@ -977,7 +1017,7 @@ function openForm({title, fields, values={}, onSave, onDelete, saveLabel}){
     if (miss){ const er = $('#f-err'); er.textContent = `Preencha: ${miss.label.toLowerCase()}.`; er.hidden = false; return; }
     const btn = el.querySelector('[data-s]'); if (btn.disabled) return; btn.disabled = true; btn.textContent = 'Salvando…';
     Promise.resolve().then(() => onSave(vals)).then(msg => { close(); save(); render(); if (msg) toast(msg); })
-      .catch(e => { console.error(e); btn.disabled = false; btn.textContent = okLabel; const er = $('#f-err'); er.textContent = 'Não foi possível salvar. Confira a conexão e tente de novo.'; er.hidden = false; });
+      .catch(e => { console.error(e); btn.disabled = false; btn.textContent = okLabel; const er = $('#f-err'); er.textContent = (e && e.userMsg) || 'Não foi possível salvar. Confira a conexão e tente de novo.'; er.hidden = false; });
   };
   const d = el.querySelector('[data-d]');
   if (d) d.onclick = () => { if (d.dataset.sure){ Promise.resolve().then(onDelete).then(() => { close(); render(); toast('Excluído'); }).catch(e => { console.error(e); toast('Não foi possível excluir. Tente de novo.'); }); } else { d.dataset.sure = 1; d.textContent = 'Toque de novo para excluir'; } };
@@ -1136,7 +1176,10 @@ function renderAuth(){
     <h1 class="hello" style="margin-top:18px">${M[0]}</h1>
     <p class="sub" style="margin:0">${M[1]}</p>
     <form id="auth-form" class="auth-form" novalidate>
-      ${authMode === 'criar' ? `<label for="a-name">Seu nome<input id="a-name" autocomplete="given-name" maxlength="40" required></label>` : ''}
+      ${authMode === 'criar' ? `<div class="auth-row">
+        <label for="a-first">Nome<input id="a-first" class="upper" autocomplete="given-name" autocapitalize="characters" maxlength="30" required></label>
+        <label for="a-last">Sobrenome<input id="a-last" class="upper" autocomplete="family-name" autocapitalize="characters" maxlength="40" required></label>
+      </div>` : ''}
       ${authMode !== 'nova' ? `<label for="a-email">E-mail<input id="a-email" type="email" autocomplete="email" inputmode="email" required></label>` : ''}
       ${authMode !== 'esqueci' ? `<label for="a-pass">Senha<input id="a-pass" type="password" autocomplete="${authMode === 'entrar' ? 'current-password' : 'new-password'}" minlength="8" required></label>` : ''}
       <div class="auth-msg ${authOk ? 'ok' : ''}" id="a-msg" ${authMsg ? '' : 'hidden'}>${esc(authMsg)}</div>
@@ -1154,9 +1197,12 @@ function renderAuth(){
 async function submitAuth(e){
   e.preventDefault();
   const v = id => ($('#' + id) || {}).value || '';
-  const email = v('a-email').trim(), password = v('a-pass'), name = v('a-name').trim();
+  const up = t => t.trim().replace(/\s+/g, ' ').toLocaleUpperCase('pt-BR');
+  const first = up(v('a-first')), last = up(v('a-last')), name = `${first} ${last}`.trim();
+  const email = v('a-email').trim(), password = v('a-pass');
   const show = (t, ok = false) => { authMsg = t; authOk = ok; const el = $('#a-msg'); el.textContent = t; el.className = 'auth-msg' + (ok ? ' ok' : ''); el.hidden = false; };
-  if (authMode === 'criar' && !name) return show('Digite seu nome.');
+  if (authMode === 'criar' && !first) return show('Digite seu nome.');
+  if (authMode === 'criar' && !last) return show('Digite seu sobrenome.');
   if (authMode !== 'nova' && !/^\S+@\S+\.\S+$/.test(email)) return show('Confira o e-mail digitado.');
   if (authMode !== 'esqueci' && password.length < 8) return show('Use uma senha com pelo menos 8 caracteres.');
   const btn = $('#a-go'), label = btn.textContent; btn.disabled = true; btn.textContent = 'Aguarde…';
@@ -1194,6 +1240,7 @@ async function startApp(){
     b.innerHTML = `${ic('fin')}Painel`; b.onclick = () => go('admin'); $('#tabs').appendChild(b);
   } else if (!S.isAdmin && navAdm) navAdm.remove();
   view = 'inicio'; render(); checkReminders();
+  fam = null; loadFamily().then(checkPendingInvite);
   refreshPush().then(() => { if (pushOn && (view === 'inicio' || view === 'ajustes')) render(); });
 }
 sb.auth.onAuthStateChange((event, s) => {
@@ -1205,6 +1252,120 @@ sb.auth.onAuthStateChange((event, s) => {
 });
 
 /* ---------- disparo de lembretes (com o app aberto) ---------- */
+/* ---------- fase do dia e previsão do tempo ---------- */
+function dayPhase(h){
+  if (h >= 5 && h < 12) return { k:'manha', hi:'Bom dia', svg:'<svg class="phase" viewBox="0 0 32 32" aria-hidden="true"><path d="M6 22h20" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M10 22a6 6 0 0 1 12 0" fill="#F5B53D"/><g stroke="#F5B53D" stroke-width="2.2" stroke-linecap="round"><path d="M16 9v3"/><path d="M8.2 13.2l2 2"/><path d="M23.8 13.2l-2 2"/></g></svg>' };
+  if (h >= 12 && h < 18) return { k:'tarde', hi:'Boa tarde', svg:'<svg class="phase" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="6" fill="#F5A623"/><g stroke="#F5A623" stroke-width="2.2" stroke-linecap="round"><path d="M16 4v3"/><path d="M16 25v3"/><path d="M4 16h3"/><path d="M25 16h3"/><path d="M7.5 7.5l2.1 2.1"/><path d="M22.4 22.4l2.1 2.1"/><path d="M7.5 24.5l2.1-2.1"/><path d="M22.4 9.6l2.1-2.1"/></g></svg>' };
+  return { k:'noite', hi:'Boa noite', svg:'<svg class="phase" viewBox="0 0 32 32" aria-hidden="true"><path d="M21 6a10 10 0 1 0 5 15.5A8 8 0 0 1 21 6z" fill="#8F9DF0"/><path d="M8 7l.8 1.7L10.5 9.5l-1.7.8L8 12l-.8-1.7L5.5 9.5l1.7-.8z" fill="#C3CBF7"/></svg>' };
+}
+const WX_ICON = {
+  sol: '<circle cx="12" cy="12" r="4.5" fill="#F5A623"/><g stroke="#F5A623" stroke-width="1.8" stroke-linecap="round"><path d="M12 2.5v2"/><path d="M12 19.5v2"/><path d="M2.5 12h2"/><path d="M19.5 12h2"/><path d="M5.3 5.3l1.4 1.4"/><path d="M17.3 17.3l1.4 1.4"/><path d="M5.3 18.7l1.4-1.4"/><path d="M17.3 6.7l1.4-1.4"/></g>',
+  parcial: '<circle cx="9" cy="9" r="3.6" fill="#F5A623"/><path d="M8 19h9a3.5 3.5 0 0 0 0-7 5 5 0 0 0-9.5 1.5A3 3 0 0 0 8 19z" fill="#C9CEE3"/>',
+  nublado: '<path d="M7 18h10a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.5 1.7A3.2 3.2 0 0 0 7 18z" fill="#B7BDD6"/>',
+  chuva: '<path d="M7 14h10a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.5 1.7A3.2 3.2 0 0 0 7 14z" fill="#B7BDD6"/><g stroke="#5E8DE8" stroke-width="1.8" stroke-linecap="round"><path d="M8 17l-1 3"/><path d="M12 17l-1 3"/><path d="M16 17l-1 3"/></g>',
+  tempestade: '<path d="M7 13h10a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.5 1.7A3.2 3.2 0 0 0 7 13z" fill="#9AA0B8"/><path d="M12.5 14l-2.5 4h2.5l-1.5 4 4.5-5.5h-2.6l1.6-2.5z" fill="#F5B53D"/>',
+  neblina: '<g stroke="#9AA0B8" stroke-width="1.8" stroke-linecap="round"><path d="M4 9h16"/><path d="M6 13h12"/><path d="M4 17h16"/></g>',
+  neve: '<path d="M7 14h10a4 4 0 0 0 0-8 5.5 5.5 0 0 0-10.5 1.7A3.2 3.2 0 0 0 7 14z" fill="#B7BDD6"/><g fill="#8FB4F0"><circle cx="8" cy="18" r="1.2"/><circle cx="12" cy="20" r="1.2"/><circle cx="16" cy="18" r="1.2"/></g>',
+};
+const wxIcon = (c, night) => `<svg class="wx-ic" viewBox="0 0 24 24" aria-hidden="true">${night && c === 'sol' ? '<path d="M15 4a8 8 0 1 0 5 13A6.5 6.5 0 0 1 15 4z" fill="#8F9DF0"/>' : (WX_ICON[c] || WX_ICON.nublado)}</svg>`;
+let wx = null, wxState = 'idle';
+try { const c = JSON.parse(localStorage.getItem('meudia.wx') || 'null'); if (c && Date.now() - c.at < 30 * 60e3) { wx = c.data; wxState = 'ok'; } } catch(e) {}
+function wxCard(){
+  if (wxState === 'off') return `<button class="wx wx-off" data-act="wx-on">${wxIcon('parcial')}<span>Toque para ver a previsão do tempo</span></button>`;
+  if (!wx) return '';
+  return `<div class="wx" role="group" aria-label="Previsão do tempo">
+    ${wxIcon(wx.cond, !wx.is_day)}
+    <div class="wx-main"><b>${wx.temp}°C</b><span>${esc(wx.desc)}${wx.city ? ' · ' + esc(wx.city) : ''}</span></div>
+    <div class="wx-side"><span>máx ${wx.max}° · mín ${wx.min}°</span><span>chuva ${wx.rain}%</span></div>
+  </div><div class="wx-src">Dados: ${esc(wx.source)}</div>`;
+}
+function loadWeather(ask){
+  if (wxState === 'loading' || !navigator.geolocation || (wxState === 'err' && !ask)) return;
+  if (wx && wxState === 'ok' && !ask) return;
+  let asked = false; try { asked = localStorage.getItem('meudia.wxok') === '1'; } catch(e) {}
+  if (!asked && !ask){ wxState = 'off'; return; }
+  wxState = 'loading';
+  navigator.geolocation.getCurrentPosition(async pos => {
+    try { localStorage.setItem('meudia.wxok', '1'); } catch(e) {}
+    const { data, error } = await sb.functions.invoke('clima', { body:{ lat: pos.coords.latitude, lon: pos.coords.longitude } });
+    if (error || !data || data.error){ wxState = 'err'; return; }
+    wx = data; wxState = 'ok';
+    try { localStorage.setItem('meudia.wx', JSON.stringify({ at: Date.now(), data })); } catch(e) {}
+    if (view === 'inicio') render();
+  }, () => { wxState = 'off'; try { localStorage.removeItem('meudia.wxok'); } catch(e) {} if (ask) toast('Sem permissão de localização, a previsão não aparece.'); if (view === 'inicio') render(); },
+  { enableHighAccuracy:false, timeout:10000, maximumAge:30 * 60e3 });
+}
+
+/* ---------- família ---------- */
+let fam = null, famLoading = false;
+async function loadFamily(){
+  if (famLoading) return; famLoading = true;
+  const { data, error } = await sb.rpc('family_overview');
+  famLoading = false;
+  if (!error){ fam = data; if (view === 'ajustes' || view === 'inicio') render(); }
+}
+const famErr = e => String((e && e.message) || '').replace(/^.*?:\s*/, '') || 'Não foi possível concluir.';
+function famSection(){
+  if (!fam) return `<section><div class="sh">Minha família</div><div class="group"><div class="empty">Carregando…</div></div></section>`;
+  const g = fam.group;
+  if (!g){
+    return `<section><div class="sh">Minha família</div><div class="group">
+      ${fam.can_create ? `<button class="row" data-act="fam-create"><span class="main"><div class="t" style="color:var(--accent)">Criar minha família</div><div class="s">Convide até 4 pessoas. Elas ganham o plano Família.</div></span>${ic('r','i chev')}</button>` : ''}
+      <button class="row" data-act="fam-code"><span class="main"><div class="t">Tenho um código de convite</div><div class="s">Entre na família de quem convidou você</div></span>${ic('r','i chev')}</button>
+    </div></section>`;
+  }
+  const owner = fam.role === 'dono', count = fam.members.length, open = (fam.invites || []).length;
+  return `<section><div class="sh">${esc(g.name)} (${count} de ${fam.max} pessoas)</div><div class="group">
+    ${fam.members.map(m => `<div class="row"><span class="fam-av" aria-hidden="true">${esc(m.name.split(' ').map(w => w[0]).slice(0,2).join(''))}</span>
+      <span class="main"><div class="t">${esc(m.name)}</div><div class="s">${m.role === 'dono' ? 'Criou a família' : 'Integrante'}${m.is_me ? ' · você' : ''}</div></span>
+      ${owner && !m.is_me ? `<button class="test" data-famrm="${m.user_id}" data-famname="${esc(m.name)}">Remover</button>` : ''}</div>`).join('')}
+    ${(fam.invites || []).map(i => `<div class="row"><span class="main"><div class="t">Convite ${esc(i.code)}</div><div class="s">Aguardando · vence em ${new Date(i.expires_at).toLocaleDateString('pt-BR')}</div></span>
+      <button class="test" data-famshare="${esc(i.code)}">Enviar</button><button class="test danger" data-famcancel="${esc(i.code)}">Cancelar</button></div>`).join('')}
+    ${owner && count + open < fam.max ? `<button class="row" data-act="fam-invite"><span class="main t" style="color:var(--accent)">Convidar pessoa</span>${ic('plus','i chev')}</button>` : ''}
+    ${owner ? `<button class="row" data-act="fam-dissolve"><span class="main t danger">${ui.famDissolve ? 'Toque de novo para desfazer a família' : 'Desfazer família'}</span></button>`
+            : `<button class="row" data-act="fam-leave"><span class="main t danger">${ui.famLeave ? 'Toque de novo para sair da família' : 'Sair da família'}</span></button>`}
+  </div><div class="foot">Cada pessoa continua com a própria agenda e as próprias finanças. Aqui aparecem só os nomes de quem faz parte da família.</div></section>`;
+}
+const inviteLink = code => `${location.origin}/?convite=${encodeURIComponent(code)}`;
+async function shareInvite(code){
+  const url = inviteLink(code), text = `${S.name ? S.name.split(' ')[0] : 'Eu'} convidou você para a família no Meu Dia IA. Código: ${code}`;
+  if (navigator.share){ try { await navigator.share({ title:'Convite Meu Dia IA', text, url }); return; } catch(e) { if (e && e.name === 'AbortError') return; } }
+  try { await navigator.clipboard.writeText(`${text}\n${url}`); toast('Link do convite copiado. Cole no WhatsApp ou onde preferir.'); }
+  catch(e) { toast(`Código do convite: <b>${esc(code)}</b>`); }
+}
+async function famCall(fn, args, okMsg){
+  const { data, error } = await sb.rpc(fn, args || {});
+  if (error){ toast(esc(famErr(error))); return null; }
+  if (okMsg) toast(okMsg);
+  await loadFamily(); return data ?? true;
+}
+function openJoin(prefill){
+  openForm({
+    title: 'Entrar numa família', saveLabel: 'Entrar',
+    fields: [{ k:'code', label:'Código do convite', type:'title', req:1 }],
+    values: { code: prefill || '' },
+    onSave: async v => {
+      const { data, error } = await sb.rpc('family_join', { p_code: v.code });
+      if (error) throw Object.assign(new Error('join'), { userMsg: famErr(error) });
+      await loadFamily(); return `Você entrou na família ${esc((data && data.group) || '')}`;
+    },
+  });
+}
+// convite recebido por link: guarda até a pessoa entrar na conta
+try {
+  const c = new URLSearchParams(location.search).get('convite');
+  if (c){ localStorage.setItem('meudia.convite', c.toUpperCase().slice(0, 12)); history.replaceState(null, '', location.pathname); }
+} catch(e) {}
+async function checkPendingInvite(){
+  let code = null; try { code = localStorage.getItem('meudia.convite'); } catch(e) {}
+  if (!code) return;
+  try { localStorage.removeItem('meudia.convite'); } catch(e) {}
+  const { data } = await sb.rpc('family_invite_info', { p_code: code });
+  if (!data || !data.valid){ toast('Esse convite de família não vale mais. Peça um novo.'); return; }
+  toast(`${esc(data.owner)} convidou você para a família ${esc(data.group)}`);
+  openJoin(code);
+}
+
 /* ---------- painel do administrador ---------- */
 let adminData = null, adminErr = '', adminLoading = false, adminPage = 0;
 const PLAN_NAME = { free:'Free', plus:'Plus', familia:'Família' };
