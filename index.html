@@ -391,7 +391,7 @@ const CATS = {lembrete:'Novo lembrete',compromisso:'Compromisso próximo',vencer
 const defCats = () => Object.fromEntries(Object.keys(CATS).map(k=>[k,true]));
 const LOCAL = 'meudia.local';
 let session = null;
-const blankState = () => ({ name:'', sounds:true, cats:defCats(), example:false, fired:{}, chat:[], chatLoaded:false, events:[], tasks:[], fin:[], rems:[] });
+const blankState = () => ({ name:'', sounds:true, quiet_start:'', quiet_end:'', event_adv:30, summary_time:'07:30', cats:defCats(), example:false, fired:{}, chat:[], chatLoaded:false, events:[], tasks:[], fin:[], rems:[] });
 let S = blankState();
 try { S.fired = (JSON.parse(localStorage.getItem(LOCAL)) || {}).fired || {}; } catch(e) {}
 const save = () => { try { localStorage.setItem(LOCAL, JSON.stringify({ fired: S.fired })); } catch(e) {} };
@@ -412,14 +412,17 @@ const MAP = {
 };
 async function loadAll(){
   const [p, ev, tk, fn, rm] = await Promise.all([
-    sb.from('profiles').select('name,sounds,sound_cats').maybeSingle(),
+    sb.from('profiles').select('name,sounds,sound_cats,quiet_start,quiet_end,event_advance_min,summary_time').maybeSingle(),
     sb.from('events').select('*').order('date'),
     sb.from('tasks').select('*'),
     sb.from('finance_entries').select('*').order('date'),
     sb.from('reminders').select('*').order('date'),
   ]);
   const bad = [p, ev, tk, fn, rm].find(r => r.error); if (bad) throw bad.error;
-  if (p.data){ S.name = p.data.name || ''; S.sounds = p.data.sounds; S.cats = Object.assign(defCats(), p.data.sound_cats || {}); }
+  if (p.data){
+    S.name = p.data.name || ''; S.sounds = p.data.sounds; S.cats = Object.assign(defCats(), p.data.sound_cats || {});
+    S.quiet_start = tm(p.data.quiet_start); S.quiet_end = tm(p.data.quiet_end); S.event_adv = p.data.event_advance_min ?? 30; S.summary_time = tm(p.data.summary_time) || '07:30';
+  }
   S.events = ev.data.map(MAP.ev.to); S.tasks = tk.data.map(MAP.task.to); S.fin = fn.data.map(MAP.fin.to); S.rems = rm.data.map(MAP.rem.to);
 }
 async function dbSave(k, o, isNew){
@@ -433,7 +436,7 @@ const persist = p => Promise.resolve(p).catch(fail);
 let profT;
 function saveProfile(){
   clearTimeout(profT);
-  profT = setTimeout(() => persist(sb.from('profiles').update({ name:S.name, sounds:S.sounds, sound_cats:S.cats }).eq('id', session.user.id).then(r => { if (r.error) throw r.error; })), 500);
+  profT = setTimeout(() => persist(sb.from('profiles').update({ name:S.name, sounds:S.sounds, sound_cats:S.cats, quiet_start:S.quiet_start || null, quiet_end:S.quiet_end || null, event_advance_min:Number(S.event_adv) || 0, summary_time:S.summary_time || '07:30' }).eq('id', session.user.id).then(r => { if (r.error) throw r.error; })), 500);
 }
 
 /* ---------- sons (originais, gerados no aparelho) ---------- */
@@ -562,7 +565,7 @@ function vHome(){
     ${['Quais são meus compromissos amanhã?','Minha conta de luz vence dia 12 e é de R$ 180','Quanto gastei este mês?','Organize meu dia'].map(s=>`<button class="sug" data-say="${esc(s)}">${esc(s)}</button>`).join('')}
   </div>
 
-  ${exBanner()}
+  ${exBanner()}${pushBanner()}
 
   <div class="pills" role="group" aria-label="Filtro">
     ${[['todas','Todos'],['pessoal','Pessoal'],['trabalho','Trabalho']].map(([k,l])=>`<button data-filter="${k}" aria-pressed="${ui.filter===k}">${l}</button>`).join('')}
@@ -776,15 +779,29 @@ function vSettings(){
     <div class="group"><label class="row" for="set-name"><span style="flex:none">Seu nome</span><input class="field-in" id="set-name" value="${esc(S.name)}" maxlength="40"></label></div>
   </section>
   <section>
-    <div class="sh">Sons</div>
+    <div class="sh">Alertas no celular</div>
     <div class="group">
-      <div class="row"><span class="main"><div class="t">Sons de alerta</div></div><label class="switch"><input type="checkbox" id="set-sounds" ${S.sounds?'checked':''} aria-label="Sons de alerta"><span></span></label></div>
+      <div class="row"><span class="main"><div class="t">Neste aparelho</div><div class="s">${PUSH_TXT[pushState()]}</div></span>
+        ${pushState()==='ativo' ? '<span class="chip good">Ativados</span>' : pushState()==='desligado' ? '<button class="pay" data-act="push-on">Ativar</button>' : ''}</div>
+      ${pushState()==='ativo' ? `<button class="row" data-act="push-test"><span class="main t" style="color:var(--accent)">Enviar alerta de teste</span></button>` : ''}
+      <label class="row" for="pref-adv"><span class="main t">Avisar compromissos</span>
+        <select class="field-in" id="pref-adv" data-pref="event_adv">${[[0,'No horário'],[5,'5 min antes'],[15,'15 min antes'],[30,'30 min antes'],[60,'1 hora antes']].map(([v,l])=>`<option value="${v}" ${Number(S.event_adv)===v?'selected':''}>${l}</option>`).join('')}</select></label>
+      <label class="row" for="pref-sum"><span class="main t">Resumo do dia às</span><input class="field-in" type="time" id="pref-sum" data-pref="summary_time" value="${esc(S.summary_time)}"></label>
+      <label class="row" for="pref-qs"><span class="main t">Silêncio a partir de</span><input class="field-in" type="time" id="pref-qs" data-pref="quiet_start" value="${esc(S.quiet_start)}"></label>
+      <label class="row" for="pref-qe"><span class="main t">Silêncio até</span><input class="field-in" type="time" id="pref-qe" data-pref="quiet_end" value="${esc(S.quiet_end)}"></label>
+    </div>
+    <div class="foot">Contas avisam às 9h: um dia antes, no dia e no dia seguinte, se não estiverem pagas. Tarefas abertas avisam às 18h. No horário silencioso só tocam os lembretes que você marcou.</div>
+  </section>
+  <section>
+    <div class="sh">Tipos de alerta e sons</div>
+    <div class="group">
+      <div class="row"><span class="main"><div class="t">Sons com o app aberto</div></span><label class="switch"><input type="checkbox" id="set-sounds" ${S.sounds?'checked':''} aria-label="Sons com o app aberto"><span></span></label></div>
       ${Object.entries(CATS).map(([k,l]) => `
-        <div class="row"><span class="main"><div class="t">${l}</div></div>
+        <div class="row"><span class="main"><div class="t">${l}</div><div class="s">${PUSH_KINDS.includes(k) ? 'No celular e no app' : 'Só com o app aberto'}</div></span>
           <button class="test" data-test="${k}">Testar</button>
           <label class="switch"><input type="checkbox" id="cat-${k}" data-cat="${k}" ${S.cats[k]?'checked':''} aria-label="${l}"><span></span></label></div>`).join('')}
     </div>
-    <div class="foot">Os sons tocam com o app aberto. Com o app fechado, o celular usa o som padrão dele.</div>
+    <div class="foot">Desligar um tipo desliga também o alerta no celular. Com o app fechado, o celular usa o som de notificação dele.</div>
   </section>
   <section>
     <div class="sh">Dados</div>
@@ -843,7 +860,10 @@ function bindView(){
   V.querySelectorAll('[data-mic]').forEach(b => b.onclick = micNote);
   V.querySelectorAll('[data-act]').forEach(b => b.onclick = () => {
     const a = b.dataset.act;
-    if (a==='logout'){ sb.auth.signOut(); }
+    if (a==='logout'){ unsubscribePush().finally(() => sb.auth.signOut()); }
+    if (a==='push-on'){ enablePush(); }
+    if (a==='push-test'){ testPush(); }
+    if (a==='push-later'){ try { localStorage.setItem('meudia.pushlater', String(Date.now())); } catch(e) {} render(); }
     if (a==='today'){ ui.weekOff = 0; ui.monthOff = 0; ui.agendaSel = today(); render(); }
     if (a==='clear-chat'){ S.chat = []; S.chatLoaded = true; render(); persist(sb.from('conversations').delete().not('id','is',null).then(r => { if (r.error) throw r.error; })); }
     if (a==='wipe'){
@@ -855,6 +875,7 @@ function bindView(){
     }
   });
   const nm = $('#set-name'); if (nm) nm.oninput = () => { S.name = nm.value.trim(); saveProfile(); };
+  V.querySelectorAll('[data-pref]').forEach(inp => inp.onchange = () => { S[inp.dataset.pref] = inp.value; saveProfile(); toast('Preferência salva'); });
   const snd = $('#set-sounds'); if (snd) snd.onchange = () => { S.sounds = snd.checked; saveProfile(); };
   const ask = $('#ask'); if (ask) ask.onsubmit = e => { e.preventDefault(); const v = $('#ask-in').value; if (!v.trim()) return; send(v); };
 }
@@ -1115,6 +1136,7 @@ async function startApp(){
   }
   if (!S.name && session.user.user_metadata && session.user.user_metadata.name) S.name = session.user.user_metadata.name;
   view = 'inicio'; render(); checkReminders();
+  refreshPush().then(() => { if (pushOn && (view === 'inicio' || view === 'ajustes')) render(); });
 }
 sb.auth.onAuthStateChange((event, s) => {
   if (event === 'PASSWORD_RECOVERY'){ recovering = true; session = s; authMode = 'nova'; authMsg = ''; setTimeout(showAuth, 0); return; }
@@ -1125,8 +1147,77 @@ sb.auth.onAuthStateChange((event, s) => {
 });
 
 /* ---------- disparo de lembretes (com o app aberto) ---------- */
+/* ---------- alertas no celular (Web Push) ---------- */
+const VAPID_PUB = 'BDgwg6S3VsklJoKIWEaW5-z7AoGakq7C3AiwFy5TrjgAbpbB9Uq0o7DVFlDkSOLHkK7OYRed_DzTjZ5fz7t-39A';
+const PUSH_KINDS = ['lembrete','compromisso','vencer','vencida','pendente','resumo'];
+const PUSH_TXT = {
+  ativo: 'Você recebe os alertas mesmo com o app fechado.',
+  desligado: 'Toque em Ativar e permita as notificações.',
+  bloqueado: 'Bloqueados. Libere as notificações deste site nas configurações do navegador.',
+  instalar: 'No iPhone, instale o app na tela inicial (Compartilhar → Adicionar à Tela de Início) e abra por lá.',
+  'sem-suporte': 'Este navegador não recebe alertas. Use o Chrome no Android ou o app instalado no iPhone.',
+};
+let pushOn = false;
+const pushSupported = () => 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
+const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+function pushState(){
+  if (isIOS && !isStandalone()) return 'instalar';
+  if (!pushSupported()) return 'sem-suporte';
+  if (Notification.permission === 'denied') return 'bloqueado';
+  if (Notification.permission === 'granted' && pushOn) return 'ativo';
+  return 'desligado';
+}
+function pushBanner(){
+  const st = pushState();
+  if (st !== 'desligado' && st !== 'instalar') return '';
+  let later = 0; try { later = Number(localStorage.getItem('meudia.pushlater')) || 0; } catch(e) {}
+  if (Date.now() - later < 3 * 864e5) return '';
+  return `<div class="banner"><span style="flex:1">${st === 'instalar' ? 'Para receber alertas com o app fechado, instale o app: Compartilhar → Adicionar à Tela de Início.' : 'Ative os alertas para receber lembretes e contas mesmo com o app fechado.'}</span>
+    ${st === 'desligado' ? '<button data-act="push-on">Ativar</button>' : ''}<button data-act="push-later" style="color:var(--fg2)">${st === 'desligado' ? 'Agora não' : 'Entendi'}</button></div>`;
+}
+function b64u(str){ const pad = '='.repeat((4 - str.length % 4) % 4); const raw = atob((str + pad).replace(/-/g, '+').replace(/_/g, '/')); return Uint8Array.from([...raw].map(c => c.charCodeAt(0))); }
+async function subscribePush(){
+  const reg = await navigator.serviceWorker.ready;
+  let sub = await reg.pushManager.getSubscription();
+  if (!sub) sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b64u(VAPID_PUB) });
+  const j = sub.toJSON();
+  const { error } = await sb.rpc('save_push_subscription', { p_endpoint: j.endpoint, p_p256dh: j.keys.p256dh, p_auth: j.keys.auth, p_ua: navigator.userAgent.slice(0, 200) });
+  if (error) throw error;
+  pushOn = true;
+}
+async function enablePush(){
+  const st = pushState();
+  if (st !== 'desligado'){ toast(PUSH_TXT[st]); return; }
+  const perm = await Notification.requestPermission();
+  if (perm !== 'granted'){ toast('Sem permissão, os alertas não chegam com o app fechado.'); render(); return; }
+  try { await subscribePush(); play('lembrete', true); toast('Alertas ativados neste aparelho'); }
+  catch(e){ console.error(e); toast('Não foi possível ativar os alertas. Tente de novo.'); }
+  render();
+}
+async function refreshPush(){
+  if (!pushSupported() || Notification.permission !== 'granted' || (isIOS && !isStandalone())) return;
+  try { await subscribePush(); } catch(e) { console.error(e); }
+}
+async function unsubscribePush(){
+  try {
+    const reg = await navigator.serviceWorker.getRegistration(); const sub = reg && await reg.pushManager.getSubscription();
+    if (sub){ await sb.from('push_subscriptions').delete().eq('endpoint', sub.endpoint); await sub.unsubscribe(); }
+  } catch(e) { console.error(e); }
+  pushOn = false;
+}
+async function testPush(){
+  const { data, error } = await sb.functions.invoke('notificar', { body: { test: true } });
+  if (error || !data || !data.sent) toast('O alerta não chegou a nenhum aparelho. Ative os alertas e tente de novo.');
+  else toast('Alerta de teste enviado. Ele deve aparecer em instantes.');
+}
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => {
+  const d = e.data || {};
+  if (d.type === 'push' && document.visibilityState === 'visible' && TONES[d.kind]) play(d.kind);
+});
+
 function checkReminders(){
-  if (!session) return;
+  if (!session || pushOn) return;
   const now = Date.now();
   S.rems.forEach(r => {
     if (r.done || S.fired[r.id] || !r.time) return;

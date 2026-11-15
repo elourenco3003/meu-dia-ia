@@ -1,7 +1,7 @@
 // Meu Dia IA · service worker
-// Guarda a "casca" do app para abrir rápido e funcionar com internet instável.
-// Nunca guarda dados do usuário: tudo que vem do Supabase passa direto pela rede.
-const CACHE = 'meudia-v1';
+// 1) Guarda a "casca" do app para abrir rápido e aguentar internet instável (nunca guarda dados do usuário).
+// 2) Recebe os alertas do servidor (Web Push) e mostra a notificação, mesmo com o app fechado.
+const CACHE = 'meudia-v2';
 const SHELL = ['/', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
@@ -15,10 +15,39 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (e.request.method !== 'GET' || url.origin !== location.origin) return;
-  // rede primeiro (sempre a versão mais nova); sem internet, usa a cópia guardada
   e.respondWith(
     fetch(e.request)
       .then(r => { const copy = r.clone(); caches.open(CACHE).then(c => c.put(e.request, copy)); return r; })
       .catch(() => caches.match(e.request).then(r => r || caches.match('/')))
   );
+});
+
+// alerta chegou do servidor
+self.addEventListener('push', e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (_) { d = { body: e.data ? e.data.text() : '' }; }
+  const title = d.title || 'Meu Dia IA';
+  e.waitUntil((async () => {
+    const wins = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    wins.forEach(c => c.postMessage({ type: 'push', kind: d.kind, title, body: d.body }));
+    await self.registration.showNotification(title, {
+      body: d.body || '',
+      icon: '/icon-192.png',
+      badge: '/icon-192.png',
+      tag: d.tag || undefined,
+      renotify: !!d.tag,
+      vibrate: [120, 60, 120],
+      data: { url: d.url || '/' },
+    });
+  })());
+});
+
+// toque na notificação abre o app
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const url = (e.notification.data && e.notification.data.url) || '/';
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(ws => {
+    const w = ws.find(c => 'focus' in c);
+    return w ? w.focus() : self.clients.openWindow(url);
+  }));
 });
