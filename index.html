@@ -492,13 +492,13 @@ button.row{width:100%;text-align:left;font:inherit;color:inherit;background:none
 .hc-cap{font-size:13px;font-weight:600;margin-top:6px;font-variant-numeric:tabular-nums}
 .hc-mm{display:flex;justify-content:space-between;font-size:11.5px;color:var(--fg2);margin-top:2px;font-variant-numeric:tabular-nums}
 .hbars{display:flex;flex-direction:column;gap:5px;margin-top:10px}
-.hb-row{display:grid;grid-template-columns:52px 1fr 64px;align-items:center;gap:8px;font-size:12.5px;font-variant-numeric:tabular-nums}
+.hb-row{display:grid;grid-template-columns:52px 1fr minmax(64px,auto);align-items:center;gap:8px;font-size:12.5px;font-variant-numeric:tabular-nums}
 .hb-m{color:var(--fg2)}
 .hb-track{position:relative;height:14px;border-radius:4px;background:var(--fill)}
 .hb-zero{position:absolute;top:-2px;bottom:-2px;width:1px;background:var(--fg3)}
 .hb-bar{position:absolute;top:0;bottom:0;border-radius:4px;background:var(--accent);opacity:.6}
 .hb-bar.neg{background:var(--bad)}
-.hb-v{text-align:right;font-weight:600} .hb-v.neg{color:var(--bad)}
+.hb-v{text-align:right;font-weight:600;white-space:nowrap} .hb-v.neg{color:var(--bad)}
 .hb-row.last .hb-bar{opacity:1} .hb-row.last .hb-m,.hb-row.last .hb-v{font-weight:800;color:var(--fg)}
 .hb-row.last .hb-v.neg{color:var(--bad)}
 </style>
@@ -1911,7 +1911,7 @@ function tickItems(){
     if (mc.desemprego) out.push({ k:'DESEMP', l:'Desemprego', v:`${n2(mc.desemprego.value, 1)}%` });
     if (mc.ibcbr) out.push({ k:'IBCBR', l:'IBC-Br', v:`${mc.ibcbr.value > 0 ? '+' : ''}${n2(mc.ibcbr.value)}% mês` });
   }
-  PORTS.forEach(([pk, pl]) => { const fr = fretePort(pk); if (fr && (fr.c40 || fr.c40hc)) out.push({ k:'FRETE:' + pk, l:`Frete 40'${fr.c40 ? '' : ' HC'} China→${pk === 'rio' ? 'Rio' : pl}`, v:`US$ ${n2(fr.c40 || fr.c40hc, 0)}` }); });
+  PORTS.forEach(([pk, pl]) => { const fr = fretePort(pk); if (fr && (fr.c40 || fr.c40hc)) out.push({ k:'FRETE:' + pk, l:`Frete 40' China→${pl}`, v:`US$ ${n2(fr.c40 || fr.c40hc, 0)}` }); });
   if (b){ (b.altas || []).slice(0, 3).concat((b.quedas || []).slice(0, 3)).forEach(x => out.push({ k:x.symbol, l:x.symbol, v:`R$ ${n2(x.price)}`, p:x.pct, raw:x.price })); }
   return out;
 }
@@ -1967,12 +1967,12 @@ function indValue(k){
 function histChart(pts, kind, unit){
   if (!pts || pts.length < 2) return '<div class="empty">Sem histórico disponível.</div>';
   if (/^\d{2}\/\d{2}$/.test(pts[0][0])) pts = pts.slice(-12);           // diário: últimos 12 dias úteis
-  const ys = pts.map(p => p[1]), money = unit === '';
+  const ys = pts.map(p => p[1]), money = unit === '' || unit === 'US$', cur = unit === 'US$' ? 'US$' : 'R$';
   let lo = Math.min(...ys), hi = Math.max(...ys);
   if (money){ lo = lo - (hi - lo) * .6; } else { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }   // dólar: escala a partir de perto do mínimo
   const span = (hi - lo) || 1, zero = money ? 0 : (0 - lo) / span * 100;
   const lbl = k => /^\d{4}-\d{2}$/.test(k) ? ymLbl(k).replace(/\/\d{2}(\d{2})$/, '/$1') : k;
-  const fmt = v => money ? `R$ ${n2(v, 2)}` : `${v > 0 && kind === 'bar' ? '+' : ''}${n2(v)}%`;
+  const fmt = v => money ? `${cur} ${n2(v, cur === 'US$' ? 0 : 2)}` : `${v > 0 && kind === 'bar' ? '+' : ''}${n2(v)}%`;
   const rows = pts.map((p, i) => {
     const v = p[1], w = Math.abs(v - (money ? lo : 0)) / span * 100, left = money ? 0 : v < 0 ? zero - w : zero;
     return `<div class="hb-row ${i === pts.length - 1 ? 'last' : ''}"><span class="hb-m">${esc(lbl(p[0]))}</span>
@@ -2110,19 +2110,19 @@ const CNT = [
   { k:'c40hc', t:"40' HC (high cube)", dim:'12,03 × 2,35 × 2,69 m', m3:76, util:68, kg:'26,5 t' },
 ];
 const usdN = (v, d = 0) => `<span class="acc"><span>US$</span><span>${n2(v, d)}</span></span>`;
-const PORTS = [['santos','Santos'],['rio','Rio de Janeiro'],['itajai','Itajaí'],['vitoria','Vitória']];
+const PORTS = [['santos','Santos']];
 const PORTN = Object.fromEntries(PORTS);
 const fretePort = k => ((mkt && mkt.frete && mkt.frete.ports) || {})[k] || null;
 function freteSection(){
-  if (!ui.port) ui.port = 'santos';
+  ui.port = 'santos';
   const fr = fretePort(ui.port), fx = mkt && mkt.moedas ? mkt.moedas.usd.value : null;
-  return `<section><div class="sh">Frete marítimo China → Brasil${S.isAdmin ? '<button data-act="frete-edit">Atualizar</button>' : ''}</div>
-    <div class="seg sm" role="group" aria-label="Porto de destino">${PORTS.map(([k, l]) => `<button data-port="${k}" aria-pressed="${ui.port === k}">${k === 'rio' ? 'Rio' : l}</button>`).join('')}</div>
-    <div class="group" style="margin-top:10px">${CNT.map(c => { const v = fr && fr[c.k];
+  const est = k => fr && Array.isArray(fr.est) && fr.est.includes(k);
+  return `<section><div class="sh">Frete marítimo China → Santos${S.isAdmin ? '<button data-act="frete-edit">Atualizar</button>' : ''}</div>
+    <div class="group">${CNT.map(c => { const v = fr && fr[c.k];
       return `<button class="row" data-frete="${c.k}"><span class="main"><div class="t">${c.t} ${ic('info','i ib')}</div>
-        <div class="s">cabe ${c.m3} m³ · útil ~${c.util} m³${v ? ` · US$ ${n2(v / c.util, 0)} por m³` : ''}</div></span>
-        <span class="mk-r">${v ? usdN(v) + (fx ? `<span class="mk-s">≈ R$ ${n2(v * fx, 0)}</span>` : '') : '<span class="mk-s">sem cotação</span>'}</span></button>`; }).join('')}</div>
-    <div class="foot">${fr ? `China → ${PORTN[ui.port]}, por contêiner, porto a porto (sem taxas de origem, destino e impostos). Referência de ${fr.date ? new Date(fr.date + 'T12:00').toLocaleDateString('pt-BR') : '—'}${fr.source ? ' · ' + esc(fr.source) : ''}.` : `Ainda sem cotação para ${PORTN[ui.port]}.`} Não existe índice gratuito por porto: os valores são atualizados manualmente.</div></section>`;
+        <div class="s">cabe ${c.m3} m³ · útil ~${c.util} m³${v ? ` · US$ ${n2(v / c.util, 0)} por m³` : ''}${fr && fr[c.k + '_min'] ? `<br>faixa 12 meses: US$ ${n2(fr[c.k + '_min'], 0)} a ${n2(fr[c.k + '_max'], 0)}` : ''}</div></span>
+        <span class="mk-r">${v ? usdN(v) + `<span class="mk-s">${est(c.k) ? 'estimado · ' : ''}${fx ? `≈ R$ ${n2(v * fx, 0)}` : ''}</span>` : '<span class="mk-s">sem cotação</span>'}</span></button>`; }).join('')}</div>
+    <div class="foot">${fr ? `China → ${PORTN[ui.port]}, por contêiner, porto a porto (sem taxas de origem, destino e impostos). ${fr.auto ? 'Média de mercado do mês, atualizada todo dia' : 'Referência'} de ${fr.date ? new Date(fr.date + 'T12:00').toLocaleDateString('pt-BR') : '—'}${fr.source ? ' · ' + esc(fr.source) : ''}.` : `Ainda sem cotação para ${PORTN[ui.port]}.`}${fr && fr.auto ? '' : ' Atualizado manualmente.'}</div></section>`;
 }
 function openFrete(k){
   const c = CNT.find(x => x.k === k), fr = fretePort(ui.port || 'santos') || {}, v = fr[k], fx = mkt && mkt.moedas ? mkt.moedas.usd.value : null;
@@ -2130,14 +2130,14 @@ function openFrete(k){
   el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="Contêiner ${esc(c.t)}">
     <div class="bar"><span style="min-width:70px"></span><b>Contêiner</b><button class="save" data-x>Fechar</button></div>
     <div class="body">
-      <div class="info-top"><div class="route-t">${esc(c.t)} · China → ${PORTN[ui.port || 'santos']}</div>${v ? `<div class="info-v">US$ ${n2(v, 0)}</div><div class="route-s">${fx ? `≈ R$ ${n2(v * fx, 0)} · ` : ''}US$ ${n2(v / c.util, 0)} por m³ útil</div>` : '<div class="route-s">Sem cotação cadastrada para este porto</div>'}</div>
+      <div class="info-top"><div class="route-t">${esc(c.t)} · China → ${PORTN[ui.port || 'santos']}</div>${v ? `<div class="info-v">US$ ${n2(v, 0)}${Array.isArray(fr.est) && fr.est.includes(k) ? ' <span class="chip warn" style="font-size:12px;vertical-align:middle">estimado</span>' : ''}</div><div class="route-s">${fx ? `≈ R$ ${n2(v * fx, 0)} · ` : ''}US$ ${n2(v / c.util, 0)} por m³ útil</div>` : '<div class="route-s">Sem cotação cadastrada</div>'}</div>
       <div class="group">
         <div class="row"><span class="main t">Medidas internas (C × L × A)</span><span class="s2">${c.dim}</span></div>
         <div class="row"><span class="main t">Volume total</span><span class="n">${c.m3} m³</span></div>
         <div class="row"><span class="main t">Volume útil na prática</span><span class="n">~${c.util} m³</span></div>
         <div class="row"><span class="main t">Peso máximo de carga</span><span class="n">${c.kg}</span></div>
       </div>
-      <div class="group">${PORTS.map(([pk, pl]) => { const pv = (fretePort(pk) || {})[k]; return `<div class="row"><span class="main t">China → ${pl}</span>${pv ? usdN(pv) : '<span class="mk-s">sem cotação</span>'}</div>`; }).join('')}</div>
+      ${fr.hist && fr.hist[k] && fr.hist[k].length > 1 ? `<div class="card hc-card"><div class="mk-l">Média mês a mês (US$ por contêiner)</div>${histChart(fr.hist[k], 'bar', 'US$')}</div>` : ''}
       <div class="foot">O volume útil considera a perda com paletes, embalagens e espaços vazios (cerca de 85% do total). O frete é só o transporte marítimo porto a porto; somam-se taxas de origem e destino, seguro, impostos de importação e o transporte até o destino.</div>
     </div></div>`;
   el.hidden = false;
