@@ -111,6 +111,12 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 .h2{font-size:22px;font-weight:600;letter-spacing:-.015em;margin:0}
 .sub{color:var(--fg2);font-size:14.5px;margin-top:4px}
 .head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.me-card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:var(--card);border:0;border-radius:18px;padding:14px;box-shadow:var(--shadow);font:inherit;color:inherit}
+.me-card .round{width:48px;height:48px;flex:none}
+.me-card .main{flex:1;min-width:0}.me-card .t{font-weight:700;font-size:17px}.me-card .s{font-size:13.5px;color:var(--fg2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.set-ic{width:32px;height:32px;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none;margin-right:2px}
+.set-ic svg{width:18px;height:18px}
+.tone-sel{max-width:132px}
 .back{display:inline-flex;align-items:center;gap:2px;color:var(--accent);font-weight:600;font-size:16px;align-self:flex-start;margin-left:-6px}
 .chead{display:grid;grid-template-columns:44px 1fr 44px;align-items:center}
 .ctitle{margin:0;text-align:center;font-size:18px;font-weight:600}
@@ -717,13 +723,20 @@ const TONES = {
   vencida:[[440,0],[349,.2]], pendente:[[740,0],[740,.16]], concluida:[[784,0],[1047,.1]],
   resposta:[[1175,0]], resumo:[[523,0],[659,.12],[784,.24],[1047,.36]], prioritario:[[988,0],[988,.17],[988,.34]], sair:[[587,0],[784,.12],[988,.24],[784,.36]], noticia:[[698,0],[880,.14]],
 };
+// toques curtos que a pessoa pode escolher para cada tipo de alerta
+const SHORT_TONES = {
+  padrao:['Padrão', null], sino:['Sino', [[880,0],[660,.28]]], gota:['Gota', [[1318,0],[1760,.07]]], acorde:['Acorde', [[523,0],[659,.04],[784,.08]]],
+  bipe:['Bipe', [[1000,0],[1000,.16]]], marimba:['Marimba', [[523,0],[659,.1],[784,.2],[1047,.3]]], alerta:['Alerta', [[988,0],[988,.17],[988,.34]]], suave:['Suave', [[440,0],[554,.18]]],
+};
+const catTones = () => { try { return JSON.parse(localStorage.getItem('meudia.tones') || '{}') || {}; } catch(e) { return {}; } };
 let actx = null;
 function play(cat, force){
   if (!force && (!S.sounds || !S.cats[cat])) return;
   try {
     actx = actx || new (window.AudioContext || window.webkitAudioContext)();
     const now = actx.currentTime + .02;
-    TONES[cat].forEach(([f,t]) => {
+    const pick = SHORT_TONES[catTones()[cat]], seq = (pick && pick[1]) || TONES[cat];
+    seq.forEach(([f,t]) => {
       const o = actx.createOscillator(), g = actx.createGain();
       o.type = 'sine'; o.frequency.value = f;
       g.gain.setValueAtTime(0, now+t); g.gain.linearRampToValueAtTime(.16, now+t+.015);
@@ -864,7 +877,7 @@ const pendingTasks = () => S.tasks.filter(t=>!t.done).sort((a,b)=>(a.due||'9999'
 /* ---------- navegação ---------- */
 let view = 'inicio';
 const ui = { agendaSel: today(), weekOff: 0, monthOff: 0, calMode: 'semana', taskSeg: 'pend', finOff: 0, wipe: false, filter: 'todas' };
-function go(v){ view = v; render(); $('#view').scrollTop = 0; }
+function go(v){ if (v === 'ajustes' && view !== 'ajustes') ui.setSub = null; view = v; render(); $('#view').scrollTop = 0; }
 document.querySelectorAll('#tabs [data-v]').forEach(b => b.onclick = () => go(b.dataset.v));
 $('#fab').onclick = () => openNewMenu();
 
@@ -1158,14 +1171,9 @@ function vRems(){
 
 /* ---------- Ajustes ---------- */
 function vSettings(){
-  return `
-  ${back()}<div class="head"><div><h1 class="lt">Ajustes</h1></div></div>
-  <section>
-    <div class="sh">Perfil</div>
-    <div class="group"><label class="row" for="set-name"><span style="flex:none">Nome completo</span><input class="field-in" id="set-name" value="${esc(nameCase(S.name))}" maxlength="70" autocapitalize="words"></label></div>
-  </section>
-  ${famSection()}
-  ${travelSection()}
+  const sub = ui.setSub;
+  const head = t => `<button class="back" data-setsub="" style="display:inline-flex!important">${ic('l')}Ajustes</button><div class="head"><div><h1 class="lt">${t}</h1></div></div>`;
+  if (sub === 'alertas') return head('Alertas e sons') + `
   <section>
     <div class="sh">Alertas no celular</div>
     <div class="group">
@@ -1180,46 +1188,44 @@ function vSettings(){
     </div>
     <div class="foot">Contas avisam às 9h: um dia antes, no dia e no dia seguinte, se não estiverem pagas. Tarefas abertas avisam às 18h. No horário silencioso só tocam os lembretes que você marcou.</div>
   </section>
-  ${themeSection()}
+  ${soundsSection()}`;
+  if (sub === 'sair') return head('Hora de sair') + travelSection();
+  if (sub === 'aparencia') return head('Aparência') + themeSection();
+  if (sub === 'familia') return head('Plano Família') + famSection();
+  if (sub === 'sobre') return head('Sobre') + `<section>${devCard()}</section>`;
+  if (sub === 'conta') return head('Conta e dados') + `
   <section>
-    <div class="sh">Tipos de alerta e sons</div>
+    <div class="sh">Perfil</div>
     <div class="group">
-      <div class="row"><span class="main"><div class="t">Sons com o app aberto</div></span><label class="switch"><input type="checkbox" id="set-sounds" ${S.sounds?'checked':''} aria-label="Sons com o app aberto"><span></span></label></div>
-      ${Object.entries(CATS).map(([k,l]) => `
-        <div class="row"><span class="main"><div class="t">${l}</div><div class="s">${PUSH_KINDS.includes(k) ? 'No celular e no app' : 'Só com o app aberto'}</div></span>
-          <button class="test" data-test="${k}">Testar</button>
-          <label class="switch"><input type="checkbox" id="cat-${k}" data-cat="${k}" ${S.cats[k]?'checked':''} aria-label="${l}"><span></span></label></div>`).join('')}
+      <label class="row" for="set-name"><span style="flex:none">Nome completo</span><input class="field-in" id="set-name" value="${esc(nameCase(S.name))}" maxlength="70" autocapitalize="words"></label>
+      <div class="row"><span class="main"><div class="t">E-mail</div></span><span class="s" style="color:var(--fg2);font-size:14px;overflow:hidden;text-overflow:ellipsis">${esc(session ? session.user.email : '')}</span></div>
     </div>
-    <div class="foot">Desligar um tipo desliga também o alerta no celular. Com o app fechado, o celular usa o som de notificação dele.</div>
   </section>
-  ${S.isAdmin ? `<section>
-    <div class="sh">Administração</div>
-    <div class="group"><button class="row" data-go="admin"><span class="main"><div class="t">Painel do administrador</div><div class="s">Usuários, planos, gasto da IA e alertas</div></span>${ic('r','i chev')}</button></div>
-  </section>` : ''}
   <section>
     <div class="sh">Dados</div>
-    <div class="group">
-      <button class="row" data-act="wipe"><span class="main t danger">${ui.wipe ? 'Toque de novo para apagar tudo' : 'Apagar todos os dados'}</span></button>
-    </div>
+    <div class="group"><button class="row" data-act="wipe"><span class="main t danger">${ui.wipe ? 'Toque de novo para apagar tudo' : 'Apagar todos os dados'}</span></button></div>
     <div class="foot">Seus dados ficam na nuvem, protegidos pelo seu login. Só você tem acesso a eles.</div>
   </section>
-  <section>
-    <div class="sh">Seu plano</div>
-    <div class="group">
-      <button class="row" data-plans="ajustes"><span class="main"><div class="t">Plano ${PLAN_NAME[S.plan || 'free'] === 'Free' ? 'grátis' : PLAN_NAME[S.plan] || ''}</div><div class="s">${(S.plan || 'free') === 'free' ? 'Toque para conhecer o Plus e o Família' : 'Obrigado por assinar o Meu Dia IA'}</div></span>${ic('r','i chev')}</button>
-    </div>
-  </section>
-  <section>
-    <div class="sh">Sobre</div>
-    ${devCard()}
-  </section>
-  <section>
-    <div class="sh">Conta</div>
-    <div class="group">
-      <div class="row"><span class="main"><div class="t">E-mail</div></span><span class="s" style="color:var(--fg2);font-size:14px;overflow:hidden;text-overflow:ellipsis">${esc(session ? session.user.email : '')}</span></div>
-      <button class="row" data-act="logout"><span class="main t" style="color:var(--accent)">Sair da conta</span></button>
-    </div>
-  </section>`;
+  <section><div class="group"><button class="row" data-act="logout"><span class="main t" style="color:var(--accent)">Sair da conta</span></button></div></section>`;
+  // menu principal: curto, uma linha por assunto
+  const plan = S.plan || 'free', planTxt = plan === 'free' ? 'Grátis' : PLAN_NAME[plan] || plan;
+  const ini = (S.name || 'Eu').trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+  const item = (k, icon, t, sub2) => `<button class="row" data-setsub="${k}"><span class="set-ic">${ic(icon)}</span><span class="main"><div class="t">${t}</div>${sub2 ? `<div class="s">${sub2}</div>` : ''}</span>${ic('r','i chev')}</button>`;
+  const inFam = fam && fam.group;
+  return `${back()}<div class="head"><div><h1 class="lt">Ajustes</h1></div></div>
+  <button class="me-card" data-setsub="conta"><span class="round avatar">${esc(ini)}</span><span class="main"><div class="t">${esc(nameCase(S.name) || 'Seu nome')}</div><div class="s">${esc(session ? session.user.email : '')}</div></span><span class="chip ${plan === 'free' ? '' : 'good'}">${planTxt}</span></button>
+  <section><div class="group">
+    ${item('alertas', 'bell', 'Alertas e sons', pushState() === 'ativo' ? 'Ativados neste aparelho' : 'Ative para receber no celular')}
+    ${item('sair', 'nav', 'Hora de sair', S.travel_on ? `Ligado · chegar ${S.travel_arrive} min antes` : 'Desligado')}
+    ${item('aparencia', 'spark', 'Aparência', ({ auto:'Automático pelo horário', claro:'Sempre claro', escuro:'Sempre escuro', sistema:'Igual ao celular' })[themeCfg().mode] || '')}
+    ${plan === 'familia' || inFam ? item('familia', 'home', 'Plano Família', inFam ? `${fam.members.length} de ${fam.max} pessoas` : 'Convide a segunda pessoa') : ''}
+  </div></section>
+  <section><div class="group">
+    <button class="row" data-plans="ajustes"><span class="set-ic">${ic('fin')}</span><span class="main"><div class="t">Seu plano: ${planTxt}</div><div class="s">${plan === 'free' ? 'Conheça o Plus e o Família' : 'Obrigado por assinar'}</div></span>${ic('r','i chev')}</button>
+    ${plan !== 'familia' && !inFam ? `<button class="row" data-act="fam-code"><span class="set-ic">${ic('home')}</span><span class="main"><div class="t">Tenho um código de convite</div><div class="s">Entrar no Plano Família de alguém</div></span>${ic('r','i chev')}</button>` : ''}
+    ${S.isAdmin ? `<button class="row" data-go="admin"><span class="set-ic">${ic('gear')}</span><span class="main"><div class="t">Painel do administrador</div><div class="s">Usuários, planos e gasto da IA</div></span>${ic('r','i chev')}</button>` : ''}
+    ${item('sobre', 'info', 'Sobre', 'ELO Sistemas de Informação')}
+  </div></section>`;
 }
 
 /* ---------- eventos da tela ---------- */
@@ -1259,6 +1265,8 @@ function bindView(){
   V.querySelectorAll('[data-month]').forEach(b => b.onclick = () => { ui.finOff += Number(b.dataset.month); render(); });
   V.querySelectorAll('[data-seg]').forEach(b => b.onclick = () => { ui.taskSeg = b.dataset.seg; render(); });
   V.querySelectorAll('[data-test]').forEach(b => b.onclick = () => play(b.dataset.test, true));
+  V.querySelectorAll('[data-setsub]').forEach(b => b.onclick = () => { ui.setSub = b.dataset.setsub || null; ui.wipe = false; render(); $('#view').scrollTop = 0; });
+  V.querySelectorAll('[data-tone]').forEach(sl => sl.onchange = () => { const t = catTones(); t[sl.dataset.tone] = sl.value; try { localStorage.setItem('meudia.tones', JSON.stringify(t)); } catch(e) {} play(sl.dataset.tone, true); });
   V.querySelectorAll('[data-cat]').forEach(c => c.onchange = () => { S.cats[c.dataset.cat] = c.checked; saveProfile(); });
   V.querySelectorAll('[data-mic]').forEach(b => b.onclick = micNote);
   V.querySelectorAll('[data-act]').forEach(b => b.onclick = () => {
@@ -1271,7 +1279,7 @@ function bindView(){
     if (a==='mkt-refresh'){ loadMarket(true); }
     if (a==='wx-pick'){ openWxPicker(); }
     if (a==='wx-refresh'){ wxFull = null; wxFullState = 'idle'; try { localStorage.removeItem('meudia.wxfull'); } catch(e) {} loadWeatherFull(true); render(); }
-    if (a==='fam-create'){ famCall('family_create', { p_name: 'Família ' + ((S.name||'').split(' ').slice(-1)[0] || '') }, 'Família criada. Agora convide as pessoas.'); }
+    if (a==='fam-create'){ famCall('family_create', { p_name: 'Família ' + ((S.name||'').split(' ').slice(-1)[0] || '') }).then(ok => ok && famCall('family_invite')).then(code => { if (code && code !== true) shareInvite(code); }); }
     if (a==='fam-code'){ openJoin(''); }
     if (a==='fam-invite'){ famCall('family_invite').then(code => { if (code) shareInvite(code); }); }
     if (a==='fam-leave' || a==='fam-dissolve'){
@@ -1827,7 +1835,7 @@ function famSection(){
   const g = fam.group;
   if (!g){
     return `<section><div class="sh">Minha família</div><div class="group">
-      ${fam.can_create ? `<button class="row" data-act="fam-create"><span class="main"><div class="t" style="color:var(--accent)">Criar minha família</div><div class="s">Convide até 4 pessoas. Elas ganham o plano Família.</div></span>${ic('r','i chev')}</button>` : ''}
+      ${fam.can_create ? `<button class="row" data-act="fam-create"><span class="main"><div class="t" style="color:var(--accent)">Convidar a segunda pessoa</div><div class="s">Seu plano Família vale para 2 pessoas: você e mais uma (ex.: marido ou esposa). Ela ganha tudo do plano.</div></span>${ic('r','i chev')}</button>` : ''}
       <button class="row" data-act="fam-code"><span class="main"><div class="t">Tenho um código de convite</div><div class="s">Entre na família de quem convidou você</div></span>${ic('r','i chev')}</button>
     </div></section>`;
   }
@@ -1838,10 +1846,10 @@ function famSection(){
       ${owner && !m.is_me ? `<button class="test" data-famrm="${m.user_id}" data-famname="${esc(nameCase(m.name))}">Remover</button>` : ''}</div>`).join('')}
     ${(fam.invites || []).map(i => `<div class="row"><span class="main"><div class="t">Convite ${esc(i.code)}</div><div class="s">Aguardando · vence em ${new Date(i.expires_at).toLocaleDateString('pt-BR')}</div></span>
       <button class="test" data-famshare="${esc(i.code)}">Enviar</button><button class="test danger" data-famcancel="${esc(i.code)}">Cancelar</button></div>`).join('')}
-    ${owner && count + open < fam.max ? `<button class="row" data-act="fam-invite"><span class="main t" style="color:var(--accent)">Convidar pessoa</span>${ic('plus','i chev')}</button>` : ''}
+    ${owner && count + open < fam.max ? `<button class="row" data-act="fam-invite"><span class="main t" style="color:var(--accent)">Convidar a segunda pessoa</span>${ic('plus','i chev')}</button>` : ''}
     ${owner ? `<button class="row" data-act="fam-dissolve"><span class="main t danger">${ui.famDissolve ? 'Toque de novo para desfazer a família' : 'Desfazer família'}</span></button>`
             : `<button class="row" data-act="fam-leave"><span class="main t danger">${ui.famLeave ? 'Toque de novo para sair da família' : 'Sair da família'}</span></button>`}
-  </div><div class="foot">Cada pessoa continua com a própria agenda e as próprias finanças. Aqui aparecem só os nomes de quem faz parte da família.</div></section>`;
+  </div><div class="foot">O Plano Família vale para 2 pessoas. Cada uma continua com a própria agenda e as próprias finanças; aqui aparecem só os nomes.</div></section>`;
 }
 const inviteLink = code => `${location.origin}/?convite=${encodeURIComponent(code)}`;
 async function shareInvite(code){
@@ -2114,6 +2122,19 @@ function nextLeave(){
 function addrRow(k, label){
   const a = S[k];
   return `<button class="row" data-addr="${k}"><span class="main"><div class="t">${label}</div><div class="s">${a.addr ? esc(a.addr) : 'Toque para cadastrar o endereço'}</div></span>${ic('r','i chev')}</button>`;
+}
+function soundsSection(){
+  return `<section>
+    <div class="sh">Sons de cada alerta</div>
+    <div class="group">
+      <div class="row"><span class="main"><div class="t">Sons com o app aberto</div></span><label class="switch"><input type="checkbox" id="set-sounds" ${S.sounds?'checked':''} aria-label="Sons com o app aberto"><span></span></label></div>
+      ${Object.entries(CATS).map(([k,l]) => `
+        <div class="row"><button class="main" data-test="${k}" style="text-align:left;background:none;border:0;font:inherit;color:inherit;padding:0"><div class="t">${l}</div><div class="s">${PUSH_KINDS.includes(k) ? 'Celular e app' : 'Só no app'}</div></button>
+          <select class="field-in tone-sel" data-tone="${k}" aria-label="Som de ${l}">${Object.entries(SHORT_TONES).map(([t, [n]]) => `<option value="${t}" ${(catTones()[k] || 'padrao') === t ? 'selected' : ''}>${n}</option>`).join('')}</select>
+          <label class="switch"><input type="checkbox" id="cat-${k}" data-cat="${k}" ${S.cats[k]?'checked':''} aria-label="${l}"><span></span></label></div>`).join('')}
+    </div>
+    <div class="foot">Toque no nome para ouvir o som; ao trocar, ele toca uma amostra. Desligar um tipo desliga também o alerta no celular. Com o app fechado, o celular usa o som de notificação dele. O alarme "Saia já" tem toques próprios, em Hora de sair.</div>
+  </section>`;
 }
 function themeSection(){
   const c = themeCfg(), hrs = [...Array(24)].map((_, h) => `${String(h).padStart(2,'0')}:00`);
