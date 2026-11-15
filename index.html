@@ -451,7 +451,7 @@ a.row.news .t{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp
 @keyframes blink{50%{opacity:.25}}
 @keyframes flup{0%,40%{background:color-mix(in srgb,var(--good) 28%,transparent)}100%{background:transparent}}
 @keyframes fldown{0%,40%{background:color-mix(in srgb,var(--bad) 28%,transparent)}100%{background:transparent}}
-@media (prefers-reduced-motion: reduce){.tk-run{animation:none}.tk-live i{animation:none}}
+
 .live-h{display:inline-flex;align-items:center;gap:6px}
 .live-h i{width:7px;height:7px;border-radius:50%;background:var(--now);animation:blink 1.4s infinite}
 .news-big{display:block;border-radius:18px;overflow:hidden;background:var(--card);box-shadow:var(--shadow);text-decoration:none;color:var(--fg)}
@@ -466,6 +466,13 @@ a.row.news .t{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp
 a.row.news .mk-new{margin-right:6px;vertical-align:1px}
 .slogo{width:30px;height:30px;border-radius:8px;flex:none;background:#fff;object-fit:contain}
 button.card:active,button.tile:active,.news-big:active,.tkband:active,.wx:active,a.row:active,button.row:active{transform:scale(.985);transition:transform .08s}
+.tk-run{animation:tick linear infinite!important;will-change:transform}
+.tk-more{flex:none;display:flex;align-items:center;gap:2px;font-size:12.5px;font-weight:700;color:var(--accent);padding:0 10px 0 4px}
+.tk-more .i{width:13px;height:13px}
+.sugs-run{margin:-10px -16px 0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent);mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent)}
+.sugs-track{display:inline-flex;gap:8px;padding:2px 16px;white-space:nowrap;animation:tick 40s linear infinite!important;will-change:transform}
+.sugs-run:active .sugs-track,.sugs-run:hover .sugs-track{animation-play-state:paused!important}
+.sugs-track .sug{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -664,7 +671,7 @@ $('#fab').onclick = () => openNewMenu();
 
 function render(){
   document.querySelectorAll('#tabs [data-v]').forEach(b => { if (b.dataset.v===view) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
-  const V = {inicio:vHome, agenda:vAgenda, assistente:vAssist, tarefas:vTasks, financas:vFin, lembretes:vRems, ajustes:vSettings, admin:vAdmin, clima:vClima, mercado:vMercado}[view] || vHome;
+  const V = {inicio:vHome, agenda:vAgenda, assistente:vAssist, tarefas:vTasks, financas:vFin, lembretes:vRems, ajustes:vSettings, admin:vAdmin, clima:vClima, mercado:vMercado, noticias:vNoticias}[view] || vHome;
   const m = $('#view'); m.classList.toggle('chat', view==='assistente');
   m.innerHTML = `<div class="wrap">${V()}</div>`;
   bindView();
@@ -739,9 +746,9 @@ function vHome(){
     <button type="button" class="mic" data-mic aria-label="Falar">${ic('mic')}</button>
     <button class="go" aria-label="Enviar">${ic('up')}</button>
   </form>
-  <div class="sugs">
-    ${['Quais são meus compromissos amanhã?','Minha conta de luz vence dia 12 e é de R$ 180','Quanto gastei este mês?','Organize meu dia'].map(s=>`<button class="sug" data-say="${esc(s)}">${esc(s)}</button>`).join('')}
-  </div>
+  ${(() => { const sg = ['Quais são meus compromissos amanhã?','Minha conta de luz vence dia 12 e é de R$ 180','Quanto gastei este mês?','Organize meu dia','Me lembre de pagar o aluguel dia 5']
+      .map(s=>`<button class="sug" data-say="${esc(s)}">${esc(s)}</button>`).join('');
+    return `<div class="sugs-run" aria-label="Sugestões"><div class="sugs-track">${sg}${sg.replace(/class="sug"/g, 'class="sug" tabindex="-1" aria-hidden="true"')}</div></div>`; })()}
 
   ${exBanner()}${pushBanner()}
 
@@ -1049,6 +1056,7 @@ function bindView(){
     if (a==='logout'){ unsubscribePush().finally(() => sb.auth.signOut()); }
     if (a==='push-on'){ enablePush(); }
     if (a==='wx-on'){ loadWeather(true); }
+    if (a==='news-eco'){ ui.newsTab = 'economia'; ui.newsPage = 0; go('noticias'); }
     if (a==='mkt-refresh'){ loadMarket(true); }
     if (a==='wx-pick'){ openWxPicker(); }
     if (a==='wx-refresh'){ wxFull = null; wxFullState = 'idle'; try { localStorage.removeItem('meudia.wxfull'); } catch(e) {} loadWeatherFull(true); render(); }
@@ -1831,7 +1839,7 @@ async function loadMarket(force){
   try { localStorage.setItem('meudia.mkt', JSON.stringify({ at: mktAt, data: mkt })); } catch(e) {}
   // só redesenha se chegou dado novo e a pessoa não está digitando
   const typing = document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
-  if (changed && !typing && (view === 'inicio' || view === 'mercado')) render();
+  if (changed && !typing && (view === 'inicio' || view === 'mercado' || view === 'noticias')) render();
 }
 const n2 = (v, d = 2) => Number(v).toLocaleString('pt-BR', { minimumFractionDigits: d, maximumFractionDigits: d });
 const pctTxt = p => `${p > 0 ? '▲' : p < 0 ? '▼' : ''} ${n2(Math.abs(p))}%`;
@@ -1874,16 +1882,16 @@ function tickerBand(){
   return `<button class="tkband" data-go="mercado" aria-label="Abrir mercado e notícias">
     <span class="tk-live"><i></i>AO VIVO<small data-ago="${esc(upd || '')}">${agoTxt(upd)}</small></span>
     <span class="tk-win"><span class="tk-run" style="animation-duration:${Math.max(items.length * 4, 20)}s">${one}<span class="tk-sep">•</span>${one}<span class="tk-sep">•</span></span></span>
+    <span class="tk-more">Ver mais${ic('r','i')}</span>
   </button>`;
 }
 function newsBlock(){
   const nw = mkt && mkt.noticias; if (!nw) return '';
-  const list = [...(nw.brasil || []), ...(nw.economia || [])].sort((a, b) => String(b.at).localeCompare(String(a.at)))
-    .filter((x, i, l) => l.findIndex(y => y.link === x.link) === i).slice(0, 3);
+  const list = (nw.economia || []).slice(0, 3);
   if (!list.length) return '';
   const seen = newsSeen(), [top, ...rest] = list;
   const badge = n => n.at && n.at > seen ? '<span class="mk-new">Nova</span>' : '';
-  return `<section><div class="sh"><span class="live-h"><i></i>Últimas notícias · atualizado às ${hm(nw.updated_at)}</span><button data-go="mercado">Ver mais</button></div>
+  return `<section><div class="sh"><span class="live-h"><i></i>Notícias de economia · ${hm(nw.updated_at)}</span><button data-act="news-eco">Ver mais</button></div>
     <a class="news-big" href="${esc(top.link)}" target="_blank" rel="noopener" data-newsopen="${esc(top.at || '')}">
       ${top.img ? `<span class="nb-img"><img src="${esc(top.img)}" alt="" loading="lazy" onerror="this.parentNode.remove()"><small>Foto: Agência Brasil</small></span>` : ''}
       <span class="nb-tx">${badge(top)}<b>${esc(top.title)}</b><small>${agoTxt(top.at)} · Agência Brasil</small></span></a>
@@ -1892,15 +1900,13 @@ function newsBlock(){
   </section>`;
 }
 // manchete mais nova (Brasil ou Economia) e o que a pessoa já viu (neste aparelho)
-function latestNews(){ const nw = mkt && mkt.noticias; if (!nw) return null; return [...(nw.brasil || []), ...(nw.economia || [])].sort((a, b) => String(b.at).localeCompare(String(a.at)))[0] || null; }
+function latestNews(){ const nw = mkt && mkt.noticias; return (nw && (nw.economia || [])[0]) || null; }
 const newsSeen = () => { try { return localStorage.getItem('meudia.newsseen') || ''; } catch(e) { return ''; } };
 const markNewsSeen = at => { try { if (at && at > newsSeen()) localStorage.setItem('meudia.newsseen', at); } catch(e) {} };
 const agoTxt = s => { if (!s) return ''; const m = Math.round((Date.now() - new Date(s).getTime()) / 60e3); return m < 60 ? `há ${Math.max(m, 1)} min` : m < 1440 ? `há ${Math.round(m / 60)} h` : new Date(s).toLocaleDateString('pt-BR'); };
 function vMercado(){
-  if (!ui.newsTab) ui.newsTab = 'brasil';
-  { const t = latestNews(); if (t) markNewsSeen(t.at); }
   loadMarket();
-  const head = `${back()}<div class="head"><div><h1 class="lt">Mercado e notícias</h1><div class="sub">${mkt && mkt.moedas ? 'Atualizado ' + agoTxt(mkt.moedas.updated_at) : 'Indicadores do dia'}</div></div>
+  const head = `${back()}<div class="head"><div><h1 class="lt">Economia</h1><div class="sub">${mkt && mkt.moedas ? 'Atualizado ' + agoTxt(mkt.moedas.updated_at) : 'Indicadores do dia'}</div></div>
     <button class="icon-btn" data-act="mkt-refresh" aria-label="Atualizar">${ic('refresh')}</button></div>`;
   if (!mkt) return head + '<div class="card empty">Carregando…</div>';
   const m = mkt.moedas, j = mkt.juros, nw = mkt.noticias;
@@ -1908,9 +1914,6 @@ function vMercado(){
   const cur = (name, x, d) => row(name, x.high ? `Máx ${accTxt(x.high, d)} · mín ${accTxt(x.low, d)}` : `Fechamento de ${esc(x.at || '')}`,
     `<span class="mk-r">${accN(x.value, d)}<span class="mk-s ${pctCls(x.pct)}">${pctTxt(x.pct)}</span></span>`);
   const pctR = (v, unit) => `<span class="mk-r"><b class="n">${n2(v)}%</b><span class="mk-s">${unit}</span></span>`;
-  const tab = ui.newsTab, list = (nw && nw[tab]) || [], per = 6, pages = Math.max(1, Math.ceil(list.length / per));
-  ui.newsPage = Math.min(Math.max(ui.newsPage || 0, 0), pages - 1);
-  const items = list.slice(ui.newsPage * per, ui.newsPage * per + per);
   const bo = mkt.bolsa;
   return `${head}
   ${bo ? bolsaSection(bo) : ''}
@@ -1921,7 +1924,21 @@ function vMercado(){
     ${j ? row('Selic (meta)', 'Definida pelo Copom', pctR(j.selic.value, 'ao ano')) + row('CDI', esc(j.cdi.date), pctR(j.cdi.value, 'ao ano'))
       + row('IPCA no mês', mesRef(j.ipca.date), pctR(j.ipca.value, 'no mês')) + row('IPCA em 12 meses', 'Até ' + mesRef(j.ipca12.date), pctR(j.ipca12.value, '12 meses')) : '<div class="empty">Sem dados agora.</div>'}
   </div></section>
-  <section><div class="sh">Notícias</div>
+  <button class="mk-more" data-go="noticias">Ver notícias de economia${ic('r','i')}</button>`;
+}
+function vNoticias(){
+  if (!ui.newsTab) ui.newsTab = 'economia';
+  { const t = latestNews(); if (t) markNewsSeen(t.at); }
+  loadMarket();
+  const nw = mkt && mkt.noticias;
+  const head = `${back()}<div class="head"><div><h1 class="lt">Notícias</h1><div class="sub">${nw ? 'Atualizado às ' + hm(nw.updated_at) : 'Agência Brasil'}</div></div>
+    <button class="icon-btn" data-act="mkt-refresh" aria-label="Atualizar">${ic('refresh')}</button></div>`;
+  if (!nw) return head + '<div class="card empty">Carregando…</div>';
+  const tab = ui.newsTab, list = nw[tab] || [], per = 6, pages = Math.max(1, Math.ceil(list.length / per));
+  ui.newsPage = Math.min(Math.max(ui.newsPage || 0, 0), pages - 1);
+  const items = list.slice(ui.newsPage * per, ui.newsPage * per + per);
+  return `${head}
+  <section>
     <div class="seg" role="group" aria-label="Notícias">${[['brasil','Brasil'],['economia','Economia'],['internacional','Internacional']].map(([k,l]) => `<button data-newstab="${k}" aria-pressed="${tab === k}">${l}</button>`).join('')}</div>
     <div class="group" style="margin-top:10px">${items.map(n => `<a class="row news" href="${esc(n.link)}" target="_blank" rel="noopener">${n.img ? `<img class="nthumb" src="${esc(n.img)}" alt="" loading="lazy" onerror="this.remove()">` : ''}<span class="main"><div class="t">${esc(n.title)}</div><div class="s">${agoTxt(n.at)} · Agência Brasil</div></span>${ic('r','i chev')}</a>`).join('') || '<div class="empty">Sem notícias agora.</div>'}</div>
     ${pages > 1 ? `<div class="pager" style="margin-top:10px"><button class="icon-btn" data-newspage="-1" aria-label="Notícias anteriores" ${ui.newsPage === 0 ? 'disabled' : ''}>${ic('l')}</button><span class="lbl" style="text-transform:none">Página ${ui.newsPage + 1} de ${pages}</span><button class="icon-btn" data-newspage="1" aria-label="Próximas notícias" ${ui.newsPage >= pages - 1 ? 'disabled' : ''}>${ic('r')}</button></div>` : ''}
@@ -1943,7 +1960,7 @@ const tcase = t => String(t || '').toLowerCase().replace(/(^|\s)(\S)/g, (m, a, b
 function bolsaSection(bo){
   const ib = bo.ibov;
   if (!ui.bolsaTab) ui.bolsaTab = 'altas';
-  const tabs = [['altas','▲ Altas'],['quedas','▼ Quedas'],['negociadas','Mais negociadas']].filter(([k]) => (bo[k] || []).length);
+  const tabs = [['altas','▲ Altas'],['quedas','▼ Quedas'],['negociadas','Mais vendidas']].filter(([k]) => (bo[k] || []).length);
   if (tabs.length && !tabs.some(([k]) => k === ui.bolsaTab)) ui.bolsaTab = tabs[0][0];
   const list = bo[ui.bolsaTab] || [];
   return `<section><div class="sh">Bolsa (B3)</div>
