@@ -491,6 +491,16 @@ button.row{width:100%;text-align:left;font:inherit;color:inherit;background:none
 .hc-b{cursor:pointer} rect.hc-b.on{opacity:1!important;stroke:var(--fg);stroke-width:1} circle.hc-b.on{fill:var(--accent);r:5}
 .hc-cap{font-size:13px;font-weight:600;margin-top:6px;font-variant-numeric:tabular-nums}
 .hc-mm{display:flex;justify-content:space-between;font-size:11.5px;color:var(--fg2);margin-top:2px;font-variant-numeric:tabular-nums}
+.hbars{display:flex;flex-direction:column;gap:5px;margin-top:10px}
+.hb-row{display:grid;grid-template-columns:52px 1fr 64px;align-items:center;gap:8px;font-size:12.5px;font-variant-numeric:tabular-nums}
+.hb-m{color:var(--fg2)}
+.hb-track{position:relative;height:14px;border-radius:4px;background:var(--fill)}
+.hb-zero{position:absolute;top:-2px;bottom:-2px;width:1px;background:var(--fg3)}
+.hb-bar{position:absolute;top:0;bottom:0;border-radius:4px;background:var(--accent);opacity:.6}
+.hb-bar.neg{background:var(--bad)}
+.hb-v{text-align:right;font-weight:600} .hb-v.neg{color:var(--bad)}
+.hb-row.last .hb-bar{opacity:1} .hb-row.last .hb-m,.hb-row.last .hb-v{font-weight:800;color:var(--fg)}
+.hb-row.last .hb-v.neg{color:var(--bad)}
 </style>
 </head>
 <body>
@@ -1949,31 +1959,24 @@ function indValue(k){
   }
   return null;
 }
-// gráfico de linha do tempo: barras (mês a mês) ou linha (acumulado / diário); toque para ver o valor
+// gráfico de barras na horizontal: mês (jan/26), barra e o valor escrito ao lado
 function histChart(pts, kind, unit){
   if (!pts || pts.length < 2) return '<div class="empty">Sem histórico disponível.</div>';
-  const w = 320, h = 130, pl = 6, pr = 6, pt = 14, pb = 22, ys = pts.map(p => p[1]);
+  if (/^\d{2}\/\d{2}$/.test(pts[0][0])) pts = pts.slice(-12);           // diário: últimos 12 dias úteis
+  const ys = pts.map(p => p[1]), money = unit === '';
   let lo = Math.min(...ys), hi = Math.max(...ys);
-  if (kind === 'bar'){ lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
-  const span = (hi - lo) || 1, iw = w - pl - pr, ih = h - pt - pb;
-  const Y = v => pt + (hi - v) / span * ih, lbl = p => /^\d{4}-\d{2}$/.test(p[0]) ? ymLbl(p[0]).replace(/\/(\d{2})(\d{2})$/, '/$2') : p[0];
-  const cap = p => `${lbl(p)}: ${n2(p[1])}${unit}`;
-  let g = '';
-  if (kind === 'bar'){
-    const bw = iw / pts.length;
-    g += `<line x1="${pl}" x2="${w - pr}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--sep)"/>`;
-    pts.forEach((p, i) => { const x = pl + i * bw + bw * .18, y0 = Y(0), y1 = Y(p[1]);
-      g += `<rect class="hc-b" data-cap="${esc(cap(p))}" x="${x.toFixed(1)}" y="${Math.min(y0, y1).toFixed(1)}" width="${(bw * .64).toFixed(1)}" height="${Math.max(Math.abs(y1 - y0), 1.5).toFixed(1)}" rx="3" fill="${p[1] < 0 ? 'var(--bad)' : 'var(--accent)'}" opacity="${i === pts.length - 1 ? 1 : .55}"/>`; });
-    pts.forEach((p, i) => { if (i % 2 === (pts.length - 1) % 2) g += `<text x="${(pl + i * bw + bw / 2).toFixed(1)}" y="${h - 6}" text-anchor="middle">${esc(lbl(p).split('/')[0])}</text>`; });
-  } else {
-    const X = i => pl + i / (pts.length - 1) * iw, d = pts.map((p, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(p[1]).toFixed(1)}`).join('');
-    g += `<path d="${d}L${X(pts.length - 1)},${h - pb}L${pl},${h - pb}Z" fill="var(--accent)" opacity=".12"/><path d="${d}" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linejoin="round"/>`;
-    pts.forEach((p, i) => { g += `<circle class="hc-b" data-cap="${esc(cap(p))}" cx="${X(i).toFixed(1)}" cy="${Y(p[1]).toFixed(1)}" r="${i === pts.length - 1 ? 4 : 9}" fill="${i === pts.length - 1 ? 'var(--accent)' : 'transparent'}"/>`; });
-    [0, Math.floor((pts.length - 1) / 2), pts.length - 1].forEach(i => { g += `<text x="${X(i).toFixed(1)}" y="${h - 6}" text-anchor="${i === 0 ? 'start' : i === pts.length - 1 ? 'end' : 'middle'}">${esc(lbl(pts[i]))}</text>`; });
-  }
-  return `<svg class="hchart" viewBox="0 0 ${w} ${h}" role="img" aria-label="Histórico">${g}</svg>
-    <div class="hc-cap" data-capout>${esc(cap(pts[pts.length - 1]))} · toque no gráfico para ver outros ${kind === 'bar' || /^\d{4}-/.test(pts[0][0]) ? 'meses' : 'dias'}</div>
-    <div class="hc-mm"><span>mín ${n2(Math.min(...ys))}${unit}</span><span>máx ${n2(Math.max(...ys))}${unit}</span></div>`;
+  if (money){ lo = lo - (hi - lo) * .6; } else { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }   // dólar: escala a partir de perto do mínimo
+  const span = (hi - lo) || 1, zero = money ? 0 : (0 - lo) / span * 100;
+  const lbl = k => /^\d{4}-\d{2}$/.test(k) ? ymLbl(k).replace(/\/\d{2}(\d{2})$/, '/$1') : k;
+  const fmt = v => money ? `R$ ${n2(v, 2)}` : `${v > 0 && kind === 'bar' ? '+' : ''}${n2(v)}%`;
+  const rows = pts.map((p, i) => {
+    const v = p[1], w = Math.abs(v - (money ? lo : 0)) / span * 100, left = money ? 0 : v < 0 ? zero - w : zero;
+    return `<div class="hb-row ${i === pts.length - 1 ? 'last' : ''}"><span class="hb-m">${esc(lbl(p[0]))}</span>
+      <span class="hb-track">${money ? '' : `<i class="hb-zero" style="left:${zero}%"></i>`}<b class="hb-bar ${v < 0 ? 'neg' : ''}" style="left:${left}%;width:${Math.max(w, .8)}%"></b></span>
+      <span class="hb-v ${v < 0 ? 'neg' : ''}">${fmt(v)}</span></div>`;
+  }).join('');
+  return `<div class="hbars">${rows}</div>
+    <div class="hc-mm"><span>mín ${fmt(Math.min(...ys))}</span><span>máx ${fmt(Math.max(...ys))}</span></div>`;
 }
 function infoChart(k){
   const hh = mkt && mkt.macro && mkt.macro.hist && mkt.macro.hist[k];
@@ -1981,7 +1984,7 @@ function infoChart(k){
   const tabs = [];
   if (hh.m && hh.m.length > 1) tabs.push(['m', k === 'SELIC' ? 'Mês a mês (% a.a.)' : k === 'DESEMP' ? 'Mês a mês' : 'Mês a mês', k === 'SELIC' || k === 'DESEMP' ? 'line' : 'bar']);
   if (hh.a && hh.a.length > 1) tabs.push(['a', 'Acumulado 12 meses', 'line']);
-  if (hh.d && hh.d.length > 1) tabs.push(['d', 'Últimos 30 dias', 'line']);
+  if (hh.d && hh.d.length > 1) tabs.push(['d', 'Últimos 12 dias úteis', 'line']);
   if (!tabs.length) return '';
   if (!tabs.some(t => t[0] === ui.infoTab)) ui.infoTab = tabs[0][0];
   const t = tabs.find(x => x[0] === ui.infoTab), unit = k === 'USD' ? '' : '%';
@@ -2012,7 +2015,6 @@ function openInfo(k){
   const bindChart = () => {
     const box = el.querySelector('[data-chartbox]'); if (!box) return;
     box.querySelectorAll('[data-itab]').forEach(b => b.onclick = () => { ui.infoTab = b.dataset.itab; box.innerHTML = infoChart(k); bindChart(); });
-    box.querySelectorAll('.hc-b').forEach(r => r.onclick = () => { const o = box.querySelector('[data-capout]'); if (o) o.textContent = r.dataset.cap; box.querySelectorAll('.hc-b').forEach(x => x.classList.toggle('on', x === r)); });
   };
   bindChart();
 }
