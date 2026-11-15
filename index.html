@@ -44,7 +44,7 @@
 
 [hidden]{display:none!important}
 html,body{height:100%}
-body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;-webkit-font-smoothing:antialiased;overflow:hidden}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);font-size:16px;overflow-wrap:break-word;word-break:normal;hyphens:manual;-webkit-font-smoothing:antialiased;overflow:hidden}
 *{box-sizing:border-box;scrollbar-width:none}
 *::-webkit-scrollbar{display:none}
 button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
@@ -143,7 +143,7 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 .tile .tx{min-width:0;flex:1}
 .tile .lab{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;color:var(--fg2);font-weight:500}
 .tile .n{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
-.tile .acc{min-width:0;width:100%;font-size:15px}
+.tile .acc{min-width:0;width:100%;font-size:clamp(12.5px,3.7vw,15px);gap:.4em}
 .tile.kpi .n{font-size:24px}
 .meter{height:10px;border-radius:999px;background:var(--fill);overflow:hidden}
 .meter span{display:block;height:100%;border-radius:999px}
@@ -154,7 +154,7 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 .tcard .bar{width:4px;align-self:stretch;border-radius:4px;background:var(--lilac);flex:none}
 .tcard .bar.mint{background:var(--mint)} .tcard .bar.acc2{background:var(--accent)}
 .tcard .main{flex:1;min-width:0;text-align:left}
-.tcard .t,.ev .t{font-size:15.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tcard .t,.ev .t{font-size:15.5px;font-weight:500;line-height:1.3;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 .tcard .s,.ev .s{font-size:12.5px;color:var(--fg2);margin-top:3px}
 .tcard.done .t,.ev.done .t{color:var(--fg2)}
 .check,.check2{width:24px;height:24px;border-radius:50%;border:1.6px solid var(--fg3);display:grid;place-items:center;flex:none;color:#fff}
@@ -190,7 +190,8 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 
 /* agenda */
 .monthrow{display:flex;align-items:center;gap:4px}
-.monthrow .m{font-size:23px;font-weight:600;letter-spacing:-.02em;text-transform:capitalize;padding:0 4px}
+.monthrow{min-width:0}
+.monthrow .m{font-size:clamp(18px,5.4vw,23px);font-weight:600;letter-spacing:-.02em;text-transform:capitalize;padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .monthrow .nav{width:32px;height:32px;display:grid;place-items:center;border-radius:50%}
 .modepill{margin-left:auto;display:inline-flex;align-items:center;gap:4px;background:var(--card);border-radius:999px;padding:8px 10px 8px 16px;font-size:14px;font-weight:500;box-shadow:var(--shadow)}
 .modepill svg{width:16px;height:16px}
@@ -206,10 +207,10 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 .day .has{width:5px;height:5px;border-radius:50%;background:var(--now)}
 .day .has.no{visibility:hidden}
 .tl{display:flex;flex-direction:column}
-.hr{display:grid;grid-template-columns:48px 1fr;gap:10px;min-height:54px}
+.hr{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;min-height:54px}
 .hr .hl{font-size:11px;color:var(--fg2);padding-top:0;transform:translateY(-6px);font-variant-numeric:tabular-nums}
-.hr .slot{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--sep);padding:8px 0}
-.ev{background:var(--card);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px}
+.hr .slot{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--sep);padding:8px 0;min-width:0}
+.ev{background:var(--card);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;min-width:0}
 .ev .main{flex:1;min-width:0;text-align:left}
 .ev.rem{background:var(--pill);box-shadow:none;border:1px dashed var(--fg3)}
 .nowline{height:2px;background:var(--now);position:relative;border-radius:2px;margin:2px 0}
@@ -245,12 +246,13 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 .stamp{text-align:center;font-size:12px;color:var(--fg2);margin-top:-4px}
 #msgs{flex:1;min-height:0;overflow-y:auto;margin:0 -4px;padding:4px}
 #msgs .in{display:flex;flex-direction:column;gap:10px}
-.b{max-width:84%;padding:12px 14px;border-radius:18px;font-size:14.5px;line-height:1.45;overflow-wrap:anywhere}
+.b{max-width:84%;padding:12px 14px;border-radius:18px;font-size:14.5px;line-height:1.45;overflow-wrap:break-word}
 .b.u{align-self:flex-end;background:var(--bubble);color:var(--bubble-fg)}
 .b.a{align-self:flex-start;background:var(--card);box-shadow:var(--shadow)}
 .act{margin-top:10px;border-top:1px solid var(--sep);padding-top:10px;display:flex;flex-direction:column;gap:6px}
-.act .kv{display:flex;justify-content:space-between;gap:12px;font-size:13.5px}
-.act .kv span:first-child{color:var(--fg2)}
+.act .kv{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:13.5px}
+.act .kv span:last-child{text-align:right;min-width:0}
+.act .kv span:first-child{color:var(--fg2);flex:none;white-space:nowrap}
 .act .btns{display:flex;gap:8px;margin-top:6px}
 .act .btns button{flex:1;padding:10px;border-radius:12px;font-size:14.5px;font-weight:600;background:var(--fill)}
 .act .btns .ok{background:var(--accent);color:#fff}
@@ -594,10 +596,10 @@ function vHome(){
   </div>
 
   <div class="tiles">
-    <button class="tile" data-go="agenda"><span class="ic">${ic('cal')}</span><span class="tx"><div class="lab">Agenda hoje</div><div class="n">${evT}</div></span></button>
+    <button class="tile" data-go="agenda"><span class="ic">${ic('cal')}</span><span class="tx"><div class="lab">Agenda</div><div class="n">${evT}</div></span></button>
     <button class="tile" data-go="tarefas"><span class="ic">${ic('task')}</span><span class="tx"><div class="lab">Tarefas</div><div class="n">${pend}</div></span></button>
     <button class="tile" data-go="financas"><span class="ic">${ic('fin')}</span><span class="tx"><div class="lab">${lateB?`<span style="color:var(--bad)">A pagar · ${lateB} vencida${lateB>1?'s':''}</span>`:'A pagar'}</div><div class="n">${acc(owed)}</div></span></button>
-    <button class="tile" data-go="lembretes"><span class="ic">${ic('bell')}</span><span class="tx"><div class="lab">Lembretes hoje</div><div class="n">${remT}</div></span></button>
+    <button class="tile" data-go="lembretes"><span class="ic">${ic('bell')}</span><span class="tx"><div class="lab">Lembretes</div><div class="n">${remT}</div></span></button>
   </div>
 
   <section>
@@ -617,13 +619,13 @@ function vAgenda(){
   let label, grid;
   if (wk){
     const ws = addDays(weekStart(new Date()), ui.weekOff*7), days = [...Array(7)].map((_,i)=>addDays(ws,i)), mid = days[3];
-    const sd = fromIso(sel); label = `${MONL[sd.getMonth()]} ${sd.getFullYear()}`;
+    const sd = fromIso(sel); label = sd.getFullYear() === new Date().getFullYear() ? MONL[sd.getMonth()] : `${MON[sd.getMonth()]} ${sd.getFullYear()}`;
     grid = `<div class="week">${days.map(d=>`<span class="wd">${DOW[d.getDay()]}</span>`).join('')}${days.map(d=>dayBtn(d)).join('')}</div>`;
   } else {
     const n = new Date(), base = new Date(n.getFullYear(), n.getMonth()+ui.monthOff, 1), st = weekStart(base);
     const end = new Date(base.getFullYear(), base.getMonth()+1, 0), cells = [];
     for (let d = new Date(st); d <= end || cells.length % 7; d = addDays(d,1)) cells.push(new Date(d));
-    label = `${MONL[base.getMonth()]} ${base.getFullYear()}`;
+    label = base.getFullYear() === new Date().getFullYear() ? MONL[base.getMonth()] : `${MON[base.getMonth()]} ${base.getFullYear()}`;
     grid = `<div class="mgrid">${['seg','ter','qua','qui','sex','sáb','dom'].map(w=>`<span class="wd">${w}</span>`).join('')}${cells.map(d=>dayBtn(d, d.getMonth()!==base.getMonth()?'out':'')).join('')}</div>`;
   }
   return `
