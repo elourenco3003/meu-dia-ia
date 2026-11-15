@@ -92,6 +92,7 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
     border-right:1px solid var(--sep);padding:22px 12px}
   #tabs .brand{display:block;order:-2;padding:4px 10px 16px}
   #tabs .side-only{display:flex}
+  #tabs .mob-only{display:none}
   #tabs [data-v]{flex-direction:row;gap:12px;font-size:15px;padding:10px 12px;border-radius:12px;color:var(--fg)}
   #tabs [data-v] svg{color:var(--fg2)}
   #tabs [data-v][aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
@@ -119,6 +120,33 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 .row.swiping.sw-right::after{right:auto;left:18px}
 .row.sw-anim>*{transition:transform .18s ease}
 #toast .undo{color:var(--accent-2);font-weight:800;font-size:14.5px;background:none;border:0;padding:4px 2px;white-space:nowrap}
+.inv-sum{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13.5px;color:var(--fg2)}
+.inv-sum b{font-weight:700}.inv-sum .up{color:var(--good)}.inv-sum .down{color:var(--bad)}
+.inv-logo{width:36px;height:36px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:800;font-size:12px;flex:none;overflow:hidden}
+.inv-logo img{width:100%;height:100%;object-fit:contain;background:#fff}
+.inv-k{font-size:11px;font-weight:700;color:var(--fg2);background:var(--fill);border-radius:6px;padding:1px 6px;margin-left:4px}
+.inv-row .main{flex:1;min-width:0}.inv-row .s{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.inv-big{display:flex;align-items:center;gap:10px;font-size:26px;font-weight:800;margin:4px 0}
+.inv-chart{padding:12px}
+.inv-big .acc{display:inline-flex;width:auto;gap:6px}
+.lc{width:100%;height:auto;display:block}
+.lc-ax{display:flex;justify-content:space-between;font-size:11.5px;color:var(--fg2);margin-top:6px;font-variant-numeric:tabular-nums}
+.bills-card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px;border:0;font:inherit;color:inherit}
+.bills-card .main{flex:1;min-width:0}.bills-card .t{font-weight:700}.bills-card .s{font-size:13px;color:var(--fg2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.set-ic.bad{background:color-mix(in srgb,var(--bad) 15%,transparent);color:var(--bad)}
+.rem-ic{width:18px;height:18px;color:var(--accent);flex:none}
+#onb{position:fixed;inset:0;z-index:96;background:var(--scrim);display:flex;align-items:center;justify-content:center;padding:20px}
+.onb-card{background:var(--bg);border-radius:24px;max-width:380px;width:100%;padding:28px 22px 18px;text-align:center;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px;align-items:center}
+.onb-ic{width:68px;height:68px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center}.onb-ic svg{width:34px;height:34px}
+.onb-card h2{margin:0;font-size:22px}.onb-card p{margin:0;color:var(--fg2);font-size:15.5px;line-height:1.45}
+.onb-dots{display:flex;gap:6px}.onb-dots i{width:8px;height:8px;border-radius:50%;background:var(--sep)}.onb-dots i.on{background:var(--accent);width:20px;border-radius:4px}
+.onb-bt{display:flex;justify-content:space-between;width:100%;margin-top:4px}.onb-bt button{font:inherit;font-size:16px;padding:10px 14px;border:0;background:none;color:var(--fg2)}.onb-bt .ok{color:var(--accent);font-weight:700}
+.onb-push{width:100%}
+#legal{position:fixed;inset:0;z-index:97;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center}
+.legal-pane{background:var(--bg);width:100%;max-width:640px;max-height:92%;border-radius:24px 24px 0 0;display:flex;flex-direction:column}
+.legal-pane .bar{display:flex;align-items:center;justify-content:space-between;padding:16px}.legal-pane .bar b{font-size:17px}.legal-pane .bar button{border:0;background:none;color:var(--accent);font:inherit;font-size:16px;font-weight:700}
+.legal-tx{overflow-y:auto;padding:0 20px calc(24px + env(safe-area-inset-bottom,0px));font-size:15px;line-height:1.55}.legal-tx h3{font-size:16px;margin:16px 0 4px}.legal-tx p{margin:0 0 8px}
+@media (min-width:640px){#legal{align-items:center}.legal-pane{border-radius:24px}}
 .li-sec{font-size:12.5px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.04em;padding:12px 14px 4px}
 .li .t{font-size:16px}
 .li.done .t{color:var(--fg2);text-decoration:line-through}
@@ -618,6 +646,10 @@ button.row{width:100%;text-align:left;font:inherit;color:inherit;background:none
   <symbol id="i-ok" viewBox="0 0 24 24"><path d="m5.5 12.5 4.2 4.2L18.5 8"/></symbol>
   <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3.5 13.8 9l5.7 1.8-5.7 1.8L12 18.5l-1.8-5.9L4.5 10.8 10.2 9z"/></symbol>
   <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></symbol>
+  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19.5h16"/><path d="m4.5 15 4.5-4.5 3.5 3 6.5-7"/><path d="M15 6.5h4v4"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.6 3.6 5.5 3.6 8.5s-1.1 5.9-3.6 8.5c-2.5-2.6-3.6-5.5-3.6-8.5S9.5 6.1 12 3.5Z"/></symbol>
+  <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3.5 4.5h2.2l2.2 10.5h10.3l2-7.5H7"/><circle cx="9.5" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></symbol>
+  <symbol id="i-dots" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="2"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="2"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="2"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="2"/></symbol>
   <symbol id="i-list" viewBox="0 0 24 24"><path d="M10 6h10M10 12h10M10 18h10"/><path d="m3.5 6 1.2 1.2L7 5M3.5 12l1.2 1.2L7 11M3.5 18l1.2 1.2L7 17"/></symbol>
   <symbol id="i-note" viewBox="0 0 24 24"><path d="M6 3.5h8.5L18.5 7.5v13H6z"/><path d="M14 3.5v4.5h4.5M9 12h6M9 16h6"/></symbol>
   <symbol id="i-gift" viewBox="0 0 24 24"><path d="M4.5 10.5h15v9.5h-15zM3.5 7.5h17v3h-17zM12 7.5V20"/><path d="M12 7.5C10.5 5 7.5 4.5 7.5 6.2S10 7.5 12 7.5c2 0 4.5-.1 4.5-1.3S13.5 5 12 7.5"/></symbol>
@@ -641,9 +673,12 @@ button.row{width:100%;text-align:left;font:inherit;color:inherit;background:none
     <button data-v="agenda"><svg class="i"><use href="#i-cal"/></svg>Agenda</button>
     <div class="fab-cell"><button id="fab" aria-label="Adicionar"><svg class="i"><use href="#i-plus"/></svg><span>Adicionar</span></button></div>
     <button data-v="assistente"><svg class="i"><use href="#i-spark"/></svg>Assistente</button>
-    <button data-v="financas"><svg class="i"><use href="#i-fin"/></svg>Finanças</button>
+    <button data-v="mais" class="mob-only"><svg class="i"><use href="#i-dots"/></svg>Mais</button>
     <button data-v="tarefas" class="side-only"><svg class="i"><use href="#i-task"/></svg>Tarefas</button>
-    <button data-v="lembretes" class="side-only"><svg class="i"><use href="#i-bell"/></svg>Lembretes</button>
+    <button data-v="financas" class="side-only"><svg class="i"><use href="#i-fin"/></svg>Finanças</button>
+    <button data-v="listas" class="side-only"><svg class="i"><use href="#i-cart"/></svg>Listas e notas</button>
+    <button data-v="invest" class="side-only"><svg class="i"><use href="#i-chart"/></svg>Investimentos</button>
+    <button data-v="mercado" class="side-only"><svg class="i"><use href="#i-globe"/></svg>Economia</button>
     <button data-v="ajustes" class="side-only"><svg class="i"><use href="#i-gear"/></svg>Ajustes</button>
   </nav>
   <main id="view"></main>
@@ -694,7 +729,7 @@ const SB_URL = 'https://tgrfwgzfjrwgkkvpgbqq.supabase.co';
 // chave pública (anon): pode ficar no navegador; quem protege os dados de cada usuário é o RLS do banco
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ3Z3pmanJ3Z2trdnBnYnFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2OTMxMDYsImV4cCI6MjExMDI2OTEwNn0.O2xXMY9NAQSeuxYmbOvT20u9UXaFp9Fr73W2HMcju4Q';
 const sb = window.supabase.createClient(SB_URL, SB_KEY);
-const CATS = {lembrete:'Novo lembrete',compromisso:'Compromisso próximo',vencer:'Conta a vencer',vencida:'Conta vencida',pendente:'Tarefa pendente',concluida:'Tarefa concluída',resposta:'Resposta da IA',resumo:'Resumo diário',sair:'Hora de sair',noticia:'Notícia em destaque',aniversario:'Aniversário',semana:'Resumo da semana',prioritario:'Alerta prioritário'};
+const CATS = {lembrete:'Novo lembrete',compromisso:'Compromisso próximo',vencer:'Conta a vencer',vencida:'Conta vencida',pendente:'Tarefa pendente',concluida:'Tarefa concluída',resposta:'Resposta da IA',resumo:'Resumo diário',sair:'Hora de sair',noticia:'Notícia em destaque',aniversario:'Aniversário',semana:'Resumo da semana',lista:'Lista compartilhada',prioritario:'Alerta prioritário'};
 const defCats = () => Object.fromEntries(Object.keys(CATS).map(k=>[k, k !== 'noticia']));
 const LOCAL = 'meudia.local';
 let session = null;
@@ -706,8 +741,8 @@ const tm = v => (v || '').slice(0,5);
 const MAP = {
   ev:   { table:'events',
           to: r => ({id:r.id, title:r.title, date:r.date, time:tm(r.start_time), end:tm(r.end_time), place:r.place||'', cat:r.category, done:r.done,
-                from:r.travel_from||'auto', plat:r.place_lat ?? null, plon:r.place_lon ?? null, plabel:r.place_label||'', tmin:r.travel_min ?? null, leave:r.leave_at||null, torig:r.travel_origin||'', tsrc:r.travel_source||''}),
-          from: o => ({title:o.title, date:o.date, start_time:o.time, end_time:o.end || null, place:o.place || '', category:o.cat || 'pessoal', done:!!o.done, travel_from:o.from || 'auto', ...(o.pgeoSet ? { place_geo:o.place, place_lat:o.plat, place_lon:o.plon, place_label:o.plabel } : {})}) },
+                from:r.travel_from||'auto', plat:r.place_lat ?? null, plon:r.place_lon ?? null, plabel:r.place_label||'', tmin:r.travel_min ?? null, leave:r.leave_at||null, torig:r.travel_origin||'', tsrc:r.travel_source||'', alert: r.alert_min == null ? '' : String(r.alert_min)}),
+          from: o => ({title:o.title, date:o.date, start_time:o.time, end_time:o.end || null, place:o.place || '', category:o.cat || 'pessoal', done:!!o.done, travel_from:o.from || 'auto', alert_min: o.alert === '' || o.alert == null ? null : Number(o.alert), ...(o.pgeoSet ? { place_geo:o.place, place_lat:o.plat, place_lon:o.plon, place_label:o.plabel } : {})}) },
   task: { table:'tasks',
           to: r => ({id:r.id, title:r.title, due:r.due_date || '', pri:r.priority, cat:r.category, done:r.done, parent:r.parent_id || null}),
           from: o => ({title:o.title, due_date:o.due || null, priority:o.pri || 'media', category:o.cat || 'pessoal', done:!!o.done, done_at:o.done ? new Date().toISOString() : null, parent_id:o.parent || null}) },
@@ -759,7 +794,7 @@ function saveProfile(){
 const TONES = {
   lembrete:[[880,0],[1318,.12]], compromisso:[[659,0],[880,.13],[988,.26]], vencer:[[523,0],[659,.15]],
   vencida:[[440,0],[349,.2]], pendente:[[740,0],[740,.16]], concluida:[[784,0],[1047,.1]],
-  resposta:[[1175,0]], resumo:[[523,0],[659,.12],[784,.24],[1047,.36]], prioritario:[[988,0],[988,.17],[988,.34]], sair:[[587,0],[784,.12],[988,.24],[784,.36]], noticia:[[698,0],[880,.14]], aniversario:[[523,0],[659,.12],[784,.24],[1047,.4]], semana:[[659,0],[523,.15]],
+  resposta:[[1175,0]], resumo:[[523,0],[659,.12],[784,.24],[1047,.36]], prioritario:[[988,0],[988,.17],[988,.34]], sair:[[587,0],[784,.12],[988,.24],[784,.36]], noticia:[[698,0],[880,.14]], aniversario:[[523,0],[659,.12],[784,.24],[1047,.4]], semana:[[659,0],[523,.15]], lista:[[784,0],[988,.1],[1175,.2]],
 };
 // toques curtos que a pessoa pode escolher para cada tipo de alerta
 const SHORT_TONES = {
@@ -937,6 +972,8 @@ function swipeDelete(key){
     restore = () => S.tasks.push(t, ...subs); commit = () => sb.from('tasks').delete().eq('id', id); label = t.parent ? 'Passo excluído' : 'Tarefa excluída'; }
   else if (k === 'note'){ const n = S.notes.find(x => x.id === id); if (!n) return; S.notes = S.notes.filter(x => x !== n);
     restore = () => S.notes.push(n); commit = () => sb.from('notes').delete().eq('id', id); label = 'Nota excluída'; }
+  else if (k === 'ativo'){ const a = (S.watch || []).find(x => x.id === id); if (!a) return; S.watch = S.watch.filter(x => x !== a);
+    restore = () => { S.watch.push(a); S.watch.sort((x, y) => String(x.created_at).localeCompare(String(y.created_at))); }; commit = () => sb.from('watchlist').delete().eq('id', id); label = `${esc(a.symbol)} removido`; }
   else if (k === 'rem'){ const r = S.rems.find(x => x.id === id); if (!r) return; S.rems = S.rems.filter(x => x !== r);
     restore = () => S.rems.push(r); commit = () => sb.from('reminders').delete().eq('id', id); label = 'Lembrete excluído'; }
   else return;
@@ -971,14 +1008,17 @@ document.querySelectorAll('#tabs [data-v]').forEach(b => b.onclick = () => go(b.
 $('#fab').onclick = () => openNewMenu();
 
 function render(){
-  document.querySelectorAll('#tabs [data-v]').forEach(b => { if (b.dataset.v===view) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
-  const V = {inicio:vHome, agenda:vAgenda, assistente:vAssist, tarefas:vTasks, financas:vFin, lembretes:vRems, ajustes:vSettings, admin:vAdmin, clima:vClima, mercado:vMercado, noticias:vNoticias, listas:vListas, lista:vLista}[view] || vHome;
+  const MAIS = ['mais','tarefas','lembretes','financas','listas','lista','invest','mercado','noticias','clima','ajustes','admin'];
+  document.querySelectorAll('#tabs [data-v]').forEach(b => { if (b.dataset.v===view || (b.dataset.v==='mais' && MAIS.includes(view))) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
+  const V = {inicio:vHome, agenda:vAgenda, assistente:vAssist, tarefas:vTasks, financas:vFin, lembretes:vTasks, ajustes:vSettings, mais:vMais, admin:vAdmin, clima:vClima, mercado:vMercado, noticias:vNoticias, listas:vListas, lista:vLista, invest:vInvest}[view] || vHome;
   const m = $('#view'); m.classList.toggle('chat', view==='assistente');
   m.innerHTML = `<div class="wrap">${V()}</div>`;
   bindView();
   if (view==='assistente') bindChat();
-  if (view==='lista') bindLista();
+  if (view==='lista'){ bindLista(); if (listItems(ui.listId).length) swipeHint(); }
+  if (view==='tarefas' && S.tasks.length) swipeHint();
   if (view==='tarefas') bindSubs();
+  if (view==='invest') bindInvest();
 }
 const back = () => `<button class="back" data-go="inicio">${ic('l')}Início</button>`;
 const exBanner = () => S.example ? `<div class="banner"><span style="flex:1">Os itens já preenchidos são exemplos para você testar.</span><button data-act="clear-ex">Remover</button></div>` : '';
@@ -1010,8 +1050,8 @@ function donut(parts){
 /* ---------- Início ---------- */
 function vHome(){
   const n = new Date(), h = n.getHours(), t = today();
-  const ph = dayPhase(h), hi = ph.hi;
-  loadWeather();
+  const ph = dayPhase(h), hi = ph.hi, hp = homePrefs();
+  if (hp.clima) loadWeather();
   const items = progItems(t);
   const doneN = items.filter(i=>i.done).length, lateN = items.filter(i=>i.late).length, leftN = items.length - doneN - lateN;
   const evT = S.events.filter(e=>e.date===t).length;
@@ -1039,24 +1079,23 @@ function vHome(){
       <button class="round avatar" data-go="ajustes" aria-label="Ajustes">${esc(ini)}</button>
     </div>
   </div>
-  <div class="wx-wrap">${wxCard()}
-  ${fam && fam.group && fam.members.length > 1 ? `<button class="famline" data-go="ajustes" aria-label="Minha família"><span class="fam-dots">${fam.members.slice(0,5).map(m => `<span class="fam-av sm">${esc(m.name[0] || '?')}</span>`).join('')}</span><span>${esc(fam.group.name)} · ${fam.members.map(m => esc(nameCase(m.name.split(' ')[0]))).join(', ')}</span></button>` : ''}</div>
-  ${nextLeave()}
-  ${tickerBand()}
-
-  <form class="askbox" id="ask" aria-label="Assistente">
+  <div class="wx-wrap">${hp.clima ? wxCard() : ''}
+  ${hp.familia && fam && fam.group && fam.members.length > 1 ? `<button class="famline" data-go="ajustes" aria-label="Minha família"><span class="fam-dots">${fam.members.slice(0,5).map(m => `<span class="fam-av sm">${esc(m.name[0] || '?')}</span>`).join('')}</span><span>${esc(fam.group.name)} · ${fam.members.map(m => esc(nameCase(m.name.split(' ')[0]))).join(', ')}</span></button>` : ''}</div>
+  ${hp.sair ? nextLeave() : ''}
+  ${hp.indicadores ? tickerBand() : ''}
+  ${hp.assistente ? `<form class="askbox" id="ask" aria-label="Assistente">
     ${ic('spark')}
     <input id="ask-in" placeholder="Fale ou escreva o que precisa" autocomplete="off" aria-label="Pedir ao assistente">
     <button type="button" class="mic" data-mic aria-label="Falar">${ic('mic')}</button>
     <button class="go" aria-label="Enviar">${ic('up')}</button>
-  </form>
-  <div class="sugs3" aria-label="Sugestões">
+  </form>` : ''}
+  ${hp.sugestoes ? `<div class="sugs3" aria-label="Sugestões">
     ${[['cal','Compromissos de amanhã','Quais são meus compromissos amanhã?'],['fin','Quanto gastei no mês?','Quanto gastei este mês?'],['spark','Organize meu dia','Organize meu dia']].map(([i,l,q])=>`<button class="sug3" data-say="${esc(q)}">${ic(i)}<span>${esc(l)}</span>${ic('r','i chev')}</button>`).join('')}
-  </div>
+  </div>` : ''}
 
   ${exBanner()}${pushBanner()}
-
-  <div class="pills" role="group" aria-label="Filtro">
+  ${hp.contas ? billsCard() : ''}
+  ${hp.resumo ? `<div class="pills" role="group" aria-label="Filtro">
     ${[['todas','Todos'],['pessoal','Pessoal'],['trabalho','Trabalho']].map(([k,l])=>`<button data-filter="${k}" aria-pressed="${ui.filter===k}">${l}</button>`).join('')}
   </div>
   <h2 class="h2">${items.length} ${items.length===1?'item':'itens'} para hoje</h2>
@@ -1067,24 +1106,24 @@ function vHome(){
       <div><i style="background:var(--accent)"></i><span><b>${lateN} ${lateN===1?'item':'itens'}</b>atrasados</span></div>
       <div><i style="background:var(--lilac)"></i><span><b>${leftN} ${leftN===1?'item':'itens'}</b>a fazer</span></div>
     </div>
-  </div>
+  </div>` : ''}
 
-  <div class="tiles">
+  ${hp.atalhos ? `<div class="tiles">
     <button class="tile" data-go="agenda"><span class="ic">${ic('cal')}</span><span class="tx"><div class="lab">Agenda</div><div class="n">${evT}</div></span></button>
-    <button class="tile" data-go="tarefas"><span class="ic">${ic('task')}</span><span class="tx"><div class="lab">Tarefas</div><div class="n">${pend}</div></span></button>
+    <button class="tile" data-go="tarefas"><span class="ic">${ic('task')}</span><span class="tx"><div class="lab">Tarefas e lembretes</div><div class="n">${pend + remT}</div></span></button>
     <button class="tile" data-go="financas"><span class="ic">${ic('fin')}</span><span class="tx"><div class="lab">${lateB?`<span style="color:var(--bad)">A pagar · ${lateB} vencida${lateB>1?'s':''}</span>`:'A pagar'}</div><div class="n">${acc(owed)}</div></span></button>
-    <button class="tile" data-go="lembretes"><span class="ic">${ic('bell')}</span><span class="tx"><div class="lab">Lembretes</div><div class="n">${remT}</div></span></button>
-    <button class="tile" data-golistas><span class="ic">${ic('list')}</span><span class="tx"><div class="lab">Listas</div><div class="n">${S.items.filter(i => !i.done).length}</div></span></button>
+    <button class="tile" data-golistas><span class="ic">${ic('cart')}</span><span class="tx"><div class="lab">Listas</div><div class="n">${S.items.filter(i => !i.done).length}</div></span></button>
+    <button class="tile" data-go="invest"><span class="ic">${ic('chart')}</span><span class="tx"><div class="lab">Investimentos</div><div class="n">${(S.watch || []).length || '+'}</div></span></button>
     <button class="tile" data-lnnotes><span class="ic">${ic('note')}</span><span class="tx"><div class="lab">Notas</div><div class="n">${S.notes.length}</div></span></button>
-  </div>
+  </div>` : ''}
 
-  <section>
+  ${hp.programacao ? `<section>
     <div class="sh">Minha programação<button data-go="agenda">Ver agenda</button></div>
     <div class="list">
       ${items.length ? items.map(card).join('') : `<div class="card empty">Nada para hoje${ui.filter!=='todas'?' neste filtro':''}. Toque no + para adicionar.</div>`}
     </div>
-  </section>
-  ${newsBlock()}`;
+  </section>` : ''}
+  ${hp.noticias ? newsBlock() : ''}`;
 }
 
 /* ---------- Agenda ---------- */
@@ -1159,14 +1198,14 @@ function openNewMenu(){
   el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="Adicionar">
     <div class="bar"><span style="min-width:70px"></span><b>Adicionar</b><button class="save" data-x>Fechar</button></div>
     <div class="body">
-      <div class="group">${[['ev','cal','Compromisso'],['task','task','Tarefa'],['rem','bell','Lembrete'],['fin','fin','Conta, despesa ou receita'],['list','list','Lista (mercado, compras…)'],['note','note','Nota']].map(([k,i,l])=>`<button class="row" data-k="${k}"><span class="mi">${ic(i)}</span><span class="main t">${l}</span>${ic('r','i chev')}</button>`).join('')}</div>
+      <div class="group">${[['ev','cal','Compromisso'],['tr','task','Tarefa ou lembrete'],['fin','fin','Conta, despesa ou receita'],['list','cart','Lista (mercado, compras…)'],['note','note','Nota']].map(([k,i,l])=>`<button class="row" data-k="${k}"><span class="mi">${ic(i)}</span><span class="main t">${l}</span>${ic('r','i chev')}</button>`).join('')}</div>
       <div class="group"><button class="row" data-ai><span class="mi">${ic('spark')}</span><span class="main"><div class="t">Pedir ao assistente</div><div class="s">Diga do seu jeito e ele organiza</div></span>${ic('r','i chev')}</button></div>
     </div></div>`;
   el.hidden = false;
   const close = () => { el.hidden = true; el.innerHTML = ''; };
   el.onclick = e => { if (e.target === el) close(); };
   el.querySelector('[data-x]').onclick = close;
-  el.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { close(); const k = b.dataset.k; if (k === 'list') openListForm(null); else if (k === 'note') openNote(null); else openEntity(k); });
+  el.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { close(); const k = b.dataset.k; if (k === 'list') openListForm(null); else if (k === 'note') openNote(null); else if (k === 'tr') openTaskOrRem(); else openEntity(k); });
   el.querySelector('[data-ai]').onclick = () => { close(); go('assistente'); setTimeout(()=>{ const i = $('#chat-in'); if (i) i.focus(); }, 60); };
 }
 
@@ -1175,13 +1214,25 @@ function vTasks(){
   const keep = ui.keep || new Set(), pend = pendingTasks(), done = S.tasks.filter(t=>t.done && !t.parent);
   const list = ui.taskSeg==='pend' ? S.tasks.filter(t => !t.parent && (!t.done || keep.has(t.id))).sort((a,b)=>(a.due||'9999').localeCompare(b.due||'9999') || PRIO_N[a.pri]-PRIO_N[b.pri]) : done;
   const t = today();
+  const remsOpen = S.rems.filter(r => !r.done || keep.has(r.id)).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+  const remRows = ui.taskSeg==='pend' ? remsOpen : S.rems.filter(r => r.done && !keep.has(r.id)).slice(-8).reverse();
+  const remRow = r => `
+    <div class="row ind ${r.done?'done':''}" data-swipe="rem:${r.id}">
+      <button class="check ${r.done?'on':''}" data-toggle="rem:${r.id}" aria-label="${r.done?'Reabrir':'Concluir'} ${esc(r.title)}">${r.done?ic('ok'):''}</button>
+      <button class="main" data-edit="rem:${r.id}" style="text-align:left">
+        <div class="t">${esc(r.title)}</div>
+        <div class="s">${r.date < t && !r.done ? `<span style="color:var(--bad)">Atrasado · ${rel(r.date)}</span>` : rel(r.date).replace(/^./,c=>c.toUpperCase())} às ${r.time} · avisar ${ADV[r.adv]}</div>
+      </button>${ic('bell','i rem-ic')}
+    </div>`;
   return `
-  ${back()}<div class="head"><div><h1 class="lt">Tarefas</h1><div class="sub">${pend.length} pendente${pend.length===1?'':'s'}</div></div>
-    <button class="icon-btn" data-new="task" aria-label="Nova tarefa">${ic('plus')}</button></div>
+  ${back()}<div class="head"><div><h1 class="lt">Tarefas e lembretes</h1><div class="sub">${pend.length} tarefa${pend.length===1?'':'s'} · ${remsOpen.length} lembrete${remsOpen.length===1?'':'s'} com horário</div></div>
+    <button class="icon-btn" data-newtr aria-label="Nova tarefa ou lembrete">${ic('plus')}</button></div>
   <div class="seg" role="group" aria-label="Filtro">
     <button data-seg="pend" aria-pressed="${ui.taskSeg==='pend'}">Pendentes</button>
-    <button data-seg="done" aria-pressed="${ui.taskSeg==='done'}">Concluídas</button>
+    <button data-seg="done" aria-pressed="${ui.taskSeg==='done'}">Concluídos</button>
   </div>
+  ${remRows.length ? `<section><div class="sh">Com horário (avisam no celular)</div><div class="group">${remRows.map(remRow).join('')}</div></section>` : ''}
+  <section><div class="sh">${ui.taskSeg==='pend' ? 'Tarefas' : 'Tarefas concluídas'}</div>
   <div class="group">
     ${list.length ? list.map(x => `
       <div class="row ind ${x.done?'done':''}" data-swipe="task:${x.id}">
@@ -1193,7 +1244,8 @@ function vTasks(){
         ${(() => { const sb2 = subsOf(x.id), dn = sb2.filter(s => s.done).length; return `<button class="test texp" data-texp="${x.id}" aria-expanded="${ui.taskOpen === x.id}" aria-label="Passos de ${esc(x.title)}">${sb2.length ? `${dn}/${sb2.length} passos` : 'Passos'} ${ui.taskOpen === x.id ? '▴' : '▾'}</button>`; })()}
         <span class="dot p-${x.pri}" title="Prioridade ${PRI[x.pri]}"></span>
       </div>${subTasksHtml(x)}`).join('') : `<div class="empty">${ui.taskSeg==='pend' ? 'Tudo feito. Bom trabalho.' : 'Nenhuma tarefa concluída ainda.'}</div>`}
-  </div>`;
+  </div></section>
+  ${ui.taskSeg==='pend' ? birthdaySection() : ''}`;
 }
 
 /* ---------- Finanças ---------- */
@@ -1287,9 +1339,10 @@ function vSettings(){
   </section>
   ${soundsSection()}`;
   if (sub === 'sair') return head('Hora de sair') + travelSection();
-  if (sub === 'aparencia') return head('Aparência') + themeSection();
+  if (sub === 'aparencia') return head('Aparência') + themeSection() + homeSection();
   if (sub === 'familia') return head('Plano Família') + famSection();
-  if (sub === 'sobre') return head('Sobre') + `<section>${devCard()}</section>`;
+  if (sub === 'sobre') return head('Sobre') + `<section>${devCard()}</section>
+  <section><div class="group"><button class="row" data-legal="termos"><span class="main t">Termos de uso</span>${ic('r','i chev')}</button><button class="row" data-legal="privacidade"><span class="main t">Política de privacidade</span>${ic('r','i chev')}</button><button class="row" data-onbagain><span class="main t">Ver as boas-vindas de novo</span>${ic('r','i chev')}</button></div></section>`;
   if (sub === 'conta') return head('Conta e dados') + `
   <section>
     <div class="sh">Perfil</div>
@@ -1303,7 +1356,8 @@ function vSettings(){
     <div class="group"><button class="row" data-act="wipe"><span class="main t danger">${ui.wipe ? 'Toque de novo para apagar tudo' : 'Apagar todos os dados'}</span></button></div>
     <div class="foot">Seus dados ficam na nuvem, protegidos pelo seu login. Só você tem acesso a eles.</div>
   </section>
-  <section><div class="group"><button class="row" data-act="logout"><span class="main t" style="color:var(--accent)">Sair da conta</span></button></div></section>`;
+  <section><div class="group"><button class="row" data-act="logout"><span class="main t" style="color:var(--accent)">Sair da conta</span></button>
+    <button class="row" data-delacc><span class="main"><div class="t danger">Excluir minha conta</div><div class="s">Apaga o login e todos os seus dados. Não dá para desfazer.</div></span></button></div></section>`;
   // menu principal: curto, uma linha por assunto
   const plan = S.plan || 'free', planTxt = plan === 'free' ? 'Grátis' : PLAN_NAME[plan] || plan;
   const ini = (S.name || 'Eu').trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
@@ -1363,6 +1417,10 @@ function bindView(){
   V.querySelectorAll('[data-seg]').forEach(b => b.onclick = () => { ui.taskSeg = b.dataset.seg; render(); });
   V.querySelectorAll('[data-test]').forEach(b => b.onclick = () => play(b.dataset.test, true));
   V.querySelectorAll('[data-lnnotes]').forEach(b => b.onclick = () => { ui.lnTab = 'notas'; go('listas'); });
+  V.querySelectorAll('[data-homeblk]').forEach(c => c.onchange = () => setHomePref(c.dataset.homeblk, c.checked));
+  V.querySelectorAll('[data-newtr]').forEach(b => b.onclick = () => openTaskOrRem());
+  V.querySelectorAll('[data-delacc]').forEach(b => b.onclick = () => openDeleteAccount());
+  V.querySelectorAll('[data-onbagain]').forEach(b => b.onclick = () => showOnboarding(true));
   V.querySelectorAll('[data-lntab]').forEach(b => b.onclick = () => { ui.lnTab = b.dataset.lntab; render(); });
   V.querySelectorAll('[data-newlist]').forEach(b => b.onclick = () => openListForm(null));
   V.querySelectorAll('[data-newnote]').forEach(b => b.onclick = () => openNote(null));
@@ -1524,7 +1582,7 @@ function openForm({title, fields, values={}, onSave, onDelete, saveLabel}){
 }
 
 const FIELDS = {
-  ev: [{k:'title',label:'Título',type:'title',req:1},{type:'break'},{k:'date',label:'Data',type:'date',req:1},{k:'time',label:'Início',type:'time',req:1},{k:'end',label:'Fim',type:'time'},{type:'break'},{k:'place',label:'Local',type:'place',ph:'Local: nome do lugar, endereço ou CEP'},{k:'from',label:'Sair de',type:'select',def:'auto',options:[['auto','Automático'],['casa','Casa'],['trabalho','Trabalho']]},{k:'cat',label:'Categoria',type:'select',def:'pessoal',options:[['pessoal','Pessoal'],['trabalho','Trabalho']]}],
+  ev: [{k:'title',label:'Título',type:'title',req:1},{type:'break'},{k:'date',label:'Data',type:'date',req:1},{k:'time',label:'Início',type:'time',req:1},{k:'end',label:'Fim',type:'time'},{type:'break'},{k:'place',label:'Local',type:'place',ph:'Local: nome do lugar, endereço ou CEP'},{k:'from',label:'Sair de',type:'select',def:'auto',options:[['auto','Automático'],['casa','Casa'],['trabalho','Trabalho']]},{k:'alert',label:'Avisar',type:'select',def:'',options:[['','Padrão (Ajustes)'],['0','No horário'],['5','5 min antes'],['15','15 min antes'],['30','30 min antes'],['60','1 hora antes'],['120','2 horas antes']]},{k:'cat',label:'Categoria',type:'select',def:'pessoal',options:[['pessoal','Pessoal'],['trabalho','Trabalho']]}],
   task: [{k:'title',label:'Título',type:'title',req:1},{type:'break'},{k:'due',label:'Data',type:'date'},{k:'pri',label:'Prioridade',type:'select',def:'media',options:[['alta','Alta'],['media','Média'],['baixa','Baixa']]},{k:'cat',label:'Categoria',type:'select',def:'pessoal',options:[['pessoal','Pessoal'],['trabalho','Trabalho']]}],
   fin: [{k:'type',label:'Tipo',type:'select',def:'conta',options:[['conta','Conta a pagar'],['despesa','Despesa'],['receita','Receita']]},{k:'title',label:'Descrição',type:'title',req:1},{type:'break'},{k:'cents',label:'Valor',type:'money',req:1},{k:'date',label:'Data ou vencimento',type:'date',req:1}],
   rem: [{k:'title',label:'Título',type:'title',req:1},{type:'break'},{k:'date',label:'Data',type:'date',req:1},{k:'time',label:'Hora',type:'time',req:1},{k:'adv',label:'Avisar',type:'select',def:0,options:Object.entries(ADV)}],
@@ -1738,7 +1796,7 @@ function vListas(){
   }
   return head + `<div class="group">${S.lists.length ? S.lists.map(l => {
       const its = listItems(l.id), left = its.filter(i => !i.done).length;
-      return `<button class="row" data-openlist="${l.id}" ${l.user_id === myId() ? `data-swipe="list:${l.id}"` : ''}><span class="set-ic">${ic(l.kind === 'mercado' ? 'fin' : 'list')}</span>
+      return `<button class="row" data-openlist="${l.id}" ${l.user_id === myId() ? `data-swipe="list:${l.id}"` : ''}><span class="set-ic">${ic(l.kind === 'mercado' ? 'cart' : 'list')}</span>
         <span class="main"><div class="t">${esc(l.name)}</div><div class="s">${left ? `${left} ${left === 1 ? 'item faltando' : 'itens faltando'}` : its.length ? 'Tudo marcado' : 'Vazia'}${l.shared ? ' · compartilhada' : ''}${l.user_id !== myId() ? ' · de ' + esc(memberName(l.user_id)) : ''}</div></span>${ic('r','i chev')}</button>`;
     }).join('') : `<div class="empty">Nenhuma lista ainda. Toque no + e crie a do mercado.</div>`}</div>
     <div class="foot">Dentro da lista, toque no microfone e fale tudo de uma vez ("arroz, 2 kg de feijão, leite…"). O app separa item por item.</div>`;
@@ -1778,6 +1836,11 @@ function shareRow(l){
   if (!others.length) return `<div class="group"><button class="row" data-sharepromo><span class="set-ic">${ic('home')}</span><span class="main"><div class="t">Compartilhar lista</div><div class="s">${(S.plan || 'free') === 'familia' ? 'Convide sua dupla no Plano Família para usar a mesma lista' : 'Recurso do Plano Família: a lista fica igual nos dois celulares'}</div></span>${ic('r','i chev')}</button></div>`;
   return `<div class="group">${others.map(m => `<div class="row"><span class="set-ic">${ic('home')}</span><span class="main"><div class="t">Compartilhar com ${esc(nameCase(m.name.split(' ')[0]))}</div><div class="s">${l.shared ? 'Vocês veem e marcam os mesmos itens' : 'Desligado: só você vê esta lista'}</div></span>
     <label class="switch"><input type="checkbox" data-share="${l.id}" ${l.shared ? 'checked' : ''} aria-label="Compartilhar com ${esc(nameCase(m.name.split(' ')[0]))}"><span></span></label></div>`).join('')}</div>`;
+}
+async function openSharedList(id){
+  if (!S.lists.some(l => l.id === id)){ try { await loadAll(); } catch(e) {} }
+  if (!S.lists.some(l => l.id === id)){ toast('Essa lista não está mais compartilhada com você.'); return; }
+  ui.listId = id; ui.liDraft = ''; go('lista');
 }
 let listCh = null, listPoll = null;
 function unwatchList(){ if (listCh){ try { sb.removeChannel(listCh); } catch(e) {} listCh = null; } clearInterval(listPoll); listPoll = null; }
@@ -1874,7 +1937,7 @@ function bindLista(){
   const sh = V.querySelector('[data-share]'); if (sh) sh.onchange = async () => {
     const on = sh.checked, { error } = await sb.from('lists').update({ shared: on }).eq('id', l.id);
     if (error){ sh.checked = !on; toast(esc(/Família/.test(error.message || '') ? 'Compartilhar é do Plano Família.' : 'Não consegui mudar agora. Tente de novo.')); return; }
-    l.shared = on; render(); toast(on ? 'Lista compartilhada. Ela já aparece no celular da sua dupla.' : 'Compartilhamento desligado.');
+    l.shared = on; render(); toast(on ? 'Lista compartilhada. Sua dupla recebe um aviso no celular em até 1 minuto.' : 'Compartilhamento desligado.');
   };
   const pr = V.querySelector('[data-sharepromo]'); if (pr) pr.onclick = () => { if ((S.plan || 'free') === 'familia'){ ui.setSub = 'familia'; view = 'ajustes'; render(); } else openPlans('ajustes'); };
 }
@@ -2037,9 +2100,238 @@ function bindSubs(){
   V.querySelectorAll('[data-subdel]').forEach(b => b.onclick = () => { const id = b.dataset.subdel; S.tasks = S.tasks.filter(t => t.id !== id); render(); persist(dbDel('task', id)); });
 }
 
+/* ---------- Investimentos: só acompanha (código do ativo), sem quantidade nem valor ---------- */
+const INV_KIND = { acao:'Ação', fii:'FII', bdr:'BDR', etf:'ETF' };
+async function loadInvest(){
+  if (!session) return;
+  const { data: w } = await sb.from('watchlist').select('id,symbol,created_at').order('created_at');
+  S.watch = w || [];
+  const syms = S.watch.map(x => x.symbol);
+  if (syms.length){ const { data: q } = await sb.from('asset_quotes').select('*').in('symbol', syms); S.quotes = Object.fromEntries((q || []).map(x => [x.symbol, x])); }
+  S.invAt = Date.now();
+  if (view === 'invest' && $('#sheet').hidden && document.activeElement !== $('#inv-in')) render();
+}
+const pctChip = p => p == null ? '<span class="chip">—</span>' : `<span class="chip ${p > 0 ? 'good' : p < 0 ? 'bad' : ''}">${p > 0 ? '▲' : p < 0 ? '▼' : ''} ${n2(Math.abs(p))}%</span>`;
+function vInvest(){
+  if (!S.watch || Date.now() - (S.invAt || 0) > 60e3) loadInvest();
+  const w = S.watch || [], Q = S.quotes || {}, tab = ui.invTab || 'todos';
+  const kindOf = s => (Q[s] && Q[s].kind) || (/11$/.test(s) ? 'fii' : 'acao');
+  const list = w.filter(x => tab === 'todos' || (tab === 'fii' ? kindOf(x.symbol) === 'fii' : kindOf(x.symbol) !== 'fii'));
+  const qs = w.map(x => Q[x.symbol]).filter(q => q && q.price != null);
+  const up = qs.filter(q => q.pct > 0).length, down = qs.filter(q => q.pct < 0).length;
+  const last = qs.reduce((m, q) => Math.max(m, new Date(q.updated_at).getTime()), 0);
+  return `${back()}<div class="head"><div><h1 class="lt">Investimentos</h1><div class="sub">${last ? 'Atualizado ' + agoTxt(new Date(last).toISOString()) + ' · cotação com até 30 min de atraso' : 'Acompanhe ações e fundos imobiliários'}</div></div></div>
+  ${qs.length ? `<div class="inv-sum"><span>Hoje</span><b class="up">${up} em alta</b><b class="down">${down} em queda</b><span>${qs.length - up - down} estáveis</span></div>` : ''}
+  <form class="askbox" id="inv-form" aria-label="Adicionar ativo">${ic('plus')}<input id="inv-in" placeholder="Código do ativo (ex.: PETR4, MXRF11)" autocomplete="off" autocapitalize="characters" maxlength="12" aria-label="Código do ativo"><button class="go" aria-label="Adicionar">${ic('up')}</button></form>
+  <div class="seg" role="group" aria-label="Mostrar">${[['todos','Todos'],['acoes','Ações'],['fii','FIIs']].map(([k,l]) => `<button data-invtab="${k}" aria-pressed="${tab === k}">${l}</button>`).join('')}</div>
+  <div class="group">${list.length ? list.map(x => { const q = Q[x.symbol];
+      return `<button class="row inv-row" data-inv="${x.symbol}" data-swipe="ativo:${x.id}">
+        <span class="inv-logo">${q && q.logo && /^https:\/\//.test(q.logo) ? `<img src="${esc(q.logo)}" alt="" loading="lazy" onerror="this.remove()">` : esc(x.symbol.slice(0, 2))}</span>
+        <span class="main"><div class="t">${esc(x.symbol)} <small class="inv-k">${INV_KIND[kindOf(x.symbol)] || ''}</small></div><div class="s">${q ? (q.kind === 'invalido' ? 'Código não encontrado na bolsa' : esc(tcase(q.name || ''))) : 'Buscando cotação…'}</div></span>
+        <span class="mk-r">${q && q.price != null ? `${accN(Number(q.price), 2)}${pctChip(q.pct)}` : ''}</span></button>`; }).join('')
+    : `<div class="empty">${w.length ? 'Nenhum ativo nesta aba.' : 'Digite o código de um ativo acima para começar a acompanhar. Você não informa quantidade nem valor investido.'}</div>`}</div>
+  <div class="foot">Preço em R$ por cota/ação e variação do dia em %. Fonte: brapi (B3), com até 30 minutos de atraso, atualizado a cada 15 min no pregão. Toque no ativo para ver o gráfico; arraste para o lado para parar de acompanhar.</div>`;
+}
+function bindInvest(){
+  const f = $('#inv-form'); if (f) f.onsubmit = async e => {
+    e.preventDefault(); const inp = $('#inv-in'), sym = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (sym.length < 4){ toast('Digite o código do ativo, por exemplo PETR4.'); return; }
+    if ((S.watch || []).some(x => x.symbol === sym)){ toast(`${sym} já está na sua lista.`); inp.value = ''; return; }
+    inp.disabled = true; toast(`Procurando ${sym}…`);
+    const { data, error } = await sb.functions.invoke('mercado', { body:{ ativo: sym } });
+    inp.disabled = false;
+    if (error || !data || !data.found){ toast(`Não encontrei ${esc(sym)} na bolsa. Confira o código.`); inp.focus(); return; }
+    const ins = await sb.from('watchlist').insert({ symbol: sym }).select().single();
+    if (ins.error){ toast(/row-level/.test(ins.error.message || '') ? 'Limite de 40 ativos acompanhados.' : 'Não consegui adicionar agora.'); return; }
+    S.watch.push(ins.data); S.quotes = { ...(S.quotes || {}), [sym]: data.quote }; inp.value = ''; render(); toast(`${sym} adicionado`);
+  };
+  $('#view').querySelectorAll('[data-invtab]').forEach(b => b.onclick = () => { ui.invTab = b.dataset.invtab; render(); });
+  $('#view').querySelectorAll('[data-inv]').forEach(b => b.onclick = () => openAsset(b.dataset.inv));
+}
+const INV_RANGES = [['5','7 dias',7],['22','1 mês',31],['66','3 m',93],['130','6 m',186],['260','1 ano',372]];
+async function openAsset(sym){
+  const q = (S.quotes || {})[sym] || { symbol: sym }, el = $('#sheet');
+  let rng = ui.invRange || '22';
+  const since = iso(addDays(new Date(), -380));
+  const { data: h } = await sb.from('asset_history').select('date,close').eq('symbol', sym).gte('date', since).order('date');
+  const hist = (h || []).map(x => [x.date, Number(x.close)]);
+  const paint = () => {
+    const days = INV_RANGES.find(r => r[0] === rng)[2], from = iso(addDays(new Date(), -days));
+    const pts = hist.filter(p => p[0] >= from);
+    const ch = pts.length > 1 ? (pts[pts.length - 1][1] / pts[0][1] - 1) * 100 : null;
+    el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="${esc(sym)}">
+      <div class="bar"><span style="min-width:70px"></span><b>${esc(sym)}</b><button class="save" data-x>Fechar</button></div>
+      <div class="body">
+        <div><div class="s" style="color:var(--fg2)">${esc(tcase(q.name || ''))}</div>
+          <div class="inv-big">${q.price != null ? accN(Number(q.price), 2) : '—'} ${pctChip(q.pct)}</div>
+          <div class="s" style="color:var(--fg2);font-size:13px">Variação de hoje · ${q.updated_at ? 'atualizado ' + agoTxt(q.updated_at) : ''}</div></div>
+        <div class="seg" role="group" aria-label="Período">${INV_RANGES.map(([k, l]) => `<button data-rng="${k}" aria-pressed="${rng === k}">${l}</button>`).join('')}</div>
+        <div class="card inv-chart">${pts.length > 1 ? lineChart(pts) : `<div class="empty">${hist.length ? 'Ainda não há dados para esse período.' : 'O gráfico aparece quando o histórico for carregado (precisa da chave da brapi no servidor) ou depois de alguns dias de acompanhamento.'}</div>`}</div>
+        ${ch != null ? `<div class="row" style="padding:0 4px"><span class="main t">Variação no período</span>${pctChip(Math.round(ch * 100) / 100)}</div>` : ''}
+        <div class="foot">Preço de fechamento de cada dia, em R$. Dados da B3 pela brapi.</div>
+      </div></div>`;
+    el.hidden = false;
+    el.querySelector('[data-x]').onclick = () => { el.hidden = true; el.innerHTML = ''; };
+    el.onclick = e => { if (e.target === el){ el.hidden = true; el.innerHTML = ''; } };
+    el.querySelectorAll('[data-rng]').forEach(b => b.onclick = () => { rng = ui.invRange = b.dataset.rng; paint(); });
+  };
+  paint();
+}
+// gráfico de linha simples (SVG), com mínimo, máximo e datas das pontas
+function lineChart(pts){
+  const W = 320, H = 150, P = 6, vs = pts.map(p => p[1]), mn = Math.min(...vs), mx = Math.max(...vs), span = mx - mn || 1;
+  const x = i => P + i * (W - 2 * P) / (pts.length - 1), y = v => P + (H - 2 * P) * (1 - (v - mn) / span);
+  const d = pts.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p[1]).toFixed(1)}`).join(' ');
+  const up = vs[vs.length - 1] >= vs[0], col = up ? 'var(--good)' : 'var(--bad)';
+  const br = s => { const [yy, mm, dd] = s.split('-'); return `${dd}/${mm}`; };
+  return `<svg viewBox="0 0 ${W} ${H}" class="lc" role="img" aria-label="Preço de ${br(pts[0][0])} a ${br(pts[pts.length - 1][0])}">
+    <path d="${d} L${x(pts.length - 1).toFixed(1)},${H - P} L${P},${H - P} Z" fill="${col}" opacity=".12"/>
+    <path d="${d}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/></svg>
+    <div class="lc-ax"><span>${br(pts[0][0])}</span><span>máx R$ ${n2(mx)} · mín R$ ${n2(mn)}</span><span>${br(pts[pts.length - 1][0])}</span></div>`;
+}
+
+/* ---------- tela inicial: blocos que a pessoa liga e desliga ---------- */
+const HOME_BLOCKS = [
+  ['clima','Previsão do tempo',true], ['familia','Família',true], ['sair','Hora de sair do próximo compromisso',true],
+  ['indicadores','Indicadores (dólar, bolsa, frete…)',true], ['assistente','Campo do assistente',true], ['sugestoes','Sugestões para o assistente',false],
+  ['contas','Contas a vencer',true], ['resumo','Resumo do dia (gráfico)',false], ['programacao','Minha programação de hoje',true],
+  ['atalhos','Atalhos (agenda, tarefas, listas…)',false], ['noticias','Notícias de economia',true],
+];
+function homePrefs(){ let p = {}; try { p = JSON.parse(localStorage.getItem('meudia.home') || '{}') || {}; } catch(e) {} return Object.fromEntries(HOME_BLOCKS.map(([k, , d]) => [k, p[k] === undefined ? d : !!p[k]])); }
+function setHomePref(k, v){ const p = homePrefs(); p[k] = v; try { localStorage.setItem('meudia.home', JSON.stringify(p)); } catch(e) {} }
+function homeSection(){
+  const p = homePrefs();
+  return `<section><div class="sh">Tela inicial</div><div class="group">${HOME_BLOCKS.map(([k, l]) => `<div class="row"><span class="main t">${l}</span><label class="switch"><input type="checkbox" data-homeblk="${k}" ${p[k] ? 'checked' : ''} aria-label="${l}"><span></span></label></div>`).join('')}</div>
+    <div class="foot">Escolha o que aparece no Início. As outras áreas continuam no botão "Mais".</div></section>`;
+}
+// contas que vencem até daqui a 3 dias (e as vencidas)
+function billsCard(){
+  const t = today(), lim = iso(addDays(new Date(), 3));
+  const due = openBills().filter(b => b.date <= lim).sort((a, b) => a.date.localeCompare(b.date));
+  if (!due.length) return '';
+  const late = due.filter(b => b.date < t).length, total = due.reduce((s, b) => s + b.cents, 0);
+  return `<button class="card bills-card" data-go="financas"><span class="set-ic ${late ? 'bad' : ''}">${ic('fin')}</span>
+    <span class="main"><div class="t">${late ? `<span style="color:var(--bad)">${late} conta${late > 1 ? 's' : ''} vencida${late > 1 ? 's' : ''}</span>` : `${due.length} conta${due.length > 1 ? 's' : ''} vence${due.length > 1 ? 'm' : ''} até ${rel(lim)}`}</div>
+    <div class="s">${due.slice(0, 2).map(b => esc(b.title)).join(' · ')}${due.length > 2 ? ` e mais ${due.length - 2}` : ''}</div></span>${acc(total)}</button>`;
+}
+
+/* ---------- botão "Mais": todas as áreas do app ---------- */
+function vMais(){
+  const t = today(), lateB = openBills().filter(b => b.date < t).length;
+  const remT = S.rems.filter(r => r.date === t && !r.done).length, pend = pendingTasks().length;
+  const tile = (go, icon, lab, n, extra = '') => `<button class="tile" ${go}><span class="ic">${ic(icon)}</span><span class="tx"><div class="lab">${lab}</div><div class="n">${n}</div></span></button>${extra}`;
+  return `<div class="head"><div><h1 class="lt">Mais</h1><div class="sub">Todas as áreas do Meu Dia</div></div></div>
+  <div class="tiles">
+    ${tile('data-go="tarefas"', 'task', 'Tarefas', pend + remT)}
+    ${tile('data-go="financas"', 'fin', lateB ? `<span style="color:var(--bad)">Finanças · ${lateB} vencida${lateB > 1 ? 's' : ''}</span>` : 'Finanças', acc(openBills().reduce((s, b) => s + b.cents, 0)))}
+    ${tile('data-golistas', 'cart', 'Listas', S.items.filter(i => !i.done).length)}
+    ${tile('data-lnnotes', 'note', 'Notas', S.notes.length)}
+    ${tile('data-go="invest"', 'chart', 'Investimentos', (S.watch || []).length || '+')}
+    ${tile('data-go="mercado"', 'globe', 'Economia', mkt && mkt.moedas ? 'US$ ' + n2(mkt.moedas.usd.value) : '—')}
+    ${tile('data-go="noticias"', 'news', 'Notícias', '')}
+    ${tile('data-go="clima"', 'spark', 'Clima', wx ? wx.temp + '°C' : '—')}
+    ${tile('data-go="agenda"', 'cal', 'Agenda', S.events.filter(e => e.date === t).length + ' hoje')}
+    ${tile('data-go="ajustes"', 'gear', 'Ajustes', '')}
+  </div>
+  <div class="foot">Dica: em Ajustes → Aparência você escolhe o que aparece na tela inicial.</div>`;
+}
+
+/* ---------- tarefa ou lembrete num formulário só ---------- */
+function openTaskOrRem(){
+  openForm({
+    title: 'Tarefa ou lembrete',
+    fields: [{k:'title',label:'O que fazer',type:'title',req:1},{type:'break'},{k:'date',label:'Data (opcional)',type:'date'},{k:'time',label:'Hora (opcional)',type:'time'},
+      {k:'adv',label:'Avisar',type:'select',def:0,options:Object.entries(ADV)},{k:'pri',label:'Prioridade',type:'select',def:'media',options:[['alta','Alta'],['media','Média'],['baixa','Baixa']]}],
+    values: {},
+    onSave: async v => {
+      if (v.time){
+        const date = v.date || today();
+        S.rems.push(await dbSave('rem', { title: v.title, date, time: v.time, adv: Number(v.adv) || 0 }, true));
+        return `Lembrete criado: ${rel(date)} às ${v.time}. Você recebe o aviso no celular.`;
+      }
+      S.tasks.push(await dbSave('task', { title: v.title, due: v.date || '', pri: v.pri || 'media', cat: 'pessoal' }, true));
+      return 'Tarefa criada. Com hora, ela vira lembrete e avisa no celular.';
+    },
+  });
+}
+
+/* ---------- primeiro uso guiado ---------- */
+const ONB = [
+  ['spark', 'Fale do seu jeito', 'Escreva ou fale "amanhã às 9h dentista" ou "pagar luz dia 20". O assistente organiza e você só confirma.'],
+  ['bell', 'Receba os avisos', 'Ative os alertas para receber lembretes, contas a vencer e a hora de sair, mesmo com o app fechado.'],
+  ['home', 'Deixe na tela de início', 'iPhone: no Safari, toque em Compartilhar e depois em "Adicionar à Tela de Início". Android: menu do Chrome → "Instalar app".'],
+];
+function showOnboarding(force){
+  try { if (!force && localStorage.getItem('meudia.onb')) return; } catch(e) { return; }
+  // não cobre outra janela aberta (ex.: convite da família): tenta de novo depois
+  if (!force && (!$('#sheet').hidden || $('#onb') || view !== 'inicio')){ setTimeout(() => showOnboarding(), 4000); return; }
+  let i = 0; const el = document.createElement('div'); el.id = 'onb'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', 'Boas-vindas');
+  const done = () => { try { localStorage.setItem('meudia.onb', '1'); } catch(e) {} el.remove(); };
+  const paint = () => {
+    const [icon, t, d] = ONB[i];
+    el.innerHTML = `<div class="onb-card"><div class="onb-ic">${ic(icon)}</div><h2>${t}</h2><p>${d}</p>
+      ${i === 1 && pushState() !== 'ativo' ? `<button class="btn-go onb-push" data-onbpush>${ic('bell')}Ativar alertas agora</button>` : ''}
+      <div class="onb-dots">${ONB.map((_, j) => `<i class="${j === i ? 'on' : ''}"></i>`).join('')}</div>
+      <div class="onb-bt"><button data-onbskip>Pular</button><button class="ok" data-onbnext>${i < ONB.length - 1 ? 'Próximo' : 'Começar'}</button></div></div>`;
+    el.querySelector('[data-onbskip]').onclick = done;
+    el.querySelector('[data-onbnext]').onclick = () => { if (i < ONB.length - 1){ i++; paint(); } else done(); };
+    const pb = el.querySelector('[data-onbpush]'); if (pb) pb.onclick = async () => { try { await enablePush(); } catch(e) {} i++; paint(); };
+  };
+  document.body.appendChild(el); paint();
+}
+// dica do gesto de arrastar, uma vez só
+function swipeHint(){
+  try { if (localStorage.getItem('meudia.swhint')) return; localStorage.setItem('meudia.swhint', '1'); } catch(e) { return; }
+  setTimeout(() => toast('Dica: arraste um item para o lado para excluir.', 5000), 600);
+}
+
+/* ---------- termos de uso e política de privacidade ---------- */
+const LEGAL = {
+  termos: ['Termos de uso', `
+<p><b>Meu Dia IA</b> é um aplicativo de organização pessoal (agenda, tarefas, lembretes, finanças pessoais, listas, notas e assistente com inteligência artificial), desenvolvido e mantido por <b>ELO Sistemas de Informação</b> (ELO Consultoria em Gestão Empresarial Ltda.).</p>
+<h3>1. Uso</h3><p>Para usar, você cria uma conta com e-mail e senha e é responsável por manter a senha em sigilo. O app é para uso pessoal e lícito.</p>
+<h3>2. Assistente com IA</h3><p>O assistente sugere registros e respostas a partir do que você escreve ou fala. Nada é salvo sem a sua confirmação. As respostas podem conter erros: confira datas, valores e horários. O app não dá recomendação financeira, médica ou jurídica.</p>
+<h3>3. Informações de mercado e trajeto</h3><p>Cotações, indicadores, notícias, frete e tempo de viagem vêm de fontes públicas de terceiros, podem ter atraso e servem apenas como referência, não como recomendação de investimento.</p>
+<h3>4. Planos</h3><p>O plano grátis tem limite diário de mensagens ao assistente. Os planos Plus e Família são pagos por mês ou por ano, nos valores mostrados na tela de planos. Você pode cancelar quando quiser; o acesso pago vale até o fim do período já pago.</p>
+<h3>5. Disponibilidade</h3><p>Trabalhamos para manter o app no ar, mas podem ocorrer falhas e manutenções. Avisos no celular dependem do aparelho, da internet e das permissões concedidas.</p>
+<h3>6. Encerramento</h3><p>Você pode excluir sua conta a qualquer momento em Ajustes → Conta e dados. Contas usadas para fins ilícitos podem ser suspensas.</p>
+<h3>7. Contato</h3><p>Dúvidas: WhatsApp (22) 99236-9975 · ELO Sistemas de Informação.</p>`],
+  privacidade: ['Política de privacidade', `
+<p>Esta política explica como o <b>Meu Dia IA</b> trata seus dados, de acordo com a Lei Geral de Proteção de Dados (LGPD, Lei 13.709/2018). O controlador dos dados é <b>ELO Sistemas de Informação</b> (ELO Consultoria em Gestão Empresarial Ltda.).</p>
+<h3>1. Dados que coletamos</h3><p>Nome e e-mail da conta; o que você registra (compromissos, tarefas, lembretes, contas, listas, notas, ativos acompanhados); conversas com o assistente; endereços de casa e trabalho que você informar; e a localização do aparelho apenas quando você permite, para calcular a hora de sair e o clima.</p>
+<h3>2. Para que usamos</h3><p>Somente para fazer o app funcionar: mostrar e organizar seus dados, enviar avisos, calcular trajetos e responder no assistente. Não vendemos seus dados e não usamos para publicidade.</p>
+<h3>3. Quem acessa</h3><p>Só você. O administrador do sistema não vê sua agenda, finanças, listas, notas nem conversas. Listas só são vistas por outra pessoa quando você liga o compartilhamento com sua dupla do Plano Família.</p>
+<h3>4. Serviços que processam dados para nós</h3><p>Supabase (banco de dados e login), Anthropic (inteligência artificial do assistente: recebe o texto da conversa para gerar a resposta), serviços de mapas e rotas (endereços e coordenadas para calcular o trajeto), Vercel (hospedagem do app) e o serviço de notificações do seu celular.</p>
+<h3>5. Segurança e guarda</h3><p>Os dados ficam em servidores com acesso protegido por login e regras que separam cada usuário. Guardamos enquanto sua conta existir; avisos lidos e antigos são apagados automaticamente.</p>
+<h3>6. Seus direitos</h3><p>Você pode ver, corrigir e apagar seus dados no próprio app, e excluir a conta inteira em Ajustes → Conta e dados. Para outras solicitações, fale com a gente.</p>
+<h3>7. Contato</h3><p>WhatsApp (22) 99236-9975 · ELO Sistemas de Informação.</p>`],
+};
+function openLegal(k){
+  const [t, html] = LEGAL[k]; const el = document.createElement('div'); el.id = 'legal'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true'); el.setAttribute('aria-label', t);
+  el.innerHTML = `<div class="legal-pane"><div class="bar"><span style="min-width:70px"></span><b>${t}</b><button class="save" data-lx>Fechar</button></div><div class="legal-tx">${html}<p class="s">Versão de novembro de 2026.</p></div></div>`;
+  document.body.appendChild(el); el.querySelector('[data-lx]').onclick = () => el.remove(); el.onclick = e => { if (e.target === el) el.remove(); };
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-legal]'); if (b){ e.preventDefault(); openLegal(b.dataset.legal); } });
+
+/* ---------- excluir a conta (LGPD) ---------- */
+function openDeleteAccount(){
+  openForm({
+    title: 'Excluir minha conta', saveLabel: 'Excluir',
+    fields: [{k:'confirm',label:'Digite EXCLUIR para confirmar',type:'title',req:1}],
+    values: {},
+    onSave: async v => {
+      if (String(v.confirm).trim().toUpperCase() !== 'EXCLUIR'){ const e = new Error('c'); e.userMsg = 'Digite EXCLUIR, em letras maiúsculas, para confirmar.'; throw e; }
+      const { data, error } = await sb.functions.invoke('conta', { body:{ action:'excluir', confirm: v.confirm } });
+      if (error || !data || !data.ok){ let m = 'Não foi possível excluir agora.'; try { const j = await error.context.json(); if (j && j.error) m = j.error; } catch(_) {} const e = new Error('x'); e.userMsg = m; throw e; }
+      setTimeout(() => { try { localStorage.clear(); } catch(_) {} sb.auth.signOut(); }, 300);
+      return 'Sua conta e todos os seus dados foram excluídos.';
+    },
+  });
+}
+
 /* ---------- sino: caixa de notificações (lidas são apagadas) ---------- */
 let inbox = [];
-const INB_IC = { lembrete:'bell', sair:'nav', sairja:'nav', compromisso:'cal', vencer:'fin', vencida:'fin', pendente:'task', resumo:'spark', noticia:'news', aniversario:'gift', semana:'fin' };
+const INB_IC = { lembrete:'bell', sair:'nav', sairja:'nav', compromisso:'cal', vencer:'fin', vencida:'fin', pendente:'task', resumo:'spark', noticia:'news', aniversario:'gift', semana:'fin', lista:'list' };
 async function loadInbox(){
   if (!session) return;
   const { data, error } = await sb.from('inbox').select('id,kind,ref,title,body,url,created_at').order('created_at', { ascending:false }).limit(60);
@@ -2050,8 +2342,9 @@ async function loadInbox(){
 }
 function inboxGo(n){
   if (n.kind === 'sair' || n.kind === 'sairja'){ if (S.events.some(e => e.id === n.ref)) openRoute(n.ref); else go('agenda'); return; }
+  if (n.kind === 'lista'){ openSharedList(n.ref); return; }
   if (n.kind === 'noticia' && /^https?:/.test(n.url || '')){ window.open(n.url, '_blank', 'noopener'); return; }
-  go({ lembrete:'lembretes', compromisso:'agenda', vencer:'financas', vencida:'financas', pendente:'tarefas', aniversario:'lembretes', semana:'financas' }[n.kind] || 'inicio');
+  go({ lembrete:'tarefas', compromisso:'agenda', vencer:'financas', vencida:'financas', pendente:'tarefas', aniversario:'tarefas', semana:'financas' }[n.kind] || 'inicio');
 }
 function openInbox(){
   const el = $('#sheet'), per = 6, seen = new Set();
@@ -2125,10 +2418,11 @@ function renderChat(){
     if (!ev){ addReply({ text:'Esse compromisso não existe mais.' }); return; }
     S.chat.push({ id:'u' + uid(), role:'user', text:c.label });
     try {
-      const rec = await dbSave('rem', { title:ev.title, date:ev.date, time:ev.time, adv:c.adv, done:false }, true);
-      S.rems.push(rec); play('lembrete');
-      addReply({ text:`Lembrete criado. Aviso ${ADV[c.adv]} de **${ev.title}**.` });
-    } catch(e) { console.error(e); addReply({ text:'Não consegui criar o lembrete. Tente de novo.' }); }
+      const prev = ev.alert; ev.alert = String(c.adv);
+      try { await dbSave('ev', ev, false); } catch(err) { ev.alert = prev; throw err; }
+      play('lembrete');
+      addReply({ text:`Pronto. Vou avisar ${ADV[c.adv]} de **${ev.title}**.` });
+    } catch(e) { console.error(e); addReply({ text:'Não consegui ajustar o aviso. Tente de novo.' }); }
   });
   const sc = $('#msgs'); if (sc) sc.scrollTop = sc.scrollHeight;
 }
@@ -2177,6 +2471,7 @@ function renderAuth(){
       ${authMode === 'entrar' ? `<button data-amode="criar">Criar conta grátis</button><button data-amode="esqueci">Esqueci minha senha</button>` : ''}
       ${authMode === 'criar' || authMode === 'esqueci' ? `<button data-amode="entrar">Já tenho conta</button>` : ''}
     </div>
+    ${authMode === 'criar' ? `<p class="foot" style="text-align:center;margin-top:14px">Ao criar a conta, você concorda com os <a href="#" data-legal="termos">Termos de uso</a> e a <a href="#" data-legal="privacidade">Política de privacidade</a>.</p>` : ''}
     <p class="foot" style="text-align:center;margin-top:20px">Seu dia organizado. Sua vida mais leve.</p>
   </div>`;
   document.querySelectorAll('[data-amode]').forEach(b => b.onclick = () => { authMode = b.dataset.amode; authMsg = ''; renderAuth(); });
@@ -2229,9 +2524,10 @@ async function startApp(){
   } else if (!S.isAdmin && navAdm) navAdm.remove();
   view = 'inicio'; render(); checkReminders();
   fam = null; loadFamily().then(checkPendingInvite);
-  saveLocationSoon(); loadMarket(); loadInbox();
+  saveLocationSoon(); loadMarket(); loadInbox(); loadInvest(); setTimeout(() => showOnboarding(), 800);
   sb.rpc('my_recurring_bills').then(r => { if (r.data > 0) loadAll().then(render).catch(() => {}); });
   if (pendingRoute){ const r = pendingRoute; pendingRoute = null; setTimeout(() => openRoute(r), 300); }
+  if (pendingList){ const r = pendingList; pendingList = null; setTimeout(() => openSharedList(r), 300); }
   refreshPush().then(() => { if (pushOn && (view === 'inicio' || view === 'ajustes')) render(); });
 }
 sb.auth.onAuthStateChange((event, s) => {
@@ -2660,7 +2956,8 @@ setInterval(() => {
   document.querySelectorAll('[data-ago]').forEach(e => e.textContent = agoTxt(e.dataset.ago));
 }, 20e3);
 setInterval(() => { if (session && document.visibilityState === 'visible' && (view === 'inicio' || view === 'mercado') && $('#sheet').hidden) loadMarket(true); }, 60e3);
-let pendingRoute = null;
+let pendingRoute = null, pendingList = null;
+try { const q = new URLSearchParams(location.search).get('lista'); if (q){ pendingList = q; history.replaceState(null, '', location.pathname); } } catch(e) {}
 try { const r = new URLSearchParams(location.search).get('rota'); if (r){ pendingRoute = r; history.replaceState(null, '', location.pathname); } } catch(e) {}
 
 /* ---------- busca de local: nome do lugar, endereço ou CEP ---------- */
@@ -2913,12 +3210,14 @@ function vMercado(){
     <button class="icon-btn" data-act="mkt-refresh" aria-label="Atualizar">${ic('refresh')}</button></div>`;
   if (!mkt) return head + '<div class="card empty">Carregando…</div>';
   const m = mkt.moedas, j = mkt.juros, nw = mkt.noticias;
+  const invLink = `<div class="group"><button class="row" data-go="invest"><span class="set-ic">${ic('chart')}</span><span class="main"><div class="t">Meus investimentos</div><div class="s">Acompanhe suas ações e fundos imobiliários</div></span>${ic('r','i chev')}</button></div>`;
   const row = (t, s, right, k) => `<${k ? `button data-ind="${k}"` : 'div'} class="row"><span class="main"><div class="t">${t}${k ? ` ${ic('info','i ib')}` : ''}</div>${s ? `<div class="s">${s}</div>` : ''}</span>${right}</${k ? 'button' : 'div'}>`;
   const cur = (name, x, d, k) => row(name, x.high ? `Máx ${accTxt(x.high, d)} · mín ${accTxt(x.low, d)}` : `Fechamento de ${esc(x.at || '')}`,
     `<span class="mk-r">${accN(x.value, d)}<span class="mk-s ${pctCls(x.pct)}">${pctTxt(x.pct)}</span></span>`, k);
   const pctR = (v, unit) => `<span class="mk-r"><b class="n">${n2(v)}%</b><span class="mk-s">${unit}</span></span>`;
   const bo = mkt.bolsa;
   return `${head}
+  ${invLink}
   ${bo ? bolsaSection(bo) : ''}
   <section><div class="sh">Moedas</div><div class="group">
     ${m ? cur('Dólar comercial', m.usd, 4, 'USD') + cur('Euro', m.eur, 4, 'EUR') + (m.btc ? cur('Bitcoin', m.btc, 2, 'BTC') : '') : '<div class="empty">Sem dados agora.</div>'}
@@ -3144,7 +3443,7 @@ function openBudget(){
 
 /* ---------- alertas no celular (Web Push) ---------- */
 const VAPID_PUB = 'BDgwg6S3VsklJoKIWEaW5-z7AoGakq7C3AiwFy5TrjgAbpbB9Uq0o7DVFlDkSOLHkK7OYRed_DzTjZ5fz7t-39A';
-const PUSH_KINDS = ['lembrete','sair','compromisso','vencer','vencida','pendente','resumo','noticia','aniversario','semana'];
+const PUSH_KINDS = ['lembrete','sair','compromisso','vencer','vencida','pendente','resumo','noticia','aniversario','semana','lista'];
 const PUSH_TXT = {
   ativo: 'Você recebe os alertas mesmo com o app fechado.',
   desligado: 'Toque em Ativar e permita as notificações.',
@@ -3211,7 +3510,8 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('mess
   if (d.type === 'push') setTimeout(loadInbox, 1500);
   if (d.type === 'push' && d.kind === 'sairja'){ const ev = S.events.find(x => x.id === d.ref); alarmFire(ev || null); return; }
   if (d.type === 'push' && document.visibilityState === 'visible' && TONES[d.kind]) play(d.kind);
-  if (d.type === 'open' && d.url){ const r = new URL(d.url, location.origin).searchParams.get('rota'); if (r) openRoute(r); }
+  if (d.type === 'open' && d.url){ const q = new URL(d.url, location.origin).searchParams, r = q.get('rota'), li = q.get('lista'); if (r) openRoute(r); if (li) openSharedList(li); }
+  if (d.type === 'push' && d.kind === 'lista') loadAll().then(() => { if (view === 'listas' || view === 'inicio') render(); }).catch(() => {});
 });
 
 function checkReminders(){
