@@ -116,6 +116,8 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 .askbox input{flex:1;min-width:0;background:none;border:0;outline:0;font-size:16px;padding:9px 4px}
 .askbox input::placeholder{color:var(--fg2)}
 .askbox .mic{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--fg2);flex:none}
+.askbox .mic.rec{background:var(--bad);color:#fff;animation:ouvindo 1.2s ease-in-out infinite}
+@keyframes ouvindo{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--bad) 45%,transparent)}50%{box-shadow:0 0 0 8px transparent}}
 .askbox .go{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;flex:none}
 .askbox svg{width:19px;height:19px}
 .sugs{display:flex;gap:8px;overflow-x:auto;margin:-10px -16px 0;padding:0 16px}
@@ -142,6 +144,10 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 .tile .lab{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px;color:var(--fg2);font-weight:500}
 .tile .n{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
 .tile .acc{min-width:0;width:100%;font-size:15px}
+.tile.kpi .n{font-size:24px}
+.meter{height:10px;border-radius:999px;background:var(--fill);overflow:hidden}
+.meter span{display:block;height:100%;border-radius:999px}
+.icon-btn:disabled{opacity:.4}
 
 .list{display:flex;flex-direction:column;gap:10px}
 .tcard{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:16px;padding:12px 14px 12px 12px;box-shadow:var(--shadow)}
@@ -500,7 +506,7 @@ $('#fab').onclick = () => openNewMenu();
 
 function render(){
   document.querySelectorAll('#tabs [data-v]').forEach(b => { if (b.dataset.v===view) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
-  const V = {inicio:vHome, agenda:vAgenda, assistente:vAssist, tarefas:vTasks, financas:vFin, lembretes:vRems, ajustes:vSettings}[view];
+  const V = {inicio:vHome, agenda:vAgenda, assistente:vAssist, tarefas:vTasks, financas:vFin, lembretes:vRems, ajustes:vSettings, admin:vAdmin}[view] || vHome;
   const m = $('#view'); m.classList.toggle('chat', view==='assistente');
   m.innerHTML = `<div class="wrap">${V()}</div>`;
   bindView();
@@ -810,6 +816,10 @@ function vSettings(){
     </div>
     <div class="foot">Desligar um tipo desliga também o alerta no celular. Com o app fechado, o celular usa o som de notificação dele.</div>
   </section>
+  ${S.isAdmin ? `<section>
+    <div class="sh">Administração</div>
+    <div class="group"><button class="row" data-go="admin"><span class="main"><div class="t">Painel do administrador</div><div class="s">Usuários, planos, gasto da IA e alertas</div></span>${ic('r','i chev')}</button></div>
+  </section>` : ''}
   <section>
     <div class="sh">Dados</div>
     <div class="group">
@@ -869,6 +879,8 @@ function bindView(){
     const a = b.dataset.act;
     if (a==='logout'){ unsubscribePush().finally(() => sb.auth.signOut()); }
     if (a==='push-on'){ enablePush(); }
+    if (a==='admin-refresh'){ adminData = null; adminErr = ''; render(); }
+    if (a==='admin-budget' && adminData){ openBudget(); }
     if (a==='push-test'){ testPush(); }
     if (a==='push-later'){ try { localStorage.setItem('meudia.pushlater', String(Date.now())); } catch(e) {} render(); }
     if (a==='today'){ ui.weekOff = 0; ui.monthOff = 0; ui.agendaSel = today(); render(); }
@@ -882,14 +894,45 @@ function bindView(){
     }
   });
   const nm = $('#set-name'); if (nm) nm.oninput = () => { S.name = nm.value.trim(); saveProfile(); };
+  V.querySelectorAll('[data-auser]').forEach(b => b.onclick = () => openUserPlan(b.dataset.auser));
+  V.querySelectorAll('[data-apage]').forEach(b => b.onclick = () => { adminPage += Number(b.dataset.apage); render(); $('#view').scrollTop = 0; });
   V.querySelectorAll('[data-pref]').forEach(inp => inp.onchange = () => { S[inp.dataset.pref] = inp.value; saveProfile(); toast('Preferência salva'); });
   const snd = $('#set-sounds'); if (snd) snd.onchange = () => { S.sounds = snd.checked; saveProfile(); };
   const ask = $('#ask'); if (ask) ask.onsubmit = e => { e.preventDefault(); const v = $('#ask-in').value; if (!v.trim()) return; send(v); };
 }
-function micNote(){ toast('A conversa por voz chega em breve. Por enquanto, escreva.'); }
+/* ---------- ditado por voz (reconhecimento de fala do próprio aparelho) ---------- */
+const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+let rec = null;
+function micNote(e){ startDictation(e.currentTarget); }
+function startDictation(btn){
+  const form = btn.closest('form'), input = form && form.querySelector('input');
+  if (!input) return;
+  if (!SpeechRec){ toast('Aqui o ditado direto não está disponível. Toque no campo e use o microfone do teclado do celular.'); input.focus(); return; }
+  if (rec){ rec.stop(); return; }
+  const ph = input.placeholder; let finalText = '', failed = false;
+  rec = new SpeechRec(); rec.lang = 'pt-BR'; rec.interimResults = true; rec.continuous = false; rec.maxAlternatives = 1;
+  btn.classList.add('rec'); btn.setAttribute('aria-label', 'Parar de ouvir'); input.placeholder = 'Ouvindo… pode falar';
+  rec.onresult = ev => {
+    let t = ''; for (const r of ev.results) t += r[0].transcript;
+    input.value = t; if (ev.results[ev.results.length - 1].isFinal) finalText = t;
+  };
+  rec.onerror = ev => {
+    failed = true;
+    if (ev.error === 'not-allowed' || ev.error === 'service-not-allowed') toast('Para ditar, permita o uso do microfone. Se não aparecer o pedido, use o microfone do teclado.');
+    else if (ev.error === 'no-speech') toast('Não ouvi nada. Toque no microfone e fale de novo.');
+    else if (ev.error !== 'aborted') toast('Não consegui ouvir. Tente de novo ou use o microfone do teclado.');
+  };
+  rec.onend = () => {
+    btn.classList.remove('rec'); btn.setAttribute('aria-label', 'Falar'); input.placeholder = ph; rec = null;
+    const t = (finalText || input.value).trim();
+    if (t && !failed){ input.value = ''; send(t); }
+  };
+  try { rec.start(); } catch(err) { rec = null; btn.classList.remove('rec'); input.placeholder = ph; toast('Não consegui abrir o microfone. Use o microfone do teclado.'); }
+}
 
 /* ---------- formulários ---------- */
-function openForm({title, fields, values={}, onSave, onDelete}){
+function openForm({title, fields, values={}, onSave, onDelete, saveLabel}){
+  const okLabel = saveLabel || (onDelete ? 'Salvar' : 'Adicionar');
   const el = $('#sheet');
   const f = fd => {
     const v = values[fd.k] ?? fd.def ?? '';
@@ -901,7 +944,7 @@ function openForm({title, fields, values={}, onSave, onDelete}){
   const groups = []; let cur = [];
   fields.forEach(fd => { if (fd.type==='break'){ groups.push(cur); cur=[]; } else cur.push(fd); }); groups.push(cur);
   el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="${esc(title)}">
-    <div class="bar"><button data-x>Cancelar</button><b>${esc(title)}</b><button class="save" data-s>${onDelete?'Salvar':'Adicionar'}</button></div>
+    <div class="bar"><button data-x>Cancelar</button><b>${esc(title)}</b><button class="save" data-s>${okLabel}</button></div>
     <div class="body">
       ${groups.map(g=>`<div class="group">${g.map(f).join('')}</div>`).join('')}
       <div class="err" id="f-err" hidden></div>
@@ -932,7 +975,7 @@ function openForm({title, fields, values={}, onSave, onDelete}){
     if (miss){ const er = $('#f-err'); er.textContent = `Preencha: ${miss.label.toLowerCase()}.`; er.hidden = false; return; }
     const btn = el.querySelector('[data-s]'); if (btn.disabled) return; btn.disabled = true; btn.textContent = 'Salvando…';
     Promise.resolve().then(() => onSave(vals)).then(msg => { close(); save(); render(); if (msg) toast(msg); })
-      .catch(e => { console.error(e); btn.disabled = false; btn.textContent = onDelete ? 'Salvar' : 'Adicionar'; const er = $('#f-err'); er.textContent = 'Não foi possível salvar. Confira a conexão e tente de novo.'; er.hidden = false; });
+      .catch(e => { console.error(e); btn.disabled = false; btn.textContent = okLabel; const er = $('#f-err'); er.textContent = 'Não foi possível salvar. Confira a conexão e tente de novo.'; er.hidden = false; });
   };
   const d = el.querySelector('[data-d]');
   if (d) d.onclick = () => { if (d.dataset.sure){ Promise.resolve().then(onDelete).then(() => { close(); render(); toast('Excluído'); }).catch(e => { console.error(e); toast('Não foi possível excluir. Tente de novo.'); }); } else { d.dataset.sure = 1; d.textContent = 'Toque de novo para excluir'; } };
@@ -1142,6 +1185,12 @@ async function startApp(){
     return;
   }
   if (!S.name && session.user.user_metadata && session.user.user_metadata.name) S.name = session.user.user_metadata.name;
+  try { const { data: adm } = await sb.from('admins').select('user_id').maybeSingle(); S.isAdmin = !!adm; } catch(e) { S.isAdmin = false; }
+  const navAdm = document.querySelector('#tabs [data-v="admin"]');
+  if (S.isAdmin && !navAdm){
+    const b = document.createElement('button'); b.dataset.v = 'admin'; b.className = 'side-only';
+    b.innerHTML = `${ic('fin')}Painel`; b.onclick = () => go('admin'); $('#tabs').appendChild(b);
+  } else if (!S.isAdmin && navAdm) navAdm.remove();
   view = 'inicio'; render(); checkReminders();
   refreshPush().then(() => { if (pushOn && (view === 'inicio' || view === 'ajustes')) render(); });
 }
@@ -1154,6 +1203,107 @@ sb.auth.onAuthStateChange((event, s) => {
 });
 
 /* ---------- disparo de lembretes (com o app aberto) ---------- */
+/* ---------- painel do administrador ---------- */
+let adminData = null, adminErr = '', adminLoading = false, adminPage = 0;
+const PLAN_NAME = { free:'Free', plus:'Plus', familia:'Família' };
+const PLAN_PRICE = { plus:1990, familia:2990 };
+const usd = v => 'US$ ' + Number(v || 0).toLocaleString('pt-BR', { minimumFractionDigits:2, maximumFractionDigits:4 });
+const fmtD = s => s ? new Date(s).toLocaleDateString('pt-BR') : '—';
+const fmtHM = s => { const d = new Date(s); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
+async function loadAdmin(){
+  if (adminLoading) return; adminLoading = true;
+  const { data, error } = await sb.rpc('admin_overview');
+  adminLoading = false;
+  if (error){ console.error(error); adminErr = 'Não foi possível carregar o painel.'; }
+  else { adminData = data; adminErr = ''; }
+  if (view === 'admin') render();
+}
+function vAdmin(){
+  const head = `${back()}<div class="head"><div><h1 class="lt">Painel</h1><div class="sub">${adminData ? 'Atualizado às ' + fmtHM(adminData.generated_at) : 'Visão do administrador'}</div></div>
+    <button class="icon-btn" data-act="admin-refresh" aria-label="Atualizar">${ic('refresh')}</button></div>`;
+  if (!S.isAdmin) return head + '<div class="card empty">Acesso restrito ao administrador.</div>';
+  if (!adminData){
+    if (!adminErr) loadAdmin();
+    return head + `<div class="card empty">${adminErr ? esc(adminErr) + ' Toque em atualizar para tentar de novo.' : 'Carregando…'}</div>`;
+  }
+  const d = adminData, ai = d.ai, fx = Number(ai.usd_brl) || 5.5;
+  const brlOf = v => acc(Math.round(Number(v || 0) * fx * 100));
+  const spent = Number(ai.spent_usd), budget = Number(ai.budget_usd), left = Math.max(budget - spent, 0);
+  const pct = budget ? Math.min(spent / budget * 100, 100) : 0;
+  const plans = Object.assign({ free:0, plus:0, familia:0 }, d.plans);
+  const mrr = plans.plus * PLAN_PRICE.plus + plans.familia * PLAN_PRICE.familia;
+  const per = 8, pages = Math.max(1, Math.ceil(d.list.length / per));
+  adminPage = Math.min(Math.max(adminPage, 0), pages - 1);
+  const rows = d.list.slice(adminPage * per, adminPage * per + per);
+  const kpi = (label, n) => `<div class="tile kpi"><span class="tx"><div class="lab">${label}</div><div class="n">${Number(n).toLocaleString('pt-BR')}</div></span></div>`;
+  return `${head}
+  <div class="tiles">
+    ${kpi('Usuários (un)', d.users)}
+    ${kpi('Novos em 7 dias (un)', d.new_7d)}
+    ${kpi('Ativos em 7 dias (un)', d.active_7d)}
+    ${kpi('Com alertas ativos (un)', d.users_with_alerts)}
+  </div>
+  <section>
+    <div class="sh">Planos</div>
+    <div class="group">
+      ${['free','plus','familia'].map(k => `<div class="row"><span class="main t">${PLAN_NAME[k]}</span><span class="n" style="font-weight:700;font-variant-numeric:tabular-nums">${plans[k]} un</span></div>`).join('')}
+      <div class="row"><span class="main"><div class="t">Receita mensal estimada</div><div class="s">Pelos preços de tabela</div></span>${acc(mrr)}</div>
+    </div>
+    <div class="foot">Plus R$ 19,90 e Família R$ 29,90 por mês. A cobrança real entra com os pagamentos.</div>
+  </section>
+  <section>
+    <div class="sh">Inteligência artificial<button data-act="admin-budget">Atualizar crédito</button></div>
+    <div class="card" style="padding:16px 18px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap"><b>Crédito usado</b><span style="font-variant-numeric:tabular-nums">${usd(spent)} de ${usd(budget)}</span></div>
+      <div class="meter" role="img" aria-label="${Math.round(pct)}% do crédito usado"><span style="width:${pct}%;background:${pct >= 80 ? 'var(--bad)' : 'var(--accent)'}"></span></div>
+      <div class="s" style="color:var(--fg2);font-size:13px">Restam ${usd(left)} · contando desde ${String(ai.since || '').slice(0, 10).split('-').reverse().join('/')}</div>
+    </div>
+    <div class="group" style="margin-top:10px">
+      <div class="row"><span class="main"><div class="t">Gasto hoje</div><div class="s">${usd(ai.today_usd)}</div></span>${brlOf(ai.today_usd)}</div>
+      <div class="row"><span class="main"><div class="t">Gasto em 30 dias</div><div class="s">${usd(ai.d30_usd)}</div></span>${brlOf(ai.d30_usd)}</div>
+      <div class="row"><span class="main t">Mensagens ao assistente em 30 dias</span><span style="font-weight:700;font-variant-numeric:tabular-nums">${ai.msgs_30d} un</span></div>
+      <div class="row"><span class="main t">Alertas enviados em 7 dias</span><span style="font-weight:700;font-variant-numeric:tabular-nums">${d.alerts_7d} un</span></div>
+    </div>
+    <div class="foot">Reais convertidos a R$ ${fx.toLocaleString('pt-BR', { minimumFractionDigits:2 })} por dólar. Ao comprar mais crédito na Anthropic, toque em Atualizar crédito.</div>
+  </section>
+  <section>
+    <div class="sh">Usuários (${d.list.length} un)</div>
+    <div class="group">
+      ${rows.map(u => `<button class="row" data-auser="${u.id}">
+        <span class="main"><div class="t">${esc(u.name || '(sem nome)')}${u.is_admin ? ' <span class="chip tint">admin</span>' : ''}${u.confirmed ? '' : ' <span class="chip warn">e-mail não confirmado</span>'}</div>
+          <div class="s">${esc(u.email || '')} · desde ${fmtD(u.created_at)} · ${u.msgs_30d} msg em 30 dias · ${u.devices} aparelho${u.devices == 1 ? '' : 's'} com alerta</div></span>
+        <span class="right"><span class="chip ${u.plan === 'free' ? '' : 'good'}">${PLAN_NAME[u.plan] || u.plan}</span><span style="font-size:12.5px;color:var(--fg2);font-variant-numeric:tabular-nums">${usd(u.cost_30d)}</span></span>
+      </button>`).join('') || '<div class="empty">Nenhum usuário.</div>'}
+    </div>
+    ${pages > 1 ? `<div class="pager" style="margin-top:10px"><button class="icon-btn" data-apage="-1" aria-label="Página anterior" ${adminPage === 0 ? 'disabled' : ''}>${ic('l')}</button><span class="lbl" style="text-transform:none">Página ${adminPage + 1} de ${pages}</span><button class="icon-btn" data-apage="1" aria-label="Próxima página" ${adminPage >= pages - 1 ? 'disabled' : ''}>${ic('r')}</button></div>` : ''}
+    <div class="foot">Toque em um usuário para mudar o plano manualmente, por exemplo para dar Plus a quem está testando. O painel não mostra agendas, finanças nem conversas dos usuários.</div>
+  </section>`;
+}
+function openUserPlan(id){
+  const u = adminData && adminData.list.find(x => x.id === id); if (!u) return;
+  openForm({
+    title: u.name || u.email, saveLabel: 'Salvar',
+    fields: [{ k:'plan', label:'Plano', type:'select', options:[['free','Free'],['plus','Plus'],['familia','Família']] }],
+    values: { plan: u.plan },
+    onSave: async v => {
+      const { error } = await sb.rpc('admin_set_plan', { p_user: id, p_plan: v.plan }); if (error) throw error;
+      adminData = null; return `Plano alterado para ${PLAN_NAME[v.plan]}`;
+    },
+  });
+}
+function openBudget(){
+  const ai = adminData.ai;
+  openForm({
+    title: 'Crédito da IA', saveLabel: 'Salvar',
+    fields: [{ k:'cents', label:'Crédito comprado (US$)', type:'money', req:1 }, { k:'since', label:'Contar gastos desde', type:'date', req:1 }],
+    values: { cents: Math.round(Number(ai.budget_usd) * 100), since: String(ai.since || '').slice(0, 10) },
+    onSave: async v => {
+      const { error } = await sb.rpc('admin_set_ai_budget', { p_usd: v.cents / 100, p_since: v.since }); if (error) throw error;
+      adminData = null; return 'Crédito atualizado';
+    },
+  });
+}
+
 /* ---------- alertas no celular (Web Push) ---------- */
 const VAPID_PUB = 'BDgwg6S3VsklJoKIWEaW5-z7AoGakq7C3AiwFy5TrjgAbpbB9Uq0o7DVFlDkSOLHkK7OYRed_DzTjZ5fz7t-39A';
 const PUSH_KINDS = ['lembrete','compromisso','vencer','vencida','pendente','resumo'];
