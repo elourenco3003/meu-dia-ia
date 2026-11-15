@@ -469,7 +469,7 @@ button.card:active,button.tile:active,.news-big:active,.tkband:active,.wx:active
 .tk-run{animation-name:tick!important;animation-duration:var(--dur,40s)!important;animation-timing-function:linear!important;animation-iteration-count:infinite!important;will-change:transform}
 .tk-more{flex:none;display:flex;align-items:center;gap:2px;font-size:12.5px;font-weight:700;color:var(--accent);padding:0 10px 0 4px}
 .tk-more .i{width:13px;height:13px}
-.sugs-run{margin:-10px -16px 0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent);mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent)}
+/* (faixa de sugestões antiga) */ .sugs-run{margin:-10px -16px 0;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent);mask-image:linear-gradient(90deg,transparent,#000 16px,#000 calc(100% - 16px),transparent)}
 .sugs-track{display:inline-flex;gap:8px;padding:2px 16px;white-space:nowrap;animation-name:tick!important;animation-duration:45s!important;animation-timing-function:linear!important;animation-iteration-count:infinite!important;will-change:transform}
 .sugs-run:active .sugs-track,.sugs-run:hover .sugs-track{animation-play-state:paused!important}
 .sugs-track .sug{white-space:nowrap}
@@ -480,6 +480,17 @@ button.row{width:100%;text-align:left;font:inherit;color:inherit;background:none
 .info-top{display:flex;flex-direction:column;gap:2px}
 .info-v{font-size:34px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-top:6px}
 .info-row .s{line-height:1.45;font-size:14.5px}
+.sugs3{display:flex;flex-direction:column;gap:8px;margin-top:-10px}
+.sug3{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:14px;background:var(--pill);border:1px solid var(--sep);font:inherit;font-size:14.5px;font-weight:500;color:var(--fg);text-align:left}
+.sug3 .i{width:17px;height:17px;flex:none;color:var(--accent)} .sug3 span{flex:1} .sug3 .chev{color:var(--fg3);width:15px;height:15px}
+.sug3:active{transform:scale(.985)}
+.hc-card{padding:12px 12px 10px}
+.seg.sm button{font-size:13px;padding:7px 6px}
+.hchart{width:100%;height:auto;display:block;margin-top:8px;overflow:visible}
+.hchart text{font-size:10px;fill:var(--fg2);font-family:inherit}
+.hc-b{cursor:pointer} rect.hc-b.on{opacity:1!important;stroke:var(--fg);stroke-width:1} circle.hc-b.on{fill:var(--accent);r:5}
+.hc-cap{font-size:13px;font-weight:600;margin-top:6px;font-variant-numeric:tabular-nums}
+.hc-mm{display:flex;justify-content:space-between;font-size:11.5px;color:var(--fg2);margin-top:2px;font-variant-numeric:tabular-nums}
 </style>
 </head>
 <body>
@@ -754,9 +765,9 @@ function vHome(){
     <button type="button" class="mic" data-mic aria-label="Falar">${ic('mic')}</button>
     <button class="go" aria-label="Enviar">${ic('up')}</button>
   </form>
-  ${(() => { const sg = ['Quais são meus compromissos amanhã?','Minha conta de luz vence dia 12 e é de R$ 180','Quanto gastei este mês?','Organize meu dia','Me lembre de pagar o aluguel dia 5']
-      .map(s=>`<button class="sug" data-say="${esc(s)}">${esc(s)}</button>`).join('');
-    return `<div class="sugs-run" aria-label="Sugestões"><div class="sugs-track">${sg}${sg.replace(/class="sug"/g, 'class="sug" tabindex="-1" aria-hidden="true"')}</div></div>`; })()}
+  <div class="sugs3" aria-label="Sugestões">
+    ${[['cal','Compromissos de amanhã','Quais são meus compromissos amanhã?'],['fin','Quanto gastei no mês?','Quanto gastei este mês?'],['spark','Organize meu dia','Organize meu dia']].map(([i,l,q])=>`<button class="sug3" data-say="${esc(q)}">${ic(i)}<span>${esc(l)}</span>${ic('r','i chev')}</button>`).join('')}
+  </div>
 
   ${exBanner()}${pushBanner()}
 
@@ -1899,7 +1910,7 @@ function tickerBand(){
   const upd = mkt.moedas && mkt.moedas.updated_at;
   return `<div class="tkband" aria-label="Indicadores ao vivo">
     <span class="tk-live"><i></i>AO VIVO<small data-ago="${esc(upd || '')}">${agoTxt(upd)}</small></span>
-    <span class="tk-win"><span class="tk-run" style="--dur:${Math.max(items.length * 3.5, 24)}s">${one}<span class="tk-sep">•</span>${one}<span class="tk-sep">•</span></span></span>
+    <span class="tk-win"><span class="tk-run" style="--dur:${Math.max(items.length * 5, 45)}s">${one}<span class="tk-sep">•</span>${one}<span class="tk-sep">•</span></span></span>
     <button class="tk-more" data-go="mercado">Ver mais${ic('r','i')}</button>
   </div>`;
 }
@@ -1929,16 +1940,56 @@ function indValue(k){
     case 'SELIC': return j && f(`${n2(j.selic.value)}%`, 'ao ano', 'meta definida pelo Copom');
     case 'CDI': return j && f(`${n2(j.cdi.value)}%`, 'ao ano', j.cdi.date);
     case 'IPCA': return j && f(`${n2(j.ipca12.value)}%`, `em 12 meses · ${n2(j.ipca.value)}% no mês`, mesRef(j.ipca.date));
-    case 'IPP': return mc.ipp && f(`${n2(mc.ipp.value)}%`, `no mês${mc.ipp.y12 != null ? ` · ${n2(mc.ipp.y12)}% em 12 meses` : ''}`, mc.ipp.ref);
-    case 'COMERCIO': return mc.comercio && f(`${mc.comercio.value > 0 ? '+' : ''}${n2(mc.comercio.value, 1)}%`, `vendas no mês${mc.comercio.y12 != null ? ` · ${n2(mc.comercio.y12, 1)}% em 12 meses` : ''}`, mc.comercio.ref);
-    case 'IGPM': return mc.igpm && f(`${n2(mc.igpm.value)}%`, 'no mês', mesRef(mc.igpm.date));
-    case 'INCC': return mc.incc && f(`${n2(mc.incc.value)}%`, 'no mês', mesRef(mc.incc.date));
-    case 'DESEMP': return mc.desemprego && f(`${n2(mc.desemprego.value, 1)}%`, 'da força de trabalho', 'trimestre até ' + mesRef(mc.desemprego.date));
-    case 'IBCBR': return mc.ibcbr && f(`${mc.ibcbr.value > 0 ? '+' : ''}${n2(mc.ibcbr.value)}%`, 'em relação ao mês anterior', mesRef(mc.ibcbr.date));
+    case 'IPP': return mc.ipp && f(`${n2(mc.ipp.value)}%`, `no mês${mc.ipp.y12 != null ? ` · ${n2(mc.ipp.y12)}% em 12 meses` : ''}`, ymLbl(mc.ipp.ref));
+    case 'COMERCIO': return mc.comercio && f(`${mc.comercio.value > 0 ? '+' : ''}${n2(mc.comercio.value, 1)}%`, `vendas no mês${mc.comercio.y12 != null ? ` · ${n2(mc.comercio.y12, 1)}% em 12 meses` : ''}`, ymLbl(mc.comercio.ref));
+    case 'IGPM': return mc.igpm && f(`${n2(mc.igpm.value)}%`, `no mês${mc.igpm.y12 != null ? ` · ${n2(mc.igpm.y12)}% em 12 meses` : ''}`, ymLbl(mc.igpm.ref));
+    case 'INCC': return mc.incc && f(`${n2(mc.incc.value)}%`, `no mês${mc.incc.y12 != null ? ` · ${n2(mc.incc.y12)}% em 12 meses` : ''}`, ymLbl(mc.incc.ref));
+    case 'DESEMP': return mc.desemprego && f(`${n2(mc.desemprego.value, 1)}%`, 'da força de trabalho', 'trimestre até ' + ymLbl(mc.desemprego.ref));
+    case 'IBCBR': return mc.ibcbr && f(`${mc.ibcbr.value > 0 ? '+' : ''}${n2(mc.ibcbr.value)}%`, 'em relação ao mês anterior', ymLbl(mc.ibcbr.ref));
   }
   return null;
 }
+// gráfico de linha do tempo: barras (mês a mês) ou linha (acumulado / diário); toque para ver o valor
+function histChart(pts, kind, unit){
+  if (!pts || pts.length < 2) return '<div class="empty">Sem histórico disponível.</div>';
+  const w = 320, h = 130, pl = 6, pr = 6, pt = 14, pb = 22, ys = pts.map(p => p[1]);
+  let lo = Math.min(...ys), hi = Math.max(...ys);
+  if (kind === 'bar'){ lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
+  const span = (hi - lo) || 1, iw = w - pl - pr, ih = h - pt - pb;
+  const Y = v => pt + (hi - v) / span * ih, lbl = p => /^\d{4}-\d{2}$/.test(p[0]) ? ymLbl(p[0]).replace(/\/(\d{2})(\d{2})$/, '/$2') : p[0];
+  const cap = p => `${lbl(p)}: ${n2(p[1])}${unit}`;
+  let g = '';
+  if (kind === 'bar'){
+    const bw = iw / pts.length;
+    g += `<line x1="${pl}" x2="${w - pr}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--sep)"/>`;
+    pts.forEach((p, i) => { const x = pl + i * bw + bw * .18, y0 = Y(0), y1 = Y(p[1]);
+      g += `<rect class="hc-b" data-cap="${esc(cap(p))}" x="${x.toFixed(1)}" y="${Math.min(y0, y1).toFixed(1)}" width="${(bw * .64).toFixed(1)}" height="${Math.max(Math.abs(y1 - y0), 1.5).toFixed(1)}" rx="3" fill="${p[1] < 0 ? 'var(--bad)' : 'var(--accent)'}" opacity="${i === pts.length - 1 ? 1 : .55}"/>`; });
+    pts.forEach((p, i) => { if (i % 2 === (pts.length - 1) % 2) g += `<text x="${(pl + i * bw + bw / 2).toFixed(1)}" y="${h - 6}" text-anchor="middle">${esc(lbl(p).split('/')[0])}</text>`; });
+  } else {
+    const X = i => pl + i / (pts.length - 1) * iw, d = pts.map((p, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(p[1]).toFixed(1)}`).join('');
+    g += `<path d="${d}L${X(pts.length - 1)},${h - pb}L${pl},${h - pb}Z" fill="var(--accent)" opacity=".12"/><path d="${d}" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linejoin="round"/>`;
+    pts.forEach((p, i) => { g += `<circle class="hc-b" data-cap="${esc(cap(p))}" cx="${X(i).toFixed(1)}" cy="${Y(p[1]).toFixed(1)}" r="${i === pts.length - 1 ? 4 : 9}" fill="${i === pts.length - 1 ? 'var(--accent)' : 'transparent'}"/>`; });
+    [0, Math.floor((pts.length - 1) / 2), pts.length - 1].forEach(i => { g += `<text x="${X(i).toFixed(1)}" y="${h - 6}" text-anchor="${i === 0 ? 'start' : i === pts.length - 1 ? 'end' : 'middle'}">${esc(lbl(pts[i]))}</text>`; });
+  }
+  return `<svg class="hchart" viewBox="0 0 ${w} ${h}" role="img" aria-label="Histórico">${g}</svg>
+    <div class="hc-cap" data-capout>${esc(cap(pts[pts.length - 1]))} · toque no gráfico para ver outros ${kind === 'bar' || /^\d{4}-/.test(pts[0][0]) ? 'meses' : 'dias'}</div>
+    <div class="hc-mm"><span>mín ${n2(Math.min(...ys))}${unit}</span><span>máx ${n2(Math.max(...ys))}${unit}</span></div>`;
+}
+function infoChart(k){
+  const hh = mkt && mkt.macro && mkt.macro.hist && mkt.macro.hist[k];
+  if (!hh) return '';
+  const tabs = [];
+  if (hh.m && hh.m.length > 1) tabs.push(['m', k === 'SELIC' ? 'Mês a mês (% a.a.)' : k === 'DESEMP' ? 'Mês a mês' : 'Mês a mês', k === 'SELIC' || k === 'DESEMP' ? 'line' : 'bar']);
+  if (hh.a && hh.a.length > 1) tabs.push(['a', 'Acumulado 12 meses', 'line']);
+  if (hh.d && hh.d.length > 1) tabs.push(['d', 'Últimos 30 dias', 'line']);
+  if (!tabs.length) return '';
+  if (!tabs.some(t => t[0] === ui.infoTab)) ui.infoTab = tabs[0][0];
+  const t = tabs.find(x => x[0] === ui.infoTab), unit = k === 'USD' ? '' : '%';
+  return `<div class="card hc-card">${tabs.length > 1 ? `<div class="seg sm" role="group" aria-label="Período">${tabs.map(([key, l]) => `<button data-itab="${key}" aria-pressed="${ui.infoTab === key}">${l}</button>`).join('')}</div>` : `<div class="mk-l" style="margin-bottom:6px">${t[1]}</div>`}
+    ${histChart(hh[t[0]], t[2], unit)}</div>`;
+}
 function openInfo(k){
+  ui.infoTab = null;
   const s0 = (mkt && mkt.bolsa && [...(mkt.bolsa.altas || []), ...(mkt.bolsa.quedas || []), ...(mkt.bolsa.negociadas || [])].find(x => x.symbol === k)) || null;
   const inf = IND[k] || (s0 && { t:`${s0.symbol} · ${tcase(s0.name)}`, d:'Ação negociada na Bolsa brasileira (B3). O preço muda ao longo do pregão, conforme compra e venda.', r:'Cotação com atraso de cerca de 30 min.' });
   if (!inf) return;
@@ -1950,6 +2001,7 @@ function openInfo(k){
       <div class="info-top"><div class="route-t">${esc(inf.t)}</div>${val ? `<div class="info-v">${esc(val.v)}</div><div class="route-s">${esc(val.unit)}${val.ref ? ' · ' + esc(val.ref) : ''}</div>` : ''}</div>
       <div class="group"><div class="row info-row"><span class="main"><div class="t">O que mede</div><div class="s">${esc(inf.d)}</div></span></div>
         <div class="row info-row"><span class="main"><div class="t">Como ler</div><div class="s">${esc(inf.r)}</div></span></div></div>
+      <div data-chartbox>${infoChart(k)}</div>
       <button class="btn-go" data-allind>Ver todos os indicadores${ic('r','i')}</button>
     </div></div>`;
   el.hidden = false;
@@ -1957,6 +2009,12 @@ function openInfo(k){
   el.onclick = ev => { if (ev.target === el) close(); };
   el.querySelector('[data-x]').onclick = close;
   el.querySelector('[data-allind]').onclick = () => { close(); go('mercado'); };
+  const bindChart = () => {
+    const box = el.querySelector('[data-chartbox]'); if (!box) return;
+    box.querySelectorAll('[data-itab]').forEach(b => b.onclick = () => { ui.infoTab = b.dataset.itab; box.innerHTML = infoChart(k); bindChart(); });
+    box.querySelectorAll('.hc-b').forEach(r => r.onclick = () => { const o = box.querySelector('[data-capout]'); if (o) o.textContent = r.dataset.cap; box.querySelectorAll('.hc-b').forEach(x => x.classList.toggle('on', x === r)); });
+  };
+  bindChart();
 }
 function newsBlock(){
   const nw = mkt && mkt.noticias; if (!nw) return '';
@@ -2021,6 +2079,7 @@ function vNoticias(){
     <div class="foot">Manchetes e fotos da Agência Brasil (EBC). Tocando, abre a matéria no site.</div>
   </section>`;
 }
+const ymLbl = s => { const [y, m] = String(s || '').split('-'); return m ? `${MON[Number(m) - 1]}/${y}` : esc(s); };
 const mesRef = d => { const [, mm, yy] = String(d).split('/'); return mm ? `${MON[Number(mm) - 1]}/${yy}` : esc(d); };
 function spark(pts, up){
   if (!pts || pts.length < 3) return '';
