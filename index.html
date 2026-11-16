@@ -804,8 +804,8 @@ body.mouse .mo-cell:hover{background:color-mix(in srgb,var(--accent) 5%,transpar
   .topbar{margin-bottom:16px;padding-block:10px}
   main{padding-inline:22px!important}
   .topbar{margin-inline:-22px;padding-inline:22px}
-  .wrap.desk.v-tarefas,.wrap.desk.v-lembretes,.wrap.desk.v-mercado,.wrap.desk.v-admin,.wrap.desk.v-ajustes,.wrap.desk.v-invest{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:16px 20px;align-items:start}
-  .wrap.desk.v-tarefas>:not(section),.wrap.desk.v-lembretes>:not(section),.wrap.desk.v-mercado>:not(section),.wrap.desk.v-admin>:not(section),.wrap.desk.v-ajustes>:not(section),.wrap.desk.v-invest>:not(section){grid-column:1/-1}
+  .wrap.desk.v-tarefas,.wrap.desk.v-lembretes,.wrap.desk.v-mercado,.wrap.desk.v-admin,.wrap.desk.v-ajustes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px;align-items:start}
+  .wrap.desk.v-tarefas>:not(section),.wrap.desk.v-lembretes>:not(section),.wrap.desk.v-mercado>:not(section),.wrap.desk.v-admin>:not(section),.wrap.desk.v-ajustes>:not(section){grid-column:1/-1}
   .wrap.desk .head .lt,.wrap.desk .ag-head .lt{font-size:26px}
 }
 .dh{display:flex;gap:24px;align-items:center}
@@ -851,6 +851,89 @@ body.mouse .ncard:hover img{transform:scale(1.04)} body.mouse .ncard:hover{box-s
 .fb-tab td{text-align:right;padding:5px 0} .fb-tab td.neg{color:var(--bad)}
 .fin-side{display:flex;flex-direction:column;gap:16px}
 @media (min-width:1300px){ .fin-desk{grid-template-columns:minmax(0,1fr) 380px} }
+
+.inv-mini{padding-block:9px!important;gap:10px}
+.inv-mini .im-v{width:104px;flex:none} .inv-mini .im-v .acc{width:100%;min-width:0}
+.inv-mini .im-p{width:78px;flex:none;text-align:right}
+.inv-desk{display:flex;flex-direction:column;gap:14px}
+.inv-desk .head{align-items:flex-end} .inv-desk .inv-sum{margin:0}
+.inv-2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+.inv-l{display:flex;flex-direction:column;gap:12px;min-width:0}
+.itab td{height:54px;padding-block:6px}
+.itab{table-layout:fixed}
+.itab .cn{display:flex;gap:10px;align-items:center;min-width:0}
+.itab .c-n .main{display:flex;flex-direction:column;min-width:0}
+.itab .c-n b{font-weight:600;font-size:14.5px} .itab .c-n small{color:var(--fg2);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.itab .inv-logo{width:32px;height:32px;flex:none}
+.itab th,.itab td{padding-inline:8px} .itab th:first-child,.itab td:first-child{padding-left:14px}
+.itab .c-v{width:108px} .itab .c-p{width:88px;text-align:right} .itab th.c-p{text-align:right} .itab .c-k{width:108px;text-align:right} .itab .c-a{width:50px}
+.itab tr.grp td{height:auto;padding:7px 14px;font-size:12px;font-weight:600;color:var(--fg2);background:color-mix(in srgb,var(--fg) 3%,var(--card));cursor:default}
+.itab tbody tr.on{background:var(--accent-soft)} .itab tbody tr.on .c-n b{color:var(--accent)}
+.itab tbody tr.grp:hover{background:none}
+.spk{display:block;margin-left:auto}
+.inv-r{padding:18px;display:flex;flex-direction:column;gap:14px;position:sticky;top:76px;min-width:0}
+.ip-head{display:flex;gap:12px;align-items:center}
+.ip-head .inv-logo{width:44px;height:44px;flex:none}
+.ip-head .main{display:flex;flex-direction:column;min-width:0;flex:1} .ip-head .main b{font-size:20px} .ip-head .main small{color:var(--fg2);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ip-price{display:flex;flex-direction:column;align-items:flex-end;gap:4px} .ip-price b{font-size:24px;font-variant-numeric:tabular-nums}
+.ip-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;border-top:1px solid var(--sep);padding-top:12px}
+.ip-stats small{display:block;font-size:11.5px;color:var(--fg2);margin-bottom:3px} .ip-stats b{font-size:15px;font-variant-numeric:tabular-nums}
+@media (max-width:1299px){ .inv-2{grid-template-columns:minmax(0,1fr)} .inv-r{position:static} }
+
+/* investimentos (computador): tabela de cotações no estilo terminal de mercado */
+.q2{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:28px;align-items:start}
+.q-l{min-width:0;display:flex;flex-direction:column;gap:12px}
+.utabs{display:flex;gap:26px;align-items:flex-end;border-bottom:1px solid var(--sep)}
+.utabs>button{padding:10px 2px 9px;font-size:16px;font-weight:650;color:var(--fg2);border-bottom:3px solid transparent;margin-bottom:-1px}
+.utabs>button[aria-selected=true]{color:var(--accent);border-bottom-color:var(--accent)}
+.utabs>button small{font-weight:600;font-size:12px;background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:1px 7px;margin-left:4px}
+.q-add{margin-left:auto;display:flex;align-items:center;gap:6px;border:1px solid var(--sep);background:var(--card);border-radius:8px;padding:0 4px 0 10px;height:36px;margin-bottom:6px;width:340px}
+.q-add:focus-within{border-color:var(--accent)}
+.q-add .i{width:16px;height:16px;color:var(--fg2)} .q-add input{flex:1;min-width:0;border:0;background:none;outline:none;font-size:14px;text-transform:uppercase} .q-add input::placeholder{text-transform:none}
+.q-addb{height:28px;padding:0 12px;border-radius:6px;background:var(--accent);color:#fff;font-weight:600;font-size:13px}
+.pchips{display:flex;gap:8px;flex-wrap:wrap}
+.pchips button{padding:6px 14px;border-radius:999px;border:1px solid var(--sep);background:var(--card);font-size:13.5px;font-weight:500;color:var(--fg)}
+.pchips button[aria-pressed=true]{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);font-weight:600}
+body.mouse .pchips button:hover{border-color:var(--accent)}
+.qt{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums;background:var(--card);border:1px solid var(--sep);border-radius:8px;overflow:hidden;border-spacing:0}
+.qt th{font-size:12.5px;font-weight:700;color:var(--fg);text-align:right;padding:10px 10px;border-bottom:1px solid var(--sep);white-space:nowrap;user-select:none}
+.qt th[data-qsort]{cursor:pointer} body.mouse .qt th[data-qsort]:hover{color:var(--accent)}
+.qt td{height:41px;padding:0 10px;text-align:right;border-bottom:1px solid var(--sep);white-space:nowrap}
+.qt tbody tr:last-child td{border-bottom:0}
+.qt .q-n{text-align:left;width:100%;max-width:0}
+.qt th.q-n{max-width:none}
+.q-mini .q-n{width:auto}
+.qn{display:flex;gap:9px;align-items:center;min-width:0}
+.qn b{font-weight:650;flex:none} .qn small{color:var(--fg2);font-size:12.5px;overflow:hidden;text-overflow:ellipsis}
+.q-logo{width:22px;height:22px;border-radius:5px;background:var(--accent-soft);color:var(--accent);font-size:9px;font-weight:700;display:grid;place-items:center;overflow:hidden;flex:none}
+.q-logo img{width:100%;height:100%;object-fit:cover}
+.q-logo.big{width:40px;height:40px;border-radius:8px;font-size:13px}
+.qt .up,.q-r .up{color:var(--good)} .qt .down,.q-r .down{color:var(--bad)}
+.qt td b{font-weight:650}
+.qt .q-h{color:var(--fg2);font-size:13px}
+.qt .q-a{width:40px;padding:0 6px;text-align:center}
+.q-star{font-size:18px;line-height:1;color:var(--fg2);width:28px;height:28px;border-radius:6px} .q-star.on{color:#E3A23B}
+body.mouse .q-star:hover{background:var(--accent-soft);color:#E3A23B}
+.qt tr.sel{cursor:pointer} body.mouse .qt tr.sel:hover{background:color-mix(in srgb,var(--accent) 6%,var(--card))}
+.qt tr.on{background:var(--accent-soft)!important} .qt tr.on .qn b{color:var(--accent)}
+.qt tr:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.q-foot{display:flex;align-items:center;justify-content:flex-end;gap:10px;font-size:13px;color:var(--fg2)}
+.q-foot span:first-child{margin-right:auto} .q-foot .icon-btn{width:30px;height:30px;box-shadow:none;border:1px solid var(--sep)} .q-foot .icon-btn[disabled]{opacity:.35;pointer-events:none}
+.q-empty{padding:28px 16px;text-align:center;color:var(--fg2);font-size:14px;background:var(--card);border:1px solid var(--sep);border-radius:8px}
+.q-r{background:var(--card);border:1px solid var(--sep);border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:12px;position:sticky;top:76px;min-width:0}
+.q-r .q-empty{border:0}
+.q-r .ip-head .main b{font-size:18px} .q-r .ip-price{align-items:flex-end} .q-r .ip-price b{font-size:22px} .q-r .ip-price span{font-size:13px;font-weight:650}
+.rtabs{display:flex;gap:16px;border-bottom:1px solid var(--sep)}
+.rtabs button{padding:6px 0;font-size:13px;font-weight:600;color:var(--fg2);border-bottom:2px solid transparent;margin-bottom:-1px}
+.rtabs button[aria-pressed=true]{color:var(--accent);border-bottom-color:var(--accent)}
+.q-follow{align-self:flex-start;padding:6px 12px;border-radius:999px;border:1px solid var(--sep);font-size:13px;font-weight:600;color:var(--fg)}
+.q-follow.on{color:#B97D16;border-color:#E3A23B;background:color-mix(in srgb,#E3A23B 12%,transparent)}
+body.mouse .q-follow:hover{border-color:var(--accent)}
+.q-r .ip-stats{grid-template-columns:repeat(2,1fr);gap:10px 14px}
+.q-mini{border:0;border-top:1px solid var(--sep);border-radius:0;font-size:13px} .q-mini td{height:34px;padding:0 6px}
+.q-mini .q-n{max-width:none}
+@media (min-width:1500px){ .q2{grid-template-columns:minmax(0,1fr) 460px} }
+@media (max-width:1299px){ .q2{grid-template-columns:minmax(0,1fr)} .q-r{position:static} .q-add{width:260px} }
 </style>
 </head>
 <body>
@@ -1245,7 +1328,7 @@ function render(){
   if (desk() && view==='listas' && (ui.lnTab||'listas')==='listas' && S.lists.length){ if (!S.lists.some(l => l.id===ui.listId)) ui.listId = S.lists[0].id; view = 'lista'; }
   if (desk() && view==='lista'){ if (ui.lnTab==='notas' || !S.lists.length) view = 'listas'; else if (!S.lists.some(l => l.id===ui.listId)) ui.listId = S.lists[0].id; }
   const D = desk();
-  const V = {inicio:vHome, agenda:D?vAgendaDesk:vAgenda, assistente:vAssist, tarefas:vTasks, financas:D?vFinDesk:vFin, lembretes:vTasks, ajustes:vSettings, mais:vMais, admin:vAdmin, clima:vClima, mercado:vMercado, noticias:vNoticias, listas:vListas, lista:D?vListaDesk:vLista, invest:vInvest}[view] || vHome;
+  const V = {inicio:vHome, agenda:D?vAgendaDesk:vAgenda, assistente:vAssist, tarefas:vTasks, financas:D?vFinDesk:vFin, lembretes:vTasks, ajustes:vSettings, mais:vMais, admin:vAdmin, clima:vClima, mercado:vMercado, noticias:vNoticias, listas:vListas, lista:D?vListaDesk:vLista, invest:D?vInvestDesk:vInvest}[view] || vHome;
   const m = $('#view'); m.classList.toggle('chat', view==='assistente');
   const hadQ = document.activeElement && document.activeElement.id === 'topq'; hvHide();
   m.innerHTML = `${side() ? topbar() : ''}<div class="wrap v-${view}${D ? ' desk' : ''}">${V()}</div>`;
@@ -1253,6 +1336,8 @@ function render(){
   if (side()){ bindTopbar(); sideFoot(); if (hadQ){ const q = $('#topq'); q.focus(); q.setSelectionRange(q.value.length, q.value.length); tbResults(q.value); } }
   if (D && view==='agenda') bindAgendaDesk();
   if (D && view==='financas') bindFinDesk();
+  if (D && view==='invest') bindInvestDesk();
+  fitCols();
   mouseText(m);
   drawSparks(m);
   if (view==='assistente') bindChat();
@@ -2418,10 +2503,10 @@ async function openAsset(sym){
 }
 // gráfico de linha com escala de preço ao lado, linhas de grade e cursor (mouse ou dedo) mostrando o valor de cada dia
 const brD = s => { const [yy, mm, dd] = s.split('-'); return `${dd}/${mm}`; };
-function lineChart(pts){
+function lineChart(pts, unit){
   const vs = pts.map(p => p[1]), mn = Math.min(...vs), mx = Math.max(...vs);
   return `<div class="lc-box" data-lc role="img" aria-label="Preço de ${brD(pts[0][0])} a ${brD(pts[pts.length - 1][0])}: mínimo R$ ${n2(mn)}, máximo R$ ${n2(mx)}"></div>
-    <div class="lc-ax"><span>máx R$ ${n2(mx)}</span><span class="lc-hint">${matchMedia('(hover:hover)').matches ? 'Passe o mouse no gráfico para ver cada dia' : '⁠Toque e ⁠arraste no gráfico para ver cada dia'}</span><span>mín R$ ${n2(mn)}</span></div>`;
+    <div class="lc-ax"><span>máx ${unit ? n2(mx, 0) + ' ' + unit : 'R$ ' + n2(mx)}</span><span class="lc-hint">${matchMedia('(hover:hover)').matches ? 'Passe o mouse no gráfico para ver cada dia' : '⁠Toque e ⁠arraste no gráfico para ver cada dia'}</span><span>mín ${unit ? n2(mn, 0) + ' ' + unit : 'R$ ' + n2(mn)}</span></div>`;
 }
 function niceStep(raw){ const p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p; }
 const WD = ['dom','seg','ter','qua','qui','sex','sáb'];
@@ -3320,7 +3405,7 @@ async function loadMarket(force){
   try { localStorage.setItem('meudia.mkt', JSON.stringify({ at: mktAt, data: mkt })); } catch(e) {}
   // só redesenha se chegou dado novo e a pessoa não está digitando
   const typing = document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
-  if (changed && !typing && (view === 'inicio' || view === 'mercado' || view === 'noticias')) render();
+  if (changed && !typing && (view === 'inicio' || view === 'mercado' || view === 'noticias' || (view === 'invest' && desk()))) render();
 }
 const n2 = (v, d = 2) => Number(v).toLocaleString('pt-BR', { minimumFractionDigits: d, maximumFractionDigits: d });
 const pctTxt = p => `${p > 0 ? '▲' : p < 0 ? '▼' : ''} ${n2(Math.abs(p))}%`;
@@ -3542,13 +3627,15 @@ const mesRef = d => { const [, mm, yy] = String(d).split('/'); return mm ? `${MO
 function spark(pts, up){
   if (!pts || pts.length < 3) return '';
   const ys = pts.map(p => p[1]), lo = Math.min(...ys), hi = Math.max(...ys);
-  return `<div class="lc-box" data-spark role="img" aria-label="Ibovespa ao longo do dia: mínimo ${n2(lo, 0)}, máximo ${n2(hi, 0)} pontos"></div>
+  return `<div class="lc-box" data-spark role="img" aria-label="Ibovespa${typeof pts[0][0] === 'string' ? ' nos últimos 3 meses' : ' ao longo do dia'}: mínimo ${n2(lo, 0)}, máximo ${n2(hi, 0)} pontos"></div>
     <div class="spark-ax"><span>mín ${n2(lo, 0)} pts</span><span>máx ${n2(hi, 0)} pts</span></div>`;
 }
 const hmT = t => { const d = new Date(t * 1000); return `${pad(d.getHours())}:${pad(d.getMinutes())}`; };
 const CHART_IBOV = { axis: hmT, title: t => `Hoje às ${hmT(t)}`, val: v => `${n2(v, 0)} pts`, step: null, h: W => W > 560 ? 220 : 170 };
+// plano grátis da bolsa: o Ibovespa vem com o fechamento de cada dia (3 meses), não minuto a minuto
+const ibovOpt = pts => pts.length && typeof pts[0][0] === 'string' ? { ...CHART_IBOV, axis: brD, title: dt => { const [yy, mm, dd] = dt.split('-'); return `${dd}/${mm}/${yy}`; }, step: 'No dia' } : CHART_IBOV;
 let sparkRz = 0; addEventListener('resize', () => { clearTimeout(sparkRz); sparkRz = setTimeout(() => drawSparks($('#view')), 150); });
-function drawSparks(root){ root.querySelectorAll('[data-spark]').forEach(b => { const ib = mkt && mkt.bolsa && mkt.bolsa.ibov; if (ib && ib.chart) drawChart(b, ib.chart, CHART_IBOV); }); }
+function drawSparks(root){ root.querySelectorAll('[data-spark]').forEach(b => { const ib = mkt && mkt.bolsa && mkt.bolsa.ibov; if (ib && ib.chart && ib.chart.length > 1) drawChart(b, ib.chart, ibovOpt(ib.chart)); }); }
 // "EDUARDO LOURENÇO" → "Eduardo Lourenço" (da, de, do, das, dos, e ficam minúsculos)
 const nameCase = t => String(t || '').trim().replace(/\s+/g, ' ').toLocaleLowerCase('pt-BR').split(' ')
   .map((w, i) => i > 0 && /^(da|de|do|das|dos|e|di|du)$/.test(w) ? w : w.charAt(0).toLocaleUpperCase('pt-BR') + w.slice(1)).join(' ');
@@ -3987,7 +4074,7 @@ function vHomeDesk(P, hp, items, card){
   const w = S.watch || [], Q = S.quotes || {};
   const colC = `${hp.clima || (hp.familia && fam && fam.group) ? P.wx : ''}${hp.sair ? nextLeave() : ''}
     ${w.length ? `<section><div class="sh">Meus investimentos<button data-go="invest">Ver todos</button></div>
-      <div class="group">${w.slice(0, 6).map(x => { const q = Q[x.symbol]; return `<button class="row inv-mini" data-go="invest"><span class="main"><div class="t">${esc(x.symbol)}</div></span><span class="mk-r">${q && q.price != null ? `${accN(Number(q.price), 2)}${pctChip(q.pct)}` : '<span class="chip">—</span>'}</span></button>`; }).join('')}</div></section>` : ''}`;
+      <div class="group">${w.slice(0, 8).map(x => { const q = Q[x.symbol]; return `<button class="row inv-mini" data-go="invest"><span class="main"><div class="t">${esc(x.symbol)}</div></span>${q && q.price != null ? `<span class="im-v">${accN(Number(q.price), 2)}</span><span class="im-p">${pctChip(q.pct)}</span>` : '<span class="chip">—</span>'}</button>`; }).join('')}</div></section>` : ''}`;
   const nw = mkt && mkt.noticias, nlist = (nw && nw.economia) || [];
   return `<div class="dh">${P.hero}${hp.assistente ? P.ask : ''}</div>
   ${hp.indicadores ? tickerBand() : ''}
@@ -4006,6 +4093,174 @@ function finBars(){
     <table class="fb-tab"><thead><tr><th>Mês</th><th>Receitas (R$)</th><th>Despesas (R$)</th><th>Saldo (R$)</th></tr></thead><tbody>${data.slice(-3).reverse().map(x => `<tr><td>${MON[x.d.getMonth()]}/${String(x.d.getFullYear()).slice(2)}</td><td>${brl(x.rec)}</td><td>${brl(x.desp)}</td><td class="${x.saldo < 0 ? 'neg' : ''}">${brl(x.saldo)}</td></tr>`).join('')}</tbody></table>
   </div></section>`;
 }
+/* ----- Investimentos no computador: tabela de cotações (Meus ativos / Mercado) e painel com gráfico ----- */
+async function loadSpark(){
+  const syms = (S.watch || []).map(x => x.symbol); if (!syms.length || S.sparkBusy) return;
+  S.sparkBusy = true;
+  const { data } = await sb.from('asset_history').select('symbol,date,close').in('symbol', syms).gte('date', iso(addDays(new Date(), -31))).order('date').limit(1000);
+  S.sparkBusy = false; S.sparkAt = Date.now(); S.spark = {};
+  (data || []).forEach(r => { if (r.symbol) (S.spark[r.symbol] = S.spark[r.symbol] || []).push([r.date, Number(r.close)]); });
+  if (view === 'invest' && desk() && $('#sheet').hidden && document.activeElement !== $('#inv-in')) render();
+}
+const fmtVol = v => v == null ? '—' : v >= 1e9 ? n2(v / 1e9, 2) + ' bi' : v >= 1e6 ? n2(v / 1e6, 1) + ' mi' : v >= 1e3 ? n2(v / 1e3, 0) + ' mil' : n2(v, 0);
+const sgn = (v, d = 2) => v == null ? '—' : `${v > 0 ? '+' : v < 0 ? '−' : ''}${n2(Math.abs(v), d)}`;
+const udCls = v => v > 0 ? 'up' : v < 0 ? 'down' : '';
+const qHora = at => { if (!at) return '—'; const d = new Date(at); return iso(d) === today() ? hm(at) : `${pad(d.getDate())}/${pad(d.getMonth() + 1)}`; };
+const invKind = (s, Q) => { const k = Q[s] && Q[s].kind; return INV_KIND[k] ? k : /3[2-5]$/.test(s) ? 'bdr' : /11$/.test(s) ? 'fii' : 'acao'; };
+// linhas da tabela, conforme a aba
+function invRows(){
+  const Q = S.quotes || {}, SP = S.spark || {}, w = S.watch || [], b = (mkt && mkt.bolsa) || {}, main = ui.invMain || 'meus';
+  const watched = Object.fromEntries(w.map(x => [x.symbol, x.id]));
+  if (main === 'meus'){
+    const tab = ui.invTab || 'todos';
+    return w.filter(x => tab === 'todos' || invKind(x.symbol, Q) === tab).map(x => { const q = Q[x.symbol] || {}, p = SP[x.symbol], vs = p ? p.map(y => y[1]) : [];
+      return { sym: x.symbol, wid: x.id, name: q.kind === 'invalido' ? 'Código não encontrado na bolsa' : tcase(q.name || ''), logo: q.logo, price: q.price != null ? Number(q.price) : null, pct: q.pct != null ? Number(q.pct) : null, vol: q.volume != null ? Number(q.volume) : null, at: q.updated_at,
+        lo: vs.length > 1 ? Math.min(...vs) : null, hi: vs.length > 1 ? Math.max(...vs) : null, p30: vs.length > 1 ? Math.round((vs[vs.length - 1] / vs[0] - 1) * 1e4) / 100 : null, dec: 2, chart: true }; });
+  }
+  const mt = ui.mkTab || 'principais', at = b.updated_at;
+  if (mt === 'principais'){
+    const m = mkt && mkt.moedas, j = mkt && mkt.juros, out = [];
+    if (b.ibov && b.ibov.price != null) out.push({ sym:'IBOV', name:'Ibovespa', tag:'pts', price:b.ibov.price, pct:b.ibov.pct, hi:b.ibov.high, lo:b.ibov.low, at, dec:0, chart:true });
+    if (m){ out.push({ sym:'USD', name:'Dólar comercial', tag:'R$', price:m.usd.value, pct:m.usd.pct, hi:m.usd.high, lo:m.usd.low, at:m.updated_at, dec:4 });
+      out.push({ sym:'EUR', name:'Euro', tag:'R$', price:m.eur.value, pct:m.eur.pct, hi:m.eur.high, lo:m.eur.low, at:m.updated_at, dec:4 });
+      if (m.btc) out.push({ sym:'BTC', name:'Bitcoin', tag:'R$', price:m.btc.value, pct:m.btc.pct, hi:m.btc.high, lo:m.btc.low, at:m.updated_at, dec:0 }); }
+    if (j){ out.push({ sym:'SELIC', name:'Selic (meta)', tag:'% a.a.', price:j.selic.value, at:j.updated_at, dec:2 }); out.push({ sym:'CDI', name:'CDI', tag:'% a.a.', price:j.cdi.value, at:j.updated_at, dec:2 });
+      out.push({ sym:'IPCA', name:'IPCA em 12 meses', tag:'%', price:j.ipca12.value, at:j.updated_at, dec:2 }); }
+    return out;
+  }
+  const base = mt === 'fiis' ? (b.fiis || []) : (b.lista || []);
+  let list = base.map(x => ({ sym:x.symbol, wid: watched[x.symbol], name: tcase(x.name || ''), logo:x.logo, price:Number(x.price), pct:Number(x.pct), vol:x.vol, at, dec:2, chart:true }));
+  if (mt === 'altas') list = list.filter(x => x.pct > 0).sort((a, c) => c.pct - a.pct);
+  if (mt === 'quedas') list = list.filter(x => x.pct < 0).sort((a, c) => a.pct - c.pct);
+  return list;
+}
+function vInvestDesk(){
+  if (!S.watch || Date.now() - (S.invAt || 0) > 60e3) loadInvest();
+  if (S.watch && S.watch.length && (!S.spark || Date.now() - (S.sparkAt || 0) > 15 * 60e3)) loadSpark();
+  if (!mkt) loadMarket();
+  const main = ui.invMain || 'meus', mt = ui.mkTab || 'principais', Q = S.quotes || {}, w = S.watch || [];
+  let rows = invRows();
+  const so = ui.invSort;
+  if (so && !(main === 'mercado' && mt === 'principais')) rows = [...rows].sort((a, c) => { const x = a[so.k], y = c[so.k]; return (x == null) - (y == null) || (typeof x === 'string' ? x.localeCompare(y) : x - y) * so.d; });
+  if (!rows.some(r => r.sym === ui.invSel && r.chart)) ui.invSel = (rows.find(r => r.chart) || {}).sym || null;
+  const per = Math.max(8, Math.floor((innerHeight - 372) / 41)), pages = Math.max(1, Math.ceil(rows.length / per));
+  ui.invPage = Math.min(Math.max(0, ui.invPage || 0), pages - 1);
+  const pg = rows.slice(ui.invPage * per, ui.invPage * per + per);
+  const wide = innerWidth >= 1500;
+  const cols = main === 'meus' ? [['name','Nome','l'],['price','Último (R$)'],['abs','Variação (R$)'],['pct','Var. %'], ...(wide ? [['lo','Mín. 30 dias'],['hi','Máx. 30 dias']] : []), ['p30','30 dias %'],['vol','Volume'],['at','Hora']]
+    : mt === 'principais' ? [['name','Nome','l'],['price','Último'], ...(rows.some(r => r.hi != null) ? [['hi','Máxima'],['lo','Mínima']] : []), ['abs','Variação'],['pct','Var. %'],['at','Hora']]
+    : [['name','Nome','l'],['price','Último (R$)'],['abs','Variação (R$)'],['pct','Var. %'],['vol','Volume'],['at','Hora']];
+  const sortable = !(main === 'mercado' && mt === 'principais');
+  const cell = (r, k) => {
+    const abs = r.price != null && r.pct != null ? r.price - r.price / (1 + r.pct / 100) : null;
+    if (k === 'name') return `<td class="q-n"><div class="qn">${r.logo !== undefined ? `<span class="q-logo">${r.logo && /^https:\/\//.test(r.logo) ? `<img src="${esc(r.logo)}" alt="" loading="lazy" onerror="this.remove()">` : esc(r.sym.slice(0, 2))}</span>` : ''}<b>${r.logo !== undefined ? esc(r.sym) : esc(r.name)}</b><small>${r.logo !== undefined ? esc(r.name) : esc(r.tag || '')}</small></div></td>`;
+    if (k === 'price') return `<td>${r.price != null ? n2(r.price, r.dec) : '—'}</td>`;
+    if (k === 'hi' || k === 'lo') return `<td>${r[k] != null ? n2(r[k], r.dec) : '—'}</td>`;
+    if (k === 'abs') return `<td class="${udCls(abs)}">${abs != null ? sgn(abs, r.dec) : '—'}</td>`;
+    if (k === 'pct' || k === 'p30') return `<td class="${udCls(r[k])}"><b>${r[k] != null ? sgn(r[k]) + '%' : '—'}</b></td>`;
+    if (k === 'vol') return `<td>${fmtVol(r.vol)}</td>`;
+    return `<td class="q-h">${qHora(r.at)}</td>`;
+  };
+  const act = r => main === 'meus' ? `<td class="q-a"><button class="q-star on" data-unfollow="${r.wid}" title="Parar de acompanhar ${esc(r.sym)}" aria-label="Parar de acompanhar ${esc(r.sym)}">★</button></td>`
+    : r.logo !== undefined ? `<td class="q-a"><button class="q-star ${r.wid ? 'on' : ''}" ${r.wid ? `data-unfollow="${r.wid}"` : `data-follow="${esc(r.sym)}"`} title="${r.wid ? 'Parar de acompanhar' : 'Acompanhar em Meus ativos'}" aria-label="${r.wid ? 'Parar de acompanhar' : 'Acompanhar'} ${esc(r.sym)}">${r.wid ? '★' : '☆'}</button></td>` : '<td class="q-a"></td>';
+  const qs = w.map(x => Q[x.symbol]).filter(q => q && q.price != null), up = qs.filter(q => q.pct > 0).length, down = qs.filter(q => q.pct < 0).length;
+  const last = main === 'meus' ? qs.reduce((m, q) => Math.max(m, new Date(q.updated_at).getTime()), 0) : (mkt && mkt.bolsa && new Date(mkt.bolsa.updated_at).getTime()) || 0;
+  const chips = main === 'meus' ? [['todos','Todos'],['acao','Ações'],['fii','FIIs'],['etf','ETFs'],['bdr','BDRs']].filter(([k]) => k === 'todos' || k === 'acao' || k === 'fii' || w.some(x => invKind(x.symbol, Q) === k)).map(([k, l]) => `<button data-invtab="${k}" aria-pressed="${(ui.invTab || 'todos') === k}">${l}</button>`).join('')
+    : [['principais','Principais'],['negociadas','Mais negociadas'],['altas','Maiores altas'],['quedas','Maiores quedas'],['fiis','Fundos imobiliários']].map(([k, l]) => `<button data-mktab="${k}" aria-pressed="${mt === k}">${l}</button>`).join('');
+  const empty = main === 'meus' ? (w.length ? 'Nenhum ativo neste filtro.' : 'Você ainda não acompanha nenhum ativo. Digite o código acima ou marque a estrela ☆ na aba Mercado.') : 'Dados do mercado ainda não carregados. Volte em alguns minutos.';
+  return `<div class="inv-desk">
+  <div class="head"><div><h1 class="lt">Investimentos</h1><div class="sub">${last ? 'Atualizado ' + agoTxt(new Date(last).toISOString()) + ' · ' : ''}cotações da B3 com até 30 min de atraso</div></div>
+    ${main === 'meus' && qs.length ? `<div class="inv-sum"><span>Meus ativos hoje</span><b class="up">${up} em alta</b><b class="down">${down} em queda</b><span>${qs.length - up - down} estáveis</span></div>` : ''}</div>
+  <div class="q2"><div class="q-l">
+    <div class="utabs" role="tablist"><button role="tab" data-invmain="meus" aria-selected="${main === 'meus'}">Meus ativos <small>${w.length}</small></button><button role="tab" data-invmain="mercado" aria-selected="${main === 'mercado'}">Mercado</button>
+      ${main === 'meus' ? `<form class="q-add" id="inv-form" aria-label="Adicionar ativo">${ic('plus')}<input id="inv-in" placeholder="Adicionar pelo código (ex.: PETR4)" autocomplete="off" autocapitalize="characters" maxlength="12" aria-label="Código do ativo"><button class="q-addb">Adicionar</button></form>` : ''}</div>
+    <div class="pchips" role="group" aria-label="Filtrar">${chips}</div>
+    ${rows.length ? `<table class="qt"><thead><tr>${cols.map(([k, l, a]) => `<th class="${a === 'l' ? 'q-n' : ''}" ${sortable ? `data-qsort="${k}" tabindex="0" role="button" title="Ordenar por ${l}"` : ''}>${l}${so && so.k === k && sortable ? (so.d > 0 ? ' ▲' : ' ▼') : ''}</th>`).join('')}<th class="q-a"><span class="sr">Acompanhar</span></th></tr></thead>
+      <tbody>${pg.map(r => `<tr class="${r.sym === ui.invSel ? 'on' : ''} ${r.chart ? 'sel' : ''}" ${r.chart ? `data-invsel="${esc(r.sym)}" tabindex="0"` : ''}>${cols.map(([k]) => cell(r, k)).join('')}${act(r)}</tr>`).join('')}</tbody></table>
+      <div class="q-foot"><span>${main === 'mercado' && mt !== 'principais' ? (mt === 'fiis' ? 'Fundos imobiliários mais negociados do dia' : 'Entre as 60 ações mais negociadas do dia') + ' · ' : ''}${rows.length} ${rows.length === 1 ? 'linha' : 'linhas'}</span>
+        ${pages > 1 ? `<button class="icon-btn" data-qpg="-1" ${ui.invPage ? '' : 'disabled'} aria-label="Página anterior">${ic('l')}</button><span>Página ${ui.invPage + 1} de ${pages}</span><button class="icon-btn" data-qpg="1" ${ui.invPage < pages - 1 ? '' : 'disabled'} aria-label="Próxima página">${ic('r')}</button>` : ''}</div>`
+      : `<div class="q-empty">${empty}</div>`}
+    <div class="foot">Variação e Var. % são do dia. Volume = quantidade de papéis negociados no dia. Fonte: brapi (B3), Banco Central e AwesomeAPI. Clique numa linha para ver o gráfico; clique no título de uma coluna para ordenar.</div>
+  </div>
+  <aside class="q-r" id="inv-panel"><div class="q-empty">${ui.invSel ? 'Carregando gráfico…' : 'Escolha um ativo para ver o gráfico.'}</div></aside></div></div>`;
+}
+async function addAsset(sym){
+  if ((S.watch || []).some(x => x.symbol === sym)) return true;
+  toast(`Adicionando ${esc(sym)}…`);
+  const { data, error } = await sb.functions.invoke('mercado', { body:{ ativo: sym } });
+  if (error || !data || !data.found){ toast(`Não encontrei ${esc(sym)} na bolsa.`); return false; }
+  const ins = await sb.from('watchlist').insert({ symbol: sym }).select().single();
+  if (ins.error){ toast(/limite/.test(ins.error.message || '') ? 'Limite de 40 ativos acompanhados.' : 'Não consegui adicionar agora.'); return false; }
+  S.watch = [...(S.watch || []), ins.data]; S.quotes = { ...(S.quotes || {}), [sym]: data.quote }; S.sparkAt = 0;
+  toast(`${esc(sym)} adicionado a Meus ativos`); return true;
+}
+async function paintAssetPanel(){
+  const el = $('#inv-panel'), sym = ui.invSel; if (!el) return;
+  const b = (mkt && mkt.bolsa) || {}, m = mkt && mkt.moedas;
+  const mini = `<table class="qt q-mini"><tbody>${[b.ibov && b.ibov.price != null && ['IBOV','Ibovespa', b.ibov.price, b.ibov.pct, 0], m && ['USD','Dólar', m.usd.value, m.usd.pct, 4], m && ['EUR','Euro', m.eur.value, m.eur.pct, 4]].filter(Boolean).map(([k, l, v, p, d]) =>
+    `<tr class="${k === 'IBOV' ? 'sel' : ''} ${k === sym ? 'on' : ''}" ${k === 'IBOV' ? 'data-panelsel="IBOV" tabindex="0"' : ''}><td class="q-n"><b>${l}</b></td><td>${n2(v, d)}</td><td class="${udCls(p)}"><b>${sgn(p)}%</b></td></tr>`).join('')}</tbody></table>`;
+  if (!sym){ el.innerHTML = `<div class="q-empty">Escolha um ativo para ver o gráfico.</div>${mini}`; return; }
+  let head, pts = [], opt = CHART_DAY, ranges = '', stats = '', note = 'Preço de fechamento de cada dia, em R$. Dados da B3 pela brapi.', hist = [];
+  const hgt = W => Math.max(220, Math.min(380, innerHeight - 560));
+  if (sym === 'IBOV'){
+    const ib = b.ibov || {}; pts = ib.chart || []; opt = { ...ibovOpt(pts), h: hgt }; const dly = pts.length && typeof pts[0][0] === 'string';
+    head = { t:'Ibovespa', s:`Índice da bolsa brasileira · ${dly ? 'últimos 3 meses' : 'hoje'}`, v:`${n2(ib.price, 0)} pts`, p: ib.pct };
+    note = dly ? 'Pontos do Ibovespa no fechamento de cada dia.' : 'Pontos do Ibovespa ao longo do pregão de hoje.';
+    if (pts.length > 1){ const vs = pts.map(p => p[1]), ch = Math.round((vs[vs.length - 1] / vs[0] - 1) * 1e4) / 100;
+      stats = `<div class="ip-stats"><div><small>No período</small><b class="${udCls(ch)}">${sgn(ch)}%</b></div><div><small>Mínimo (pts)</small><b>${n2(Math.min(...vs), 0)}</b></div><div><small>Máximo (pts)</small><b>${n2(Math.max(...vs), 0)}</b></div><div><small>Primeiro dia (pts)</small><b>${n2(vs[0], 0)}</b></div></div>`; }
+  } else {
+    S.hist = S.hist || {}; S.histTried = S.histTried || {};
+    const fetchH = async () => { const { data: h } = await sb.from('asset_history').select('date,close').eq('symbol', sym).gte('date', iso(addDays(new Date(), -380))).order('date'); S.hist[sym] = { at: Date.now(), pts: (h || []).map(x => [x.date, Number(x.close)]) }; };
+    if (!S.hist[sym] || Date.now() - S.hist[sym].at > 15 * 60e3){ await fetchH(); if (ui.invSel !== sym || !$('#inv-panel')) return; }
+    if (S.hist[sym].pts.length < 10 && !S.histTried[sym]){ S.histTried[sym] = true; el.innerHTML = `<div class="q-empty">Buscando o histórico de ${esc(sym)}…</div>${mini}`;
+      try { await sb.functions.invoke('mercado', { body:{ historico: sym } }); await fetchH(); } catch(e) {}
+      if (ui.invSel !== sym || !$('#inv-panel')) return; }
+    hist = S.hist[sym].pts;
+    const row = invRows().find(r => r.sym === sym) || {}, q = (S.quotes || {})[sym] || {};
+    const rng = ui.invRange || '22', days = INV_RANGES.find(r => r[0] === rng)[2], from = iso(addDays(new Date(), -days));
+    pts = hist.filter(p => p[0] >= from); opt = { ...CHART_DAY, h: hgt };
+    head = { t: sym, s: row.name || tcase(q.name || ''), v: (row.price ?? q.price) != null ? 'R$ ' + n2(Number(row.price ?? q.price)) : '—', p: row.pct ?? q.pct, logo: row.logo ?? q.logo, wid: (S.watch || []).find(x => x.symbol === sym) };
+    ranges = `<div class="rtabs" role="group" aria-label="Período">${INV_RANGES.map(([k, l]) => `<button data-rng="${k}" aria-pressed="${rng === k}">${l}</button>`).join('')}</div>`;
+    if (pts.length > 1){ const vs = pts.map(p => p[1]), ch = Math.round((vs[vs.length - 1] / vs[0] - 1) * 1e4) / 100;
+      stats = `<div class="ip-stats"><div><small>No período</small><b class="${udCls(ch)}">${sgn(ch)}%</b></div><div><small>Mínimo (R$)</small><b>${n2(Math.min(...vs))}</b></div><div><small>Máximo (R$)</small><b>${n2(Math.max(...vs))}</b></div><div><small>Primeiro dia (R$)</small><b>${n2(vs[0])}</b></div></div>`; }
+  }
+  el.innerHTML = `<div class="ip-head">${head.logo !== undefined ? `<span class="q-logo big">${head.logo && /^https:\/\//.test(head.logo) ? `<img src="${esc(head.logo)}" alt="" onerror="this.remove()">` : esc(sym.slice(0, 2))}</span>` : ''}
+      <div class="main"><b>${esc(head.t)}</b><small>${esc(head.s)}</small></div>
+      <div class="ip-price"><b>${head.v}</b><span class="${udCls(head.p)}">${head.p != null ? sgn(Number(head.p)) + '% hoje' : ''}</span></div></div>
+    ${sym !== 'IBOV' ? `<button class="q-follow ${head.wid ? 'on' : ''}" ${head.wid ? `data-unfollow="${head.wid.id}"` : `data-follow="${esc(sym)}"`}>${head.wid ? '★ Acompanhando' : '☆ Acompanhar em Meus ativos'}</button>` : ''}
+    ${ranges}
+    <div class="inv-chart">${pts.length > 1 ? lineChart(pts, sym === 'IBOV' ? 'pts' : '') : `<div class="q-empty">${hist.length ? 'Ainda não há dados para esse período.' : sym === 'IBOV' ? 'O gráfico do Ibovespa aparece na próxima atualização do mercado.' : 'Sem histórico disponível para este ativo agora.'}</div>`}</div>
+    ${stats}<div class="foot">${note}</div>${mini}`;
+  el.querySelectorAll('[data-rng]').forEach(x => x.onclick = () => { ui.invRange = x.dataset.rng; paintAssetPanel(); });
+  if (pts.length > 1){ ui.invPts = pts; drawChart(el.querySelector('[data-lc]'), pts, opt); }
+  bindFollow(el);
+  const ps = el.querySelector('[data-panelsel]'); if (ps) ps.onclick = () => { ui.invSel = 'IBOV'; $('#view').querySelectorAll('[data-invsel]').forEach(x => x.classList.toggle('on', x.dataset.invsel === 'IBOV')); paintAssetPanel(); };
+}
+function bindFollow(root){
+  root.querySelectorAll('[data-follow]').forEach(x => x.onclick = async e => { e.stopPropagation(); x.disabled = true; const ok = await addAsset(x.dataset.follow); if (ok || true) render(); });
+  root.querySelectorAll('[data-unfollow]').forEach(x => x.onclick = e => { e.stopPropagation(); swipeDelete('ativo:' + x.dataset.unfollow); });
+}
+function bindInvestDesk(){
+  const V = $('#view');
+  V.querySelectorAll('[data-invmain]').forEach(x => x.onclick = () => { if ((ui.invMain || 'meus') === x.dataset.invmain) return; ui.invMain = x.dataset.invmain; ui.invPage = 0; ui.invSort = null; ui.invSel = null; render(); });
+  V.querySelectorAll('[data-mktab]').forEach(x => x.onclick = () => { ui.mkTab = x.dataset.mktab; ui.invPage = 0; ui.invSort = null; render(); });
+  V.querySelectorAll('[data-invtab]').forEach(x => { const f = x.onclick; x.onclick = e => { ui.invPage = 0; f && f(e); }; });
+  V.querySelectorAll('[data-qpg]').forEach(x => x.onclick = () => { ui.invPage = (ui.invPage || 0) + Number(x.dataset.qpg); render(); });
+  V.querySelectorAll('[data-qsort]').forEach(x => { x.onclick = () => { const k = x.dataset.qsort, so = ui.invSort; ui.invSort = so && so.k === k ? (so.d === (k === 'name' ? 1 : -1) ? { k, d: -so.d } : null) : { k, d: k === 'name' ? 1 : -1 }; ui.invPage = 0; render(); };
+    x.onkeydown = e => { if (e.key === 'Enter') x.click(); }; });
+  V.querySelectorAll('.q-l [data-invsel]').forEach(r => { r.onclick = () => { ui.invSel = r.dataset.invsel; V.querySelectorAll('[data-invsel]').forEach(x => x.classList.toggle('on', x === r)); paintAssetPanel(); };
+    r.onkeydown = e => { if (e.key === 'Enter') r.click(); }; });
+  bindFollow(V.querySelector('.q-l'));
+  paintAssetPanel();
+}
+// colunas das telas em blocos: tantas quantas couberem, sem deixar coluna vazia
+function fitCols(){
+  const wr = $('#view .wrap.desk'); if (!wr) return;
+  if (!/v-(tarefas|lembretes|mercado|admin|ajustes)\b/.test(wr.className)){ wr.style.gridTemplateColumns = ''; return; }
+  const n = wr.querySelectorAll(':scope > section').length, c = Math.max(1, Math.min(n, Math.floor(wr.clientWidth / 360)));
+  wr.style.gridTemplateColumns = `repeat(${c},minmax(0,1fr))`;
+}
+let fitRz = 0; addEventListener('resize', () => { clearTimeout(fitRz); fitRz = setTimeout(() => { fitCols(); if (view === 'invest' && desk() && ui.invPts && document.activeElement !== $('#inv-in')) render(); }, 150); });
 /* ----- Agenda no computador: semana em 7 colunas e mês com os compromissos nas células ----- */
 function agendaItems(d){
   return [
