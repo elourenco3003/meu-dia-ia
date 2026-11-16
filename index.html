@@ -753,7 +753,7 @@ body.mouse .wk-ev:hover{filter:brightness(.95)}
 .mo{padding:0;overflow:hidden}
 .mo-top{display:grid;grid-template-columns:repeat(7,1fr);font-size:12px;color:var(--fg2);text-transform:uppercase;letter-spacing:.04em;padding:10px 0;text-align:center;border-bottom:1px solid var(--sep)}
 .mo-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
-.mo-cell{min-height:118px;border-left:1px solid var(--sep);border-top:1px solid var(--sep);padding:4px;display:flex;flex-direction:column;gap:3px;cursor:pointer;min-width:0}
+.mo-cell{min-height:var(--moh,100px);overflow:hidden;border-left:1px solid var(--sep);border-top:1px solid var(--sep);padding:4px;display:flex;flex-direction:column;gap:3px;cursor:pointer;min-width:0}
 .mo-cell:nth-child(7n+1){border-left:0}
 .mo-grid .mo-cell:nth-child(-n+7){border-top:0}
 body.mouse .mo-cell:hover{background:color-mix(in srgb,var(--accent) 5%,transparent)}
@@ -804,8 +804,8 @@ body.mouse .mo-cell:hover{background:color-mix(in srgb,var(--accent) 5%,transpar
   .topbar{margin-bottom:16px;padding-block:10px}
   main{padding-inline:22px!important}
   .topbar{margin-inline:-22px;padding-inline:22px}
-  .wrap.desk.v-tarefas,.wrap.desk.v-lembretes,.wrap.desk.v-mercado,.wrap.desk.v-admin,.wrap.desk.v-ajustes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px;align-items:start}
-  .wrap.desk.v-tarefas>:not(section),.wrap.desk.v-lembretes>:not(section),.wrap.desk.v-mercado>:not(section),.wrap.desk.v-admin>:not(section),.wrap.desk.v-ajustes>:not(section){grid-column:1/-1}
+  .wrap.desk.v-tarefas,.wrap.desk.v-lembretes,.wrap.desk.v-admin,.wrap.desk.v-ajustes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px;align-items:start}
+  .wrap.desk.v-tarefas>:not(section),.wrap.desk.v-lembretes>:not(section),.wrap.desk.v-admin>:not(section),.wrap.desk.v-ajustes>:not(section){grid-column:1/-1}
   .wrap.desk .head .lt,.wrap.desk .ag-head .lt{font-size:26px}
 }
 .dh{display:flex;gap:24px;align-items:center}
@@ -966,6 +966,14 @@ body.mouse .kc:hover{box-shadow:0 3px 10px rgba(20,24,60,.18)}
 .k-empty{font-size:12.5px;color:var(--fg2);text-align:center;padding:12px 6px;border:1px dashed var(--sep);border-radius:8px}
 .k-add{display:flex;gap:6px;align-items:center;font-size:13px;font-weight:600;color:var(--fg2);padding:6px 4px;border-radius:8px}
 .k-add .i{width:15px;height:15px} .k-add:hover{background:var(--card);color:var(--accent)}
+
+.wk-body .wk-row{min-height:var(--wkh,40px)}
+.wk-body .wk-cell{min-height:0}
+.wk.tight .wk-ev small{display:none} .wk.tight .wk-ev{padding:1px 6px;flex-direction:row;align-items:center} .wk.tight .wk-main{flex-direction:row;gap:6px;align-items:center}
+.wk.tight .wk-day{flex-direction:row;justify-content:center;gap:8px;padding:6px 0} .wk.tight .wk-day b{width:28px;height:28px;font-size:15px}
+
+.utabs>button .i{width:14px;height:14px;vertical-align:-2px;opacity:.7}
+.eco-d{font-size:13.5px;line-height:1.5;color:var(--fg);margin:0} .eco-r{color:var(--fg2)}
 </style>
 </head>
 <body>
@@ -1360,7 +1368,7 @@ function render(){
   if (desk() && view==='listas' && (ui.lnTab||'listas')==='listas' && S.lists.length){ if (!S.lists.some(l => l.id===ui.listId)) ui.listId = S.lists[0].id; view = 'lista'; }
   if (desk() && view==='lista'){ if (ui.lnTab==='notas' || !S.lists.length) view = 'listas'; else if (!S.lists.some(l => l.id===ui.listId)) ui.listId = S.lists[0].id; }
   const D = desk();
-  const V = {inicio:vHome, agenda:D?vAgendaDesk:vAgenda, assistente:vAssist, tarefas:vTasks, financas:D?vFinDesk:vFin, lembretes:vTasks, ajustes:vSettings, mais:vMais, admin:vAdmin, clima:vClima, mercado:vMercado, noticias:vNoticias, listas:vListas, lista:D?vListaDesk:vLista, invest:D?vInvestDesk:vInvest}[view] || vHome;
+  const V = {inicio:vHome, agenda:D?vAgendaDesk:vAgenda, assistente:vAssist, tarefas:vTasks, financas:D?vFinDesk:vFin, lembretes:vTasks, ajustes:vSettings, mais:vMais, admin:vAdmin, clima:vClima, mercado:D?vMercadoDesk:vMercado, noticias:vNoticias, listas:vListas, lista:D?vListaDesk:vLista, invest:D?vInvestDesk:vInvest}[view] || vHome;
   const m = $('#view'); m.classList.toggle('chat', view==='assistente');
   const hadQ = document.activeElement && document.activeElement.id === 'topq'; hvHide();
   m.innerHTML = `${side() ? topbar() : ''}<div class="wrap v-${view}${D ? ' desk' : ''}">${V()}</div>`;
@@ -1369,6 +1377,7 @@ function render(){
   if (D && view==='agenda') bindAgendaDesk();
   if (D && view==='financas') bindFinDesk();
   if (D && view==='invest') bindInvestDesk();
+  if (D && view==='mercado') bindMercadoDesk();
   if (D && view==='inicio') bindBoard();
   fitCols();
   mouseText(m);
@@ -2552,7 +2561,7 @@ function drawChart(box, pts, opt = CHART_DAY){
   const step = niceStep((mx - mn) / 4), lo = Math.floor(mn / step) * step, hi = Math.ceil(mx / step) * step;
   const cw = W - PL - PR, ch = H - PT - PB, n = pts.length;
   const x = i => PL + (n === 1 ? cw / 2 : i * cw / (n - 1)), y = v => PT + ch * (1 - (v - lo) / (hi - lo));
-  const up = vs[n - 1] >= vs[0], col = up ? 'var(--good)' : 'var(--bad)';
+  const up = vs[n - 1] >= vs[0], col = opt.color || (up ? 'var(--good)' : 'var(--bad)');
   const dec = step >= 5 ? 0 : step < 0.1 ? 3 : 2, fmt = v => v.toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
   let grid = '';
   for (let v = lo; v <= hi + step / 2; v += step){ const yy = y(v).toFixed(1);
@@ -2581,7 +2590,7 @@ function drawChart(box, pts, opt = CHART_DAY){
     cur.querySelector('.lc-tag').setAttribute('y', cy - 10); cur.querySelector('.lc-tagt').setAttribute('y', cy); cur.querySelector('.lc-tagt').textContent = fmt(v);
     const p0 = (v / pts[0][1] - 1) * 100, pd = i ? (v / pts[i - 1][1] - 1) * 100 : null;
     const pc = q => q == null ? '—' : `<span class="${q > 0 ? 'up' : q < 0 ? 'down' : ''}">${q > 0 ? '▲' : q < 0 ? '▼' : ''} ${n2(Math.abs(q))}%</span>`;
-    tip.innerHTML = `<small>${opt.title(dt)}</small><b>${opt.val(v)}</b>${opt.step ? `<div>${opt.step} ${pc(pd)}</div>` : ''}<div>Desde ${opt.axis(pts[0][0])} ${pc(p0)}</div>`;
+    tip.innerHTML = `<small>${opt.title(dt)}</small><b>${opt.val(v)}</b>${opt.step ? `<div>${opt.step} ${pc(pd)}</div>` : ''}${opt.noRel ? '' : `<div>Desde ${opt.axis(pts[0][0])} ${pc(p0)}</div>`}`;
     tip.hidden = false;
     const tw = tip.offsetWidth, left = cx + 14 + tw > W - PR ? cx - 14 - tw : cx + 14;
     tip.style.left = Math.max(0, left) + 'px'; tip.style.top = Math.max(0, Math.min(H - tip.offsetHeight - PB, cy - tip.offsetHeight / 2)) + 'px';
@@ -4325,10 +4334,90 @@ function bindInvestDesk(){
   bindFollow(V.querySelector('.q-l'));
   paintAssetPanel();
 }
+/* ----- Economia no computador: mesmo padrão de Investimentos (abas, filtros, tabela e painel com gráfico) ----- */
+function ecoRows(){
+  const m = mkt && mkt.moedas, j = mkt && mkt.juros, mc = (mkt && mkt.macro) || {}, b = (mkt && mkt.bolsa) || {}, out = [];
+  const pc = (v, d = 2) => `${n2(v, d)}%`, sg = (v, d = 2) => `${v > 0 ? '+' : ''}${n2(v, d)}%`;
+  if (b.ibov && b.ibov.price != null) out.push({ k:'IBOV', g:'bolsa', name:'Ibovespa', tag:'pontos', val:n2(b.ibov.price, 0), day:b.ibov.pct, ref:qHora(b.updated_at) });
+  if (m){ out.push({ k:'USD', g:'moedas', name:'Dólar comercial', tag:'R$', val:n2(m.usd.value, 4), day:m.usd.pct, ref:m.usd.at });
+    out.push({ k:'EUR', g:'moedas', name:'Euro', tag:'R$', val:n2(m.eur.value, 4), day:m.eur.pct, ref:m.eur.at });
+    if (m.btc) out.push({ k:'BTC', g:'moedas', name:'Bitcoin', tag:'R$', val:n2(m.btc.value, 0), day:m.btc.pct, ref:m.btc.at }); }
+  if (j){ out.push({ k:'SELIC', g:'juros', name:'Selic (meta)', tag:'ao ano', val:pc(j.selic.value), ref:'Definida pelo Copom' });
+    out.push({ k:'CDI', g:'juros', name:'CDI', tag:'ao ano', val:pc(j.cdi.value), ref:j.cdi.date });
+    out.push({ k:'IPCA', g:'juros', name:'IPCA (inflação oficial)', tag:'no mês', val:pc(j.ipca.value), y12:j.ipca12.value, ref:mesRef(j.ipca.date) }); }
+  [['IPP','IPP (indústria)','ipp','no mês',2],['COMERCIO','Comércio varejista','comercio','vendas no mês',1],['IGPM','IGP-M','igpm','no mês',2],['INCC','INCC (construção)','incc','no mês',2],['DESEMP','Desemprego','desemprego','da força de trabalho',1],['IBCBR','IBC-Br (prévia do PIB)','ibcbr','sobre o mês anterior',2]]
+    .forEach(([k, name, f, tag, d]) => { const x = mc[f]; if (x) out.push({ k, g:'atividade', name, tag, val: k === 'DESEMP' ? pc(x.value, d) : k === 'COMERCIO' || k === 'IBCBR' ? sg(x.value, d) : pc(x.value, d), mv: k === 'COMERCIO' || k === 'IBCBR' ? x.value : null, y12:x.y12, ref:(k === 'DESEMP' ? 'trimestre até ' : '') + ymLbl(x.ref) }); });
+  return out;
+}
+function vMercadoDesk(){
+  loadMarket();
+  if (!mkt) return `<div class="head"><div><h1 class="lt">Economia</h1></div></div><div class="q-empty">Carregando…</div>`;
+  const main = ui.ecoMain || 'ind', chip = ui.ecoTab || 'todos';
+  const head = `<div class="head"><div><h1 class="lt">Economia</h1><div class="sub">${mkt.moedas ? 'Atualizado ' + agoTxt(mkt.moedas.updated_at) : 'Indicadores do dia'} · Banco Central, IBGE e B3</div></div>
+    <button class="icon-btn" data-act="mkt-refresh" aria-label="Atualizar" title="Atualizar">${ic('refresh')}</button></div>`;
+  const tabs = `<div class="utabs" role="tablist"><button role="tab" data-ecomain="ind" aria-selected="${main === 'ind'}">Indicadores</button><button role="tab" data-ecomain="frete" aria-selected="${main === 'frete'}">Frete marítimo</button>
+    <button role="tab" data-ecobolsa aria-selected="false">Bolsa e ações ${ic('r','i')}</button><button role="tab" data-go="noticias" aria-selected="false">Notícias ${ic('r','i')}</button></div>`;
+  let left;
+  if (main === 'frete'){
+    const fr = fretePort('santos'), fx = mkt.moedas ? mkt.moedas.usd.value : null, est = k => fr && Array.isArray(fr.est) && fr.est.includes(k);
+    left = `<div class="pchips"><button aria-pressed="true">China → Santos</button>${S.isAdmin ? '<button data-act="frete-edit">Atualizar valores</button>' : ''}</div>
+    <table class="qt"><thead><tr><th class="q-n">Contêiner</th><th>Cabe (m³)</th><th>Útil (m³)</th><th>Frete (US$)</th><th>≈ em R$</th><th>US$ por m³</th><th>Faixa 12 meses (US$)</th></tr></thead>
+      <tbody>${CNT.map(c => { const v = fr && fr[c.k];
+        return `<tr class="sel" data-frete="${c.k}" tabindex="0"><td class="q-n"><div class="qn"><b>${c.t}</b><small>${est(c.k) ? 'estimado' : ''}</small></div></td><td>${c.m3}</td><td>~${c.util}</td><td><b>${v ? n2(v, 0) : '—'}</b></td><td>${v && fx ? n2(v * fx, 0) : '—'}</td><td>${v ? n2(v / c.util, 0) : '—'}</td><td>${fr && fr[c.k + '_min'] ? `${n2(fr[c.k + '_min'], 0)} a ${n2(fr[c.k + '_max'], 0)}` : '—'}</td></tr>`; }).join('')}</tbody></table>
+    <div class="foot">${fr ? `Por contêiner, porto a porto (sem taxas de origem, destino e impostos). Referência de ${fr.date ? new Date(fr.date + 'T12:00').toLocaleDateString('pt-BR') : '—'}${fr.source ? ' · ' + esc(fr.source) : ''}. Atualizado manualmente.` : 'Ainda sem cotação.'} Clique numa linha para ver os detalhes do contêiner.</div>`;
+  } else {
+    const all = ecoRows(), rows = all.filter(r => chip === 'todos' || r.g === chip);
+    if (!rows.some(r => r.k === ui.ecoSel)) ui.ecoSel = rows[0] ? rows[0].k : null;
+    const G = { bolsa:'Bolsa', moedas:'Moeda', juros:'Juros e inflação', atividade:'Atividade e preços' };
+    left = `<div class="pchips" role="group" aria-label="Filtrar">${[['todos','Todos'],['moedas','Moedas'],['juros','Juros e inflação'],['atividade','Atividade e preços']].map(([k, l]) => `<button data-ecotab="${k}" aria-pressed="${chip === k}">${l}</button>`).join('')}</div>
+    ${rows.length ? `<table class="qt"><thead><tr><th class="q-n">Indicador</th><th>Último</th><th>Variação do dia</th><th>Em 12 meses</th><th>Grupo</th><th>Referência</th></tr></thead>
+      <tbody>${rows.map(r => `<tr class="sel ${r.k === ui.ecoSel ? 'on' : ''}" data-ecosel="${r.k}" tabindex="0"><td class="q-n"><div class="qn"><b>${r.name}</b><small>${r.tag}</small></div></td>
+        <td class="${r.mv != null ? udCls(r.mv) : ''}"><b>${r.val}</b></td><td class="${udCls(r.day)}"><b>${r.day != null ? sgn(Number(r.day)) + '%' : '—'}</b></td><td>${r.y12 != null ? n2(r.y12) + '%' : '—'}</td><td class="q-h">${G[r.g]}</td><td class="q-h">${esc(r.ref || '—')}</td></tr>`).join('')}</tbody></table>` : '<div class="q-empty">Sem dados agora.</div>'}
+    <div class="foot">Moedas em R$ por unidade. Juros ao ano. Inflação e atividade: variação no mês e acumulado em 12 meses. Clique num indicador para ver o que ele mede e o histórico. Dados: ${esc((mkt.moedas && mkt.moedas.source) || 'Banco Central')}, IBGE e brapi.</div>`;
+  }
+  return `<div class="inv-desk">${head}<div class="q2"><div class="q-l">${tabs}${left}</div><aside class="q-r" id="eco-panel"></aside></div></div>`;
+}
+function paintEcoPanel(){
+  const el = $('#eco-panel'); if (!el) return;
+  if ((ui.ecoMain || 'ind') === 'frete'){
+    const fr = fretePort('santos');
+    el.innerHTML = `<div class="ip-head"><div class="main"><b>Frete marítimo</b><small>China → Santos, por contêiner</small></div></div>
+      <p class="eco-d">Valor de referência do frete porto a porto. Não inclui taxas de origem e destino, seguro, impostos nem transporte até o depósito.</p>
+      <p class="eco-d"><b>Útil</b> é o volume que normalmente se consegue ocupar com carga em caixas. <b>US$ por m³</b> ajuda a comparar os tamanhos.</p>
+      ${fr && fr.source ? `<div class="foot">${esc(fr.source)}</div>` : ''}`;
+    return;
+  }
+  const k = ui.ecoSel, r = ecoRows().find(x => x.k === k), info = IND[k];
+  if (!r){ el.innerHTML = '<div class="q-empty">Escolha um indicador.</div>'; return; }
+  const H = ((mkt.macro || {}).hist || {})[k] || {}, ib = (mkt.bolsa || {}).ibov;
+  const series = k === 'IBOV' ? { d: (ib && ib.chart) || [] } : H;
+  const kinds = [['m','Mês a mês'],['a','Acumulado 12 meses'],['d', k === 'IBOV' ? 'Últimos 3 meses' : 'Últimos dias']].filter(([s]) => series[s] && series[s].length > 1);
+  if (!kinds.some(([s]) => s === ui.ecoSer)) ui.ecoSer = kinds[0] ? kinds[0][0] : null;
+  const pts = ui.ecoSer ? series[ui.ecoSer] : [];
+  const lbl = x => /^\d{4}-\d{2}-\d{2}$/.test(x) ? brD(x) : /^\d{4}-\d{2}$/.test(x) ? ymLbl(x).replace(/\/\d{2}(\d{2})$/, '/$1') : x;
+  const fmt = v => k === 'IBOV' ? `${n2(v, 0)} pts` : k === 'USD' || k === 'EUR' ? `R$ ${n2(v, 4)}` : `${n2(v)}%`;
+  el.innerHTML = `<div class="ip-head"><div class="main"><b>${esc(info ? info.t : r.name)}</b><small>${esc(r.ref || '')}</small></div>
+      <div class="ip-price"><b>${r.val}</b><span class="${udCls(r.day)}">${r.day != null ? sgn(Number(r.day)) + '% hoje' : esc(r.tag)}</span></div></div>
+    ${info ? `<p class="eco-d">${esc(info.d)}</p><p class="eco-d eco-r">${esc(info.r)}</p>` : ''}
+    ${kinds.length > 1 ? `<div class="rtabs" role="group" aria-label="Série">${kinds.map(([s, l]) => `<button data-ecoser="${s}" aria-pressed="${ui.ecoSer === s}">${l}</button>`).join('')}</div>` : kinds.length ? `<div class="rtabs"><button aria-pressed="true">${kinds[0][1]}</button></div>` : ''}
+    <div class="inv-chart">${pts.length > 1 ? '<div class="lc-box" data-lc role="img" aria-label="Histórico do indicador"></div><div class="lc-ax"><span></span><span class="lc-hint">Passe o mouse no gráfico para ver cada ponto</span><span></span></div>' : '<div class="q-empty">Sem histórico para este indicador.</div>'}</div>
+    ${pts.length > 1 ? (() => { const vs = pts.map(p => p[1]); return `<div class="ip-stats"><div><small>Mais recente</small><b>${fmt(vs[vs.length - 1])}</b></div><div><small>Início do período</small><b>${fmt(vs[0])}</b></div><div><small>Mínimo</small><b>${fmt(Math.min(...vs))}</b></div><div><small>Máximo</small><b>${fmt(Math.max(...vs))}</b></div></div>`; })() : ''}`;
+  el.querySelectorAll('[data-ecoser]').forEach(x => x.onclick = () => { ui.ecoSer = x.dataset.ecoser; paintEcoPanel(); });
+  if (pts.length > 1) drawChart(el.querySelector('[data-lc]'), pts, { axis: lbl, title: lbl, val: fmt, step: null, noRel: k !== 'IBOV' && k !== 'USD' && k !== 'EUR', color: k === 'IBOV' ? '' : 'var(--accent)', h: () => Math.max(200, Math.min(340, innerHeight - 620)) });
+}
+function bindMercadoDesk(){
+  const V = $('#view');
+  V.querySelectorAll('[data-ecomain]').forEach(x => x.onclick = () => { ui.ecoMain = x.dataset.ecomain; render(); });
+  V.querySelectorAll('[data-ecotab]').forEach(x => x.onclick = () => { ui.ecoTab = x.dataset.ecotab; render(); });
+  const eb = V.querySelector('[data-ecobolsa]'); if (eb) eb.onclick = () => { ui.invMain = 'mercado'; ui.mkTab = 'negociadas'; ui.invPage = 0; ui.invSel = null; go('invest'); };
+  V.querySelectorAll('[data-ecosel]').forEach(r => { r.onclick = () => { ui.ecoSel = r.dataset.ecosel; V.querySelectorAll('[data-ecosel]').forEach(x => x.classList.toggle('on', x === r)); paintEcoPanel(); };
+    r.onkeydown = e => { if (e.key === 'Enter') r.click(); }; });
+  paintEcoPanel();
+}
 // colunas das telas em blocos: tantas quantas couberem, sem deixar coluna vazia
 function fitCols(){
   const wr = $('#view .wrap.desk'); if (!wr) return;
-  if (!/v-(tarefas|lembretes|mercado|admin|ajustes)\b/.test(wr.className)){ wr.style.gridTemplateColumns = ''; return; }
+  if (!/v-(tarefas|lembretes|admin|ajustes)\b/.test(wr.className)){ wr.style.gridTemplateColumns = ''; return; }
   const n = wr.querySelectorAll(':scope > section').length, c = Math.max(1, Math.min(n, Math.floor(wr.clientWidth / 360)));
   wr.style.gridTemplateColumns = `repeat(${c},minmax(0,1fr))`;
 }
@@ -4366,11 +4455,11 @@ function vAgendaDesk(){
         return `<div class="wk-cell ${d === t ? 'today' : ''} ${d < t ? 'past' : ''}" data-slot="${d}|${pad(h)}:00" title="Novo compromisso em ${rel(d)} às ${pad(h)}:00">${nowL}${cell.map(chip).join('')}</div>`; }).join('')}</div>`;
     }
     const allDay = tasks.some(x => x.length) ? `<div class="wk-row wk-all"><span class="wk-hl">Tarefas</span>${tasks.map((ts, c) => `<div class="wk-cell ${ds[c] === t ? 'today' : ''}">${ts.map(x => `<div class="wk-ev task ${x.done ? 'done' : ''}"><button class="wk-main" data-edit="task:${x.id}" title="${esc(x.title)}"><span>${esc(x.title)}</span></button><button class="wk-ck ${x.done ? 'on' : ''}" data-toggle="task:${x.id}" title="${x.done ? 'Reabrir' : 'Concluir'}" aria-label="${x.done ? 'Reabrir' : 'Concluir'} ${esc(x.title)}">${ic('ok')}</button></div>`).join('')}</div>`).join('')}</div>` : '';
-    const rh = Math.max(46, Math.floor((innerHeight - 330) / (to - from + 1)));
+    const rh = 40;
     return head(label) + `<div class="wk card" style="--wkh:${rh}px">
       <div class="wk-row wk-top"><span class="wk-hl"></span>${days.map((d, c) => `<button class="wk-day ${ds[c] === t ? 'today' : ''} ${ds[c] === sel ? 'sel' : ''}" data-pick="${ds[c]}"><span>${DOW[d.getDay()]}</span><b>${d.getDate()}</b></button>`).join('')}</div>
       ${allDay}<div class="wk-body">${body}</div></div>
-      <div class="foot">Clique num horário vazio para criar um compromisso ali. Clique num compromisso para ver ou editar.</div>`;
+`;
   }
   const n = new Date(), base = new Date(n.getFullYear(), n.getMonth() + ui.monthOff, 1), st = weekStart(base);
   const end = new Date(base.getFullYear(), base.getMonth() + 1, 0), cells = [];
@@ -4380,11 +4469,23 @@ function vAgendaDesk(){
     <div class="mo-grid">${cells.map(d => { const s = iso(d), its = agendaItems(s), tk = S.tasks.filter(x => x.due === s && !x.done && !x.parent).length;
       return `<div class="mo-cell ${d.getMonth() !== base.getMonth() ? 'out' : ''} ${s === t ? 'today' : ''}" data-slot="${s}|09:00">
         <button class="mo-d" data-weekof="${s}" title="Ver a semana">${d.getDate()}</button>
-        ${its.slice(0, 3).map(chip).join('')}${its.length > 3 ? `<button class="mo-more" data-weekof="${s}">+${its.length - 3} mais</button>` : ''}${tk ? `<span class="mo-tk">${ic('task')}${tk} tarefa${tk > 1 ? 's' : ''}</span>` : ''}</div>`; }).join('')}</div></div>
-    <div class="foot">Clique no número do dia para abrir a semana. Clique num espaço vazio para criar um compromisso nesse dia.</div>`;
+        ${its.slice(0, 3).map(chip).join('')}${its.length > 3 ? `<button class="mo-more" data-weekof="${s}">+${its.length - 3} mais</button>` : ''}${tk ? `<span class="mo-tk">${ic('task')}${tk} tarefa${tk > 1 ? 's' : ''}</span>` : ''}</div>`; }).join('')}</div></div>`;
 }
+// a grade da agenda ocupa exatamente a altura que sobra na tela (sem rolar)
+function fitAgenda(){
+  const V = $('#view'), wk = V.querySelector('.wk'), mo = V.querySelector('.mo-grid');
+  // maior altura de linha que ainda cabe sem rolar a tela
+  const fit = (box, prop, min, max) => {
+    let lo = min, hi = max;
+    while (hi - lo > 1){ const mid = (lo + hi) >> 1; box.style.setProperty(prop, mid + 'px'); if (V.scrollHeight > V.clientHeight + 1) hi = mid; else lo = mid; }
+    box.style.setProperty(prop, lo + 'px'); return lo;
+  };
+  if (wk){ wk.classList.remove('tight'); if (fit(wk, '--wkh', 18, 90) < 34){ wk.classList.add('tight'); fit(wk, '--wkh', 18, 90); } }
+  if (mo) fit(mo, '--moh', 56, 220);
+}
+let agRz = 0; addEventListener('resize', () => { clearTimeout(agRz); agRz = setTimeout(() => { if (view === 'agenda' && desk()) fitAgenda(); }, 120); });
 function bindAgendaDesk(){
-  const V = $('#view');
+  const V = $('#view'); fitAgenda();
   V.querySelectorAll('[data-calmode]').forEach(b => b.onclick = () => {
     if ((ui.calMode === 'semana') === (b.dataset.calmode === 'semana')) return;
     ui.calMode = b.dataset.calmode; const s = fromIso(ui.agendaSel), n = new Date();
