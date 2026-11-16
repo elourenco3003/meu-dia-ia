@@ -725,7 +725,7 @@ body.mouse .tile:hover,body.mouse button.card:hover{box-shadow:0 6px 22px rgba(3
 .wk-day:hover b{background:var(--accent-soft)}
 .wk-day.today{color:var(--accent);font-weight:600} .wk-day.today b{background:var(--accent);color:#fff}
 .wk-hl{font-size:11.5px;color:var(--fg2);text-align:right;padding:5px 8px 0 0;font-variant-numeric:tabular-nums}
-.wk-cell{border-left:1px solid var(--sep);border-top:1px solid var(--sep);min-height:54px;padding:3px;display:flex;flex-direction:column;gap:3px;position:relative;cursor:pointer;min-width:0}
+.wk-cell{border-left:1px solid var(--sep);border-top:1px solid var(--sep);min-height:var(--wkh,54px);padding:3px;display:flex;flex-direction:column;gap:3px;position:relative;cursor:pointer;min-width:0}
 .wk-body .wk-row:first-child .wk-cell{border-top:0}
 body.mouse .wk-cell:hover{background:color-mix(in srgb,var(--accent) 7%,transparent)}
 .wk-cell.today{background:color-mix(in srgb,var(--accent) 4%,transparent)}
@@ -796,6 +796,61 @@ body.mouse .mo-cell:hover{background:color-mix(in srgb,var(--accent) 5%,transpar
 .md-l .row.on{background:var(--accent-soft)} .md-l .row.on .t{color:var(--accent);font-weight:600}
 .md-r{display:flex;flex-direction:column;gap:18px;min-width:0}
 .md-r>.head .lt{font-size:24px}
+
+/* computador: usa toda a largura e menos espaço em branco */
+@media (min-width:1100px){
+  .wrap.desk{max-width:1640px;gap:16px}
+  .tb-in{max-width:1640px}
+  .topbar{margin-bottom:16px;padding-block:10px}
+  main{padding-inline:22px!important}
+  .topbar{margin-inline:-22px;padding-inline:22px}
+  .wrap.desk.v-tarefas,.wrap.desk.v-lembretes,.wrap.desk.v-mercado,.wrap.desk.v-admin,.wrap.desk.v-ajustes,.wrap.desk.v-invest{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:16px 20px;align-items:start}
+  .wrap.desk.v-tarefas>:not(section),.wrap.desk.v-lembretes>:not(section),.wrap.desk.v-mercado>:not(section),.wrap.desk.v-admin>:not(section),.wrap.desk.v-ajustes>:not(section),.wrap.desk.v-invest>:not(section){grid-column:1/-1}
+  .wrap.desk .head .lt,.wrap.desk .ag-head .lt{font-size:26px}
+}
+.dh{display:flex;gap:24px;align-items:center}
+.dh .hero{flex:none;margin:0} .dh .hello{font-size:24px;white-space:nowrap} .dh .askbox{flex:1;max-width:760px;margin-left:auto}
+.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.kpi{display:flex;gap:12px;align-items:center;text-align:left;background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:14px 16px;min-width:0}
+.kpi .ic{width:40px;height:40px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}
+.kpi .kx{display:flex;flex-direction:column;min-width:0;flex:1}
+.kpi small{font-size:12px;color:var(--fg2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi b{font-size:20px;font-weight:700;line-height:1.25;font-variant-numeric:tabular-nums}
+.kpi b .acc{width:100%;min-width:0;justify-content:flex-start;gap:6px}
+.kpi em{font-style:normal;font-size:12px;color:var(--fg2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi.bad em{color:var(--bad);font-weight:600}
+body.mouse .kpi:hover{box-shadow:0 6px 22px rgba(30,34,70,.12)}
+.dash3{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) minmax(0,.9fr);gap:20px;align-items:start}
+.dcol{display:flex;flex-direction:column;gap:16px;min-width:0}
+.dcol .leave-card .lc-s{white-space:normal}
+.dchip{flex:none;width:42px;height:42px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05}
+.dchip small{font-size:10.5px;text-transform:uppercase;font-weight:600} .dchip b{font-size:16px}
+.inv-mini .t{font-weight:600}
+.ngrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.ncard{display:flex;flex-direction:column;background:var(--card);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);text-decoration:none;color:var(--fg);min-width:0}
+.nc-img{display:grid;place-items:center;aspect-ratio:16/10;background:var(--accent-soft);color:var(--accent);position:relative;overflow:hidden}
+.nc-img .i{width:40px;height:40px;opacity:.5}
+.nc-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .25s}
+body.mouse .ncard:hover img{transform:scale(1.04)} body.mouse .ncard:hover{box-shadow:0 8px 26px rgba(30,34,70,.14)}
+.nc-tx{display:flex;flex-direction:column;gap:6px;padding:12px 14px 14px}
+.nc-tx b{font-size:15.5px;line-height:1.3;font-weight:650;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.nc-tx small{font-size:12px;color:var(--fg2)} .nc-tx .mk-new{align-self:flex-start}
+.v-noticias .ngrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:1399px){ .dnews .ngrid{grid-template-columns:repeat(3,minmax(0,1fr))} .dnews .ncard:nth-child(4){display:none} .kpi{padding:12px} .kpi .ic{display:none} }
+.fbars-card{padding:16px}
+.fbars{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;height:130px}
+.fb{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.fb-b{flex:1;display:flex;align-items:flex-end;gap:3px;width:100%;justify-content:center;border-bottom:1px solid var(--sep)}
+.fb-b i{width:38%;max-width:16px;min-height:2px;border-radius:4px 4px 0 0}
+.fbars-card i.r{background:var(--good)} .fbars-card i.d{background:var(--bad);opacity:.8}
+.fb small{font-size:11.5px;color:var(--fg2)}
+.fb-leg{display:flex;gap:16px;font-size:12px;color:var(--fg2);margin:10px 0 8px}
+.fb-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+.fb-tab{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+.fb-tab th{font-weight:600;color:var(--fg2);text-align:right;padding:6px 0;border-top:1px solid var(--sep);font-size:11.5px} .fb-tab th:first-child,.fb-tab td:first-child{text-align:left}
+.fb-tab td{text-align:right;padding:5px 0} .fb-tab td.neg{color:var(--bad)}
+.fin-side{display:flex;flex-direction:column;gap:16px}
+@media (min-width:1300px){ .fin-desk{grid-template-columns:minmax(0,1fr) 380px} }
 </style>
 </head>
 <body>
@@ -1300,9 +1355,7 @@ function vHome(){
   </section>` : ''}`,
   };
   // computador (tela larga): painel com coluna principal e coluna lateral
-  if (desk()) return `${P.hero}${hp.indicadores ? tickerBand() : ''}
-  <div class="dash"><div class="dash-main">${P.ask}${P.sug}${exBanner()}${pushBanner()}${P.prog}${P.resumo}${P.tiles}</div>
-    <aside class="dash-side" aria-label="Resumo do dia">${P.wx}${hp.sair ? nextLeave() : ''}${hp.contas ? billsCard() : ''}${hp.noticias ? newsBlock() : ''}</aside></div>`;
+  if (desk()) return vHomeDesk(P, hp, items, card);
   return `${P.hero}${P.wx}${hp.sair ? nextLeave() : ''}${hp.indicadores ? tickerBand() : ''}${P.ask}${P.sug}${exBanner()}${pushBanner()}${hp.contas ? billsCard() : ''}${P.resumo}${P.tiles}${P.prog}${hp.noticias ? newsBlock() : ''}`;
 }
 
@@ -3478,7 +3531,8 @@ function vNoticias(){
   return `${head}
   <section>
     <div class="seg" role="group" aria-label="Notícias">${[['brasil','Brasil'],['economia','Economia'],['internacional','Internacional']].map(([k,l]) => `<button data-newstab="${k}" aria-pressed="${tab === k}">${l}</button>`).join('')}</div>
-    <div class="group" style="margin-top:10px">${items.map(n => `<a class="row news" href="${esc(n.link)}" target="_blank" rel="noopener">${n.img ? `<img class="nthumb" src="${esc(n.img)}" alt="" loading="lazy" onerror="this.remove()">` : ''}<span class="main"><div class="t">${esc(n.title)}</div><div class="s">${agoTxt(n.at)} · Agência Brasil</div></span>${ic('r','i chev')}</a>`).join('') || '<div class="empty">Sem notícias agora.</div>'}</div>
+    ${desk() ? `<div style="margin-top:12px">${items.length ? newsCards(items, 6) : '<div class="card empty">Sem notícias agora.</div>'}</div>` : ''}
+    <div class="group" style="margin-top:10px${desk() ? ';display:none' : ''}">${items.map(n => `<a class="row news" href="${esc(n.link)}" target="_blank" rel="noopener">${n.img ? `<img class="nthumb" src="${esc(n.img)}" alt="" loading="lazy" onerror="this.remove()">` : ''}<span class="main"><div class="t">${esc(n.title)}</div><div class="s">${agoTxt(n.at)} · Agência Brasil</div></span>${ic('r','i chev')}</a>`).join('') || '<div class="empty">Sem notícias agora.</div>'}</div>
     ${pages > 1 ? `<div class="pager" style="margin-top:10px"><button class="icon-btn" data-newspage="-1" aria-label="Notícias anteriores" ${ui.newsPage === 0 ? 'disabled' : ''}>${ic('l')}</button><span class="lbl" style="text-transform:none">Página ${ui.newsPage + 1} de ${pages}</span><button class="icon-btn" data-newspage="1" aria-label="Próximas notícias" ${ui.newsPage >= pages - 1 ? 'disabled' : ''}>${ic('r')}</button></div>` : ''}
     <div class="foot">Manchetes e fotos da Agência Brasil (EBC). Tocando, abre a matéria no site.</div>
   </section>`;
@@ -3896,6 +3950,62 @@ function sideFoot(){
   const pl = el.querySelector('[data-plans]'); if (pl) pl.onclick = () => openPlans('limite');
 }
 
+/* ----- Início no computador: painel denso (indicadores, 3 colunas, notícias com foto grande) ----- */
+function newsCards(list, n){
+  const seen = newsSeen();
+  return `<div class="ngrid">${list.slice(0, n).map(x => `<a class="ncard" href="${esc(x.link)}" target="_blank" rel="noopener" data-newsopen="${esc(x.at || '')}">
+    <span class="nc-img">${x.img ? `<img src="${esc(x.img)}" alt="" loading="lazy" onerror="this.remove()">` : ''}${ic('news')}</span>
+    <span class="nc-tx">${x.at && x.at > seen ? '<span class="mk-new">Nova</span>' : ''}<b>${esc(x.title)}</b><small>${agoTxt(x.at)} · Agência Brasil</small></span></a>`).join('')}</div>`;
+}
+function vHomeDesk(P, hp, items, card){
+  const t = today(), n = new Date(), mk = monthKey(t);
+  const doneN = items.filter(i => i.done).length;
+  const pend = pendingTasks(), lateT = pend.filter(x => x.due && x.due < t).length;
+  const bills = openBills(), owed = bills.filter(b => monthKey(b.date) <= mk).reduce((a, b) => a + b.cents, 0), lateB = bills.filter(b => b.date < t).length;
+  const fm = finMonth(mk), left = S.items.filter(i => !i.done).length;
+  const kpi = (go, icn, lab, val, sub, cls = '') => `<button class="kpi ${cls}" ${go}><span class="ic">${ic(icn)}</span><span class="kx"><small>${lab}</small><b>${val}</b><em>${sub}</em></span></button>`;
+  const kpis = `<div class="kpis">
+    ${kpi('data-go="agenda"', 'cal', 'Hoje', `${items.length} ${items.length === 1 ? 'item' : 'itens'}`, items.length ? `${doneN} concluído${doneN === 1 ? '' : 's'}` : 'Dia livre')}
+    ${kpi('data-go="tarefas"', 'task', 'Tarefas pendentes', pend.length, lateT ? `${lateT} atrasada${lateT > 1 ? 's' : ''}` : 'Nenhuma atrasada', lateT ? 'bad' : '')}
+    ${kpi('data-go="financas"', 'fin', 'A pagar no mês (R$)', acc(owed), lateB ? `${lateB} vencida${lateB > 1 ? 's' : ''}` : `${bills.length} conta${bills.length === 1 ? '' : 's'} em aberto`, lateB ? 'bad' : '')}
+    ${kpi('data-go="financas"', 'chart', 'Saldo do mês (R$)', acc(fm.saldo, fm.saldo < 0 ? 'neg' : ''), 'Receitas menos despesas')}
+    ${kpi('data-golistas', 'cart', 'Listas', `${left} ${left === 1 ? 'item' : 'itens'}`, left ? 'faltando comprar' : 'Nada faltando')}
+  </div>`;
+  // próximos 7 dias (sem hoje)
+  const lim = iso(addDays(n, 7));
+  const next = [...S.events.filter(e => e.date > t && e.date <= lim && !e.done).map(e => ({ k:'ev', d:e.date, tm:e.time || '', r:e, s:e.place || 'Compromisso' })),
+    ...S.rems.filter(r => r.date > t && r.date <= lim && !r.done).map(r => ({ k:'rem', d:r.date, tm:r.time || '', r, s:'Lembrete' })),
+    ...S.tasks.filter(x => x.due && x.due > t && x.due <= lim && !x.done && !x.parent).map(x => ({ k:'task', d:x.due, tm:'', r:x, s:'Tarefa' }))]
+    .sort((a, b) => a.d.localeCompare(b.d) || a.tm.localeCompare(b.tm)).slice(0, 6);
+  const dchip = d => { const x = fromIso(d); return `<span class="dchip"><small>${DOW[x.getDay()]}</small><b>${x.getDate()}</b></span>`; };
+  const colA = hp.programacao ? `<section><div class="sh">Hoje<button data-go="agenda">Ver agenda</button></div>
+    <div class="list">${items.length ? items.map(card).join('') : `<div class="card empty">Nada para hoje. Clique em Adicionar ou aperte N.</div>`}</div></section>` : '';
+  const colB = `<section><div class="sh">Próximos 7 dias<button data-go="agenda">Agenda</button></div>
+      <div class="group">${next.length ? next.map(i => `<button class="row" data-edit="${i.k}:${i.r.id}">${dchip(i.d)}<span class="main"><div class="t">${esc(i.r.title)}</div><div class="s">${i.tm ? i.tm + ' · ' : ''}${esc(i.s)}</div></span></button>`).join('') : '<div class="empty">Nada marcado para os próximos dias.</div>'}</div></section>
+    ${hp.contas ? `<section><div class="sh">Contas a vencer<button data-go="financas">Finanças</button></div>
+      <div class="group">${bills.length ? bills.slice(0, 5).map(f => `<div class="row"><button class="main" data-edit="fin:${f.id}" style="text-align:left"><div class="t">${esc(f.title)}</div><div class="s">${f.date < t ? '<span class="chip bad">Vencida</span> ' : ''}vence ${rel(f.date)}</div></button><span class="right">${acc(f.cents)}<button class="pay" data-pay="${f.id}">Pagar</button></span></div>`).join('') : '<div class="empty">Nenhuma conta em aberto.</div>'}</div></section>` : ''}`;
+  const w = S.watch || [], Q = S.quotes || {};
+  const colC = `${hp.clima || (hp.familia && fam && fam.group) ? P.wx : ''}${hp.sair ? nextLeave() : ''}
+    ${w.length ? `<section><div class="sh">Meus investimentos<button data-go="invest">Ver todos</button></div>
+      <div class="group">${w.slice(0, 6).map(x => { const q = Q[x.symbol]; return `<button class="row inv-mini" data-go="invest"><span class="main"><div class="t">${esc(x.symbol)}</div></span><span class="mk-r">${q && q.price != null ? `${accN(Number(q.price), 2)}${pctChip(q.pct)}` : '<span class="chip">—</span>'}</span></button>`; }).join('')}</div></section>` : ''}`;
+  const nw = mkt && mkt.noticias, nlist = (nw && nw.economia) || [];
+  return `<div class="dh">${P.hero}${hp.assistente ? P.ask : ''}</div>
+  ${hp.indicadores ? tickerBand() : ''}
+  ${exBanner()}${pushBanner()}
+  ${kpis}
+  <div class="dash3"><div class="dcol">${colA}</div><div class="dcol">${colB}</div><div class="dcol">${colC}</div></div>
+  ${hp.noticias && nlist.length ? `<section class="dnews"><div class="sh"><span class="live-h"><i></i>Notícias de economia · ${hm(nw.updated_at)}</span><button data-act="news-eco">Ver todas</button></div>${newsCards(nlist, 4)}</section>` : ''}`;
+}
+// gráfico de barras: receitas x despesas dos últimos 6 meses (Finanças no computador)
+function finBars(){
+  const n = new Date(), ms = [...Array(6)].map((_, i) => new Date(n.getFullYear(), n.getMonth() + ui.finOff - 5 + i, 1));
+  const data = ms.map(d => ({ d, ...finMonth(iso(d).slice(0, 7)) })), mx = Math.max(1, ...data.map(x => Math.max(x.rec, x.desp)));
+  return `<section><div class="sh">Últimos 6 meses (R$)</div><div class="card fbars-card">
+    <div class="fbars">${data.map(x => `<div class="fb"><div class="fb-b"><i class="r" style="height:${(x.rec / mx * 100).toFixed(1)}%" title="Receitas em ${MON[x.d.getMonth()]}: R$ ${brl(x.rec)}"></i><i class="d" style="height:${(x.desp / mx * 100).toFixed(1)}%" title="Despesas em ${MON[x.d.getMonth()]}: R$ ${brl(x.desp)}"></i></div><small>${MON[x.d.getMonth()]}</small></div>`).join('')}</div>
+    <div class="fb-leg"><span><i class="r"></i>Receitas</span><span><i class="d"></i>Despesas</span></div>
+    <table class="fb-tab"><thead><tr><th>Mês</th><th>Receitas (R$)</th><th>Despesas (R$)</th><th>Saldo (R$)</th></tr></thead><tbody>${data.slice(-3).reverse().map(x => `<tr><td>${MON[x.d.getMonth()]}/${String(x.d.getFullYear()).slice(2)}</td><td>${brl(x.rec)}</td><td>${brl(x.desp)}</td><td class="${x.saldo < 0 ? 'neg' : ''}">${brl(x.saldo)}</td></tr>`).join('')}</tbody></table>
+  </div></section>`;
+}
 /* ----- Agenda no computador: semana em 7 colunas e mês com os compromissos nas células ----- */
 function agendaItems(d){
   return [
@@ -3929,7 +4039,8 @@ function vAgendaDesk(){
         return `<div class="wk-cell ${d === t ? 'today' : ''} ${d < t ? 'past' : ''}" data-slot="${d}|${pad(h)}:00" title="Novo compromisso em ${rel(d)} às ${pad(h)}:00">${nowL}${cell.map(chip).join('')}</div>`; }).join('')}</div>`;
     }
     const allDay = tasks.some(x => x.length) ? `<div class="wk-row wk-all"><span class="wk-hl">Tarefas</span>${tasks.map((ts, c) => `<div class="wk-cell ${ds[c] === t ? 'today' : ''}">${ts.map(x => `<div class="wk-ev task ${x.done ? 'done' : ''}"><button class="wk-main" data-edit="task:${x.id}" title="${esc(x.title)}"><span>${esc(x.title)}</span></button><button class="wk-ck ${x.done ? 'on' : ''}" data-toggle="task:${x.id}" title="${x.done ? 'Reabrir' : 'Concluir'}" aria-label="${x.done ? 'Reabrir' : 'Concluir'} ${esc(x.title)}">${ic('ok')}</button></div>`).join('')}</div>`).join('')}</div>` : '';
-    return head(label) + `<div class="wk card">
+    const rh = Math.max(46, Math.floor((innerHeight - 330) / (to - from + 1)));
+    return head(label) + `<div class="wk card" style="--wkh:${rh}px">
       <div class="wk-row wk-top"><span class="wk-hl"></span>${days.map((d, c) => `<button class="wk-day ${ds[c] === t ? 'today' : ''} ${ds[c] === sel ? 'sel' : ''}" data-pick="${ds[c]}"><span>${DOW[d.getDay()]}</span><b>${d.getDate()}</b></button>`).join('')}</div>
       ${allDay}<div class="wk-body">${body}</div></div>
       <div class="foot">Clique num horário vazio para criar um compromisso ali. Clique num compromisso para ver ou editar.</div>`;
@@ -3997,7 +4108,7 @@ function vFinDesk(){
     ${pages > 1 ? `<div class="tpager"><span>${ui.finPage * per + 1}–${Math.min(list.length, ui.finPage * per + per)} de ${list.length}</span><button class="icon-btn" data-fpg="-1" ${ui.finPage ? '' : 'disabled'} aria-label="Página anterior">${ic('l')}</button><span>Página ${ui.finPage + 1} de ${pages}</span><button class="icon-btn" data-fpg="1" ${ui.finPage < pages - 1 ? '' : 'disabled'} aria-label="Próxima página">${ic('r')}</button></div>` : ''}</div>
     <div class="foot">Total da tabela = receitas menos despesas e contas. Clique numa linha para editar ou apagar.</div>
   </section>
-  <aside class="fin-side">${recurringSection()}</aside></div>`;
+  <aside class="fin-side">${finBars()}${recurringSection()}</aside></div>`;
 }
 function bindFinDesk(){
   const V = $('#view');
