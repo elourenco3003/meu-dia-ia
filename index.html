@@ -934,6 +934,38 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 .q-mini .q-n{max-width:none}
 @media (min-width:1500px){ .q2{grid-template-columns:minmax(0,1fr) 460px} }
 @media (max-width:1299px){ .q2{grid-template-columns:minmax(0,1fr)} .q-r{position:static} .q-add{width:260px} }
+
+/* início (computador): clima no topo e quadro de cartões */
+.dh{align-items:stretch}
+.dh .hero{display:flex;flex-direction:column;justify-content:center}
+.dh-wx{margin-left:auto;width:min(480px,46%);display:flex;flex-direction:column;gap:6px;justify-content:center}
+.dh-wx .wx-wrap{margin:0}
+.dh2{display:flex;gap:16px;align-items:stretch}
+.dh2 .askbox{flex:1;margin:0;max-width:none} .dh2 .leave-card{flex:none;width:min(480px,46%);margin:0} .dh2 .leave-card .lc-s{white-space:normal}
+.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+.kboard{display:flex;gap:14px;align-items:flex-start;min-width:0}
+.kcol{flex:1 1 0;min-width:0;background:color-mix(in srgb,var(--fg) 5%,var(--bg));border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;border:2px solid transparent}
+.kcol.over{border-color:var(--accent);background:var(--accent-soft)}
+.kcol header{display:flex;align-items:center;justify-content:space-between;padding:2px 4px}
+.kcol header b{font-size:14px;font-weight:700}
+.kcol header span{font-size:12px;font-weight:700;color:var(--fg2);background:var(--card);border-radius:999px;min-width:22px;text-align:center;padding:1px 6px}
+.kcol-late header b{color:var(--bad)} .kcol-hoje header b{color:var(--accent)}
+.kcards{display:flex;flex-direction:column;gap:8px;min-height:44px}
+.kc{display:flex;gap:6px;align-items:flex-start;background:var(--card);border-radius:8px;box-shadow:0 1px 2px rgba(20,24,60,.12);border-left:4px solid var(--accent);padding:8px 8px 8px 10px;cursor:grab}
+.kc.k-rem{border-left-color:var(--fg2)} .kc.k-task{border-left-color:var(--mint)} .kc.k-fin{border-left-color:#E3A23B}
+.kc.dragging{opacity:.45}
+body.mouse .kc:hover{box-shadow:0 3px 10px rgba(20,24,60,.18)}
+.kc-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;text-align:left;cursor:inherit}
+.kc-tag{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--fg2)}
+.kc-main b{font-size:14px;font-weight:600;line-height:1.3;overflow-wrap:anywhere}
+.kc-meta{font-size:12px;color:var(--fg2);line-height:1.35;overflow-wrap:anywhere} .kc-meta .lv{color:var(--accent);font-weight:600}
+.kc.done .kc-main b{text-decoration:line-through;color:var(--fg2)}
+.kc-ck{flex:none;width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--fg2);display:grid;place-items:center;color:transparent;margin-top:2px}
+.kc-ck .i{width:13px;height:13px;stroke-width:2.6}
+.kc-ck:hover{color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent)} .kc-ck.on{background:var(--mint);color:#fff;box-shadow:none}
+.k-empty{font-size:12.5px;color:var(--fg2);text-align:center;padding:12px 6px;border:1px dashed var(--sep);border-radius:8px}
+.k-add{display:flex;gap:6px;align-items:center;font-size:13px;font-weight:600;color:var(--fg2);padding:6px 4px;border-radius:8px}
+.k-add .i{width:15px;height:15px} .k-add:hover{background:var(--card);color:var(--accent)}
 </style>
 </head>
 <body>
@@ -1337,6 +1369,7 @@ function render(){
   if (D && view==='agenda') bindAgendaDesk();
   if (D && view==='financas') bindFinDesk();
   if (D && view==='invest') bindInvestDesk();
+  if (D && view==='inicio') bindBoard();
   fitCols();
   mouseText(m);
   drawSparks(m);
@@ -4045,43 +4078,82 @@ function newsCards(list, n){
     <span class="nc-tx">${x.at && x.at > seen ? '<span class="mk-new">Nova</span>' : ''}<b>${esc(x.title)}</b><small>${agoTxt(x.at)} · Agência Brasil</small></span></a>`).join('')}</div>`;
 }
 function vHomeDesk(P, hp, items, card){
-  const t = today(), n = new Date(), mk = monthKey(t);
-  const doneN = items.filter(i => i.done).length;
+  const t = today(), n = new Date(), mk = monthKey(t), tm = iso(addDays(n, 1)), lim = iso(addDays(n, 7));
   const pend = pendingTasks(), lateT = pend.filter(x => x.due && x.due < t).length;
   const bills = openBills(), owed = bills.filter(b => monthKey(b.date) <= mk).reduce((a, b) => a + b.cents, 0), lateB = bills.filter(b => b.date < t).length;
   const fm = finMonth(mk), left = S.items.filter(i => !i.done).length;
+  // quadro no estilo Trello: cada coluna é um momento, cada cartão é um compromisso, lembrete, tarefa ou conta
+  const all = [
+    ...S.events.map(e => ({ k:'ev', id:e.id, d:e.date, tm:e.time || '', title:e.title, sub:e.place || '', done:!!e.done, lv:e.leave && hasLeave(e) ? e : null })),
+    ...S.rems.map(r => ({ k:'rem', id:r.id, d:r.date, tm:r.time || '', title:r.title, sub:'', done:!!r.done })),
+    ...S.tasks.filter(x => !x.parent).map(x => ({ k:'task', id:x.id, d:x.due || '', tm:'', title:x.title, sub:x.pri === 'alta' ? 'Prioridade alta' : '', done:!!x.done, hi:x.pri === 'alta' })),
+    ...S.fin.filter(f => f.type === 'conta').map(f => ({ k:'fin', id:f.id, d:f.date, tm:'', title:f.title, sub:'', done:!!f.paid, cents:f.cents })),
+  ];
+  const keep = ui.keep || new Set();
+  const colOf = c => c.done ? ((c.d === t || keep.has(c.id)) ? 'feito' : null)
+    : !c.d ? (c.k === 'task' ? 'semdata' : null) : c.d < t ? (c.k === 'ev' ? null : 'late') : c.d === t ? 'hoje' : c.d === tm ? 'amanha' : c.d <= lim ? 'prox' : null;
+  const by = { late:[], hoje:[], amanha:[], prox:[], semdata:[], feito:[] };
+  all.forEach(c => { const k = colOf(c); if (k) by[k].push(c); });
+  Object.values(by).forEach(l => l.sort((x, y) => x.d.localeCompare(y.d) || (x.tm || '99').localeCompare(y.tm || '99')));
+  const TAG = { ev:'Compromisso', rem:'Lembrete', task:'Tarefa', fin:'Conta' };
+  const kcard = c => { const x = c.d ? fromIso(c.d) : null;
+    return `<div class="kc k-${c.k} ${c.done ? 'done' : ''}" draggable="true" data-card="${c.k}:${c.id}">
+      <button class="kc-main" data-edit="${c.k}:${c.id}"><span class="kc-tag">${TAG[c.k]}${c.hi ? ' · alta' : ''}</span><b>${esc(c.title)}</b>
+        <span class="kc-meta">${[c.d && c.d !== t && c.d !== tm ? `${DOW[x.getDay()]} ${pad(x.getDate())}/${pad(x.getMonth() + 1)}` : '', c.tm, c.k === 'fin' ? 'R$ ' + brl(c.cents) : '', c.sub ? esc(c.sub) : ''].filter(Boolean).join(' · ')}${c.lv ? ` <span class="lv">· sair ${fmtHM(c.lv.leave)}</span>` : ''}</span></button>
+      <button class="kc-ck ${c.done ? 'on' : ''}" ${c.k === 'fin' ? (c.done ? 'disabled' : `data-pay="${c.id}"`) : `data-toggle="${c.k}:${c.id}"`} title="${c.k === 'fin' ? 'Marcar como paga' : c.done ? 'Reabrir' : 'Concluir'}" aria-label="${c.k === 'fin' ? 'Marcar como paga' : c.done ? 'Reabrir' : 'Concluir'}: ${esc(c.title)}">${ic('ok')}</button></div>`; };
+  const col = (k, title, add) => `<section class="kcol kcol-${k}" data-col="${k}" aria-label="${title}"><header><b>${title}</b><span>${by[k].length}</span></header>
+    <div class="kcards">${by[k].map(kcard).join('') || `<div class="k-empty">${k === 'feito' ? 'Arraste para cá o que terminar' : 'Nada aqui'}</div>`}</div>
+    ${add ? `<button class="k-add" data-kadd="${add}">${ic('plus')}Adicionar</button>` : ''}</section>`;
   const kpi = (go, icn, lab, val, sub, cls = '') => `<button class="kpi ${cls}" ${go}><span class="ic">${ic(icn)}</span><span class="kx"><small>${lab}</small><b>${val}</b><em>${sub}</em></span></button>`;
-  const kpis = `<div class="kpis">
-    ${kpi('data-go="agenda"', 'cal', 'Hoje', `${items.length} ${items.length === 1 ? 'item' : 'itens'}`, items.length ? `${doneN} concluído${doneN === 1 ? '' : 's'}` : 'Dia livre')}
+  const nw = mkt && mkt.noticias, nlist = (nw && nw.economia) || [];
+  return `<div class="dh">${P.hero}${hp.clima || (hp.familia && fam && fam.group) ? `<div class="dh-wx">${P.wx}</div>` : ''}</div>
+  ${hp.assistente || hp.sair ? `<div class="dh2">${hp.assistente ? P.ask : ''}${hp.sair ? nextLeave() : ''}</div>` : ''}
+  ${hp.indicadores ? tickerBand() : ''}
+  ${exBanner()}${pushBanner()}
+  ${true ? `<div class="kpis">
     ${kpi('data-go="tarefas"', 'task', 'Tarefas pendentes', pend.length, lateT ? `${lateT} atrasada${lateT > 1 ? 's' : ''}` : 'Nenhuma atrasada', lateT ? 'bad' : '')}
     ${kpi('data-go="financas"', 'fin', 'A pagar no mês (R$)', acc(owed), lateB ? `${lateB} vencida${lateB > 1 ? 's' : ''}` : `${bills.length} conta${bills.length === 1 ? '' : 's'} em aberto`, lateB ? 'bad' : '')}
     ${kpi('data-go="financas"', 'chart', 'Saldo do mês (R$)', acc(fm.saldo, fm.saldo < 0 ? 'neg' : ''), 'Receitas menos despesas')}
     ${kpi('data-golistas', 'cart', 'Listas', `${left} ${left === 1 ? 'item' : 'itens'}`, left ? 'faltando comprar' : 'Nada faltando')}
-  </div>`;
-  // próximos 7 dias (sem hoje)
-  const lim = iso(addDays(n, 7));
-  const next = [...S.events.filter(e => e.date > t && e.date <= lim && !e.done).map(e => ({ k:'ev', d:e.date, tm:e.time || '', r:e, s:e.place || 'Compromisso' })),
-    ...S.rems.filter(r => r.date > t && r.date <= lim && !r.done).map(r => ({ k:'rem', d:r.date, tm:r.time || '', r, s:'Lembrete' })),
-    ...S.tasks.filter(x => x.due && x.due > t && x.due <= lim && !x.done && !x.parent).map(x => ({ k:'task', d:x.due, tm:'', r:x, s:'Tarefa' }))]
-    .sort((a, b) => a.d.localeCompare(b.d) || a.tm.localeCompare(b.tm)).slice(0, 6);
-  const dchip = d => { const x = fromIso(d); return `<span class="dchip"><small>${DOW[x.getDay()]}</small><b>${x.getDate()}</b></span>`; };
-  const colA = hp.programacao ? `<section><div class="sh">Hoje<button data-go="agenda">Ver agenda</button></div>
-    <div class="list">${items.length ? items.map(card).join('') : `<div class="card empty">Nada para hoje. Clique em Adicionar ou aperte N.</div>`}</div></section>` : '';
-  const colB = `<section><div class="sh">Próximos 7 dias<button data-go="agenda">Agenda</button></div>
-      <div class="group">${next.length ? next.map(i => `<button class="row" data-edit="${i.k}:${i.r.id}">${dchip(i.d)}<span class="main"><div class="t">${esc(i.r.title)}</div><div class="s">${i.tm ? i.tm + ' · ' : ''}${esc(i.s)}</div></span></button>`).join('') : '<div class="empty">Nada marcado para os próximos dias.</div>'}</div></section>
-    ${hp.contas ? `<section><div class="sh">Contas a vencer<button data-go="financas">Finanças</button></div>
-      <div class="group">${bills.length ? bills.slice(0, 5).map(f => `<div class="row"><button class="main" data-edit="fin:${f.id}" style="text-align:left"><div class="t">${esc(f.title)}</div><div class="s">${f.date < t ? '<span class="chip bad">Vencida</span> ' : ''}vence ${rel(f.date)}</div></button><span class="right">${acc(f.cents)}<button class="pay" data-pay="${f.id}">Pagar</button></span></div>`).join('') : '<div class="empty">Nenhuma conta em aberto.</div>'}</div></section>` : ''}`;
-  const w = S.watch || [], Q = S.quotes || {};
-  const colC = `${hp.clima || (hp.familia && fam && fam.group) ? P.wx : ''}${hp.sair ? nextLeave() : ''}
-    ${w.length ? `<section><div class="sh">Meus investimentos<button data-go="invest">Ver todos</button></div>
-      <div class="group">${w.slice(0, 8).map(x => { const q = Q[x.symbol]; return `<button class="row inv-mini" data-go="invest"><span class="main"><div class="t">${esc(x.symbol)}</div></span>${q && q.price != null ? `<span class="im-v">${accN(Number(q.price), 2)}</span><span class="im-p">${pctChip(q.pct)}</span>` : '<span class="chip">—</span>'}</button>`; }).join('')}</div></section>` : ''}`;
-  const nw = mkt && mkt.noticias, nlist = (nw && nw.economia) || [];
-  return `<div class="dh">${P.hero}${hp.assistente ? P.ask : ''}</div>
-  ${hp.indicadores ? tickerBand() : ''}
-  ${exBanner()}${pushBanner()}
-  ${kpis}
-  <div class="dash3"><div class="dcol">${colA}</div><div class="dcol">${colB}</div><div class="dcol">${colC}</div></div>
+  </div>` : ''}
+  ${hp.programacao ? `<div class="kboard" aria-label="Quadro do dia">
+    ${by.late.length ? col('late', 'Atrasado') : ''}${col('hoje', 'Hoje', t)}${col('amanha', 'Amanhã', tm)}${col('prox', 'Próximos dias')}${by.semdata.length ? col('semdata', 'Tarefas sem data') : ''}${col('feito', 'Concluído hoje')}
+  </div><div class="foot">Arraste um cartão para Hoje ou Amanhã para mudar a data, ou para Concluído hoje quando terminar. Clique no cartão para abrir.</div>` : ''}
   ${hp.noticias && nlist.length ? `<section class="dnews"><div class="sh"><span class="live-h"><i></i>Notícias de economia · ${hm(nw.updated_at)}</span><button data-act="news-eco">Ver todas</button></div>${newsCards(nlist, 4)}</section>` : ''}`;
+}
+// arrastar cartões entre as colunas do quadro
+function bindBoard(){
+  const V = $('#view'), board = V.querySelector('.kboard'); if (!board) return;
+  V.querySelectorAll('[data-kadd]').forEach(b => b.onclick = () => { ui.agendaSel = b.dataset.kadd; ui.newEv = { date: b.dataset.kadd }; openNewMenu(); });
+  let drag = null;
+  board.querySelectorAll('[data-card]').forEach(c => {
+    c.ondragstart = e => { drag = c.dataset.card; c.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', drag); } catch(_) {} };
+    c.ondragend = () => { c.classList.remove('dragging'); board.querySelectorAll('.over').forEach(x => x.classList.remove('over')); drag = null; };
+  });
+  board.querySelectorAll('[data-col]').forEach(col => {
+    col.ondragover = e => { if (!drag) return; e.preventDefault(); col.classList.add('over'); };
+    col.ondragleave = e => { if (!col.contains(e.relatedTarget)) col.classList.remove('over'); };
+    col.ondrop = e => { e.preventDefault(); col.classList.remove('over'); if (drag) moveCard(drag, col.dataset.col); };
+  });
+}
+function moveCard(key, to){
+  const [k, id] = key.split(':'), it = S[ARR[k]].find(x => x.id === id); if (!it) return;
+  const t = today(), tm = iso(addDays(new Date(), 1)), dk = k === 'task' ? 'due' : 'date';
+  if (to === 'feito'){
+    if (k === 'fin'){ if (it.paid) return; it.paid = true; toast(`<b>${esc(it.title)}</b> marcada como paga`); }
+    else { if (it.done) return; it.done = true; (ui.keep = ui.keep || new Set()).add(id); }
+    play('concluida');
+  } else if (to === 'hoje' || to === 'amanha'){
+    if (k === 'fin'){ toast('O vencimento de uma conta se muda abrindo a conta.'); return; }
+    const nd = to === 'hoje' ? t : tm; if (it[dk] === nd && !it.done) return;
+    it[dk] = nd; it.done = false;
+    if (k === 'ev'){ it.leave = null; it.tsrc = ''; persist(sb.from('events').update({ travel_checked_at: null, leave_at: null }).eq('id', id).then(r => { if (r.error) throw r.error; })); }
+    toast(`Movido para ${to === 'hoje' ? 'hoje' : 'amanhã'}`);
+  } else if (to === 'semdata'){
+    if (k !== 'task'){ toast('Só tarefas podem ficar sem data.'); return; }
+    it.due = ''; it.done = false;
+  } else { toast(to === 'late' ? 'Não dá para mover para Atrasado.' : 'Para outra data, abra o cartão e escolha o dia.'); return; }
+  render(); persist(dbSave(k, it, false));
 }
 // gráfico de barras: receitas x despesas dos últimos 6 meses (Finanças no computador)
 function finBars(){
