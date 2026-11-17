@@ -651,6 +651,7 @@ button.row{width:100%;text-align:left;font:inherit;color:inherit;background:none
 .row .kbd{min-width:52px;height:26px;margin-right:12px}
 .hv-del{position:fixed;z-index:30;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:var(--card);color:var(--bad);box-shadow:0 2px 10px rgba(20,24,60,.16)}
 .hv-del:hover{background:var(--bad);color:#fff}
+.hv-del.arq{color:var(--accent)} .hv-del.arq:hover{background:var(--accent);color:#fff}
 .hv-del .i{width:18px;height:18px}
 body.mouse #view [data-swipe]{padding-right:52px}
 .topbar,.side-foot{display:none}
@@ -826,7 +827,7 @@ body.mouse .kpi:hover{box-shadow:0 6px 22px rgba(30,34,70,.12)}
 .dchip{flex:none;width:42px;height:42px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.05}
 .dchip small{font-size:10.5px;text-transform:uppercase;font-weight:600} .dchip b{font-size:16px}
 .inv-mini .t{font-weight:600}
-.ngrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.ngrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .ncard{display:flex;flex-direction:column;background:var(--card);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);text-decoration:none;color:var(--fg);min-width:0}
 .nc-img{display:grid;place-items:center;aspect-ratio:16/10;background:var(--accent-soft);color:var(--accent);position:relative;overflow:hidden}
 .nc-img .i{width:40px;height:40px;opacity:.5}
@@ -835,8 +836,8 @@ body.mouse .ncard:hover img{transform:scale(1.04)} body.mouse .ncard:hover{box-s
 .nc-tx{display:flex;flex-direction:column;gap:6px;padding:12px 14px 14px}
 .nc-tx b{font-size:15.5px;line-height:1.3;font-weight:650;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .nc-tx small{font-size:12px;color:var(--fg2)} .nc-tx .mk-new{align-self:flex-start}
-.v-noticias .ngrid{grid-template-columns:repeat(3,minmax(0,1fr))}
-@media (max-width:1399px){ .dnews .ngrid{grid-template-columns:repeat(3,minmax(0,1fr))} .dnews .ncard:nth-child(4){display:none} .kpi{padding:12px} .kpi .ic{display:none} }
+
+@media (max-width:1399px){ .kpi{padding:12px} .kpi .ic{display:none} }
 .fbars-card{padding:16px}
 .fbars{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;height:130px}
 .fb{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
@@ -974,6 +975,18 @@ body.mouse .kc:hover{box-shadow:0 3px 10px rgba(20,24,60,.18)}
 
 .utabs>button .i{width:14px;height:14px;vertical-align:-2px;opacity:.7}
 .eco-d{font-size:13.5px;line-height:1.5;color:var(--fg);margin:0} .eco-r{color:var(--fg2)}
+
+/* "Como foi?" e arquivados */
+.conf-card{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:14px 16px;display:flex;flex-direction:column;gap:12px;border-left:4px solid var(--accent)}
+.cc-h{display:flex;gap:12px;align-items:center}
+.cc-ic{width:36px;height:36px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}
+.cc-h b{display:block;font-size:15.5px} .cc-h small{color:var(--fg2);font-size:13px}
+.cc-b{display:flex;gap:8px;flex-wrap:wrap}
+.cc-b button{flex:1;min-width:120px;height:40px;border-radius:12px;background:color-mix(in srgb,var(--fg) 5%,var(--card));box-shadow:inset 0 0 0 1px var(--sep);font-size:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px}
+.cc-b .cc-ok{background:var(--accent);color:#fff;box-shadow:none}
+.cc-b .i{width:16px;height:16px}
+body.mouse .cc-b button:hover{filter:brightness(.97)}
+.cc-b.big button{height:48px;font-size:15px}
 </style>
 </head>
 <body>
@@ -1009,6 +1022,7 @@ body.mouse .kc:hover{box-shadow:0 3px 10px rgba(20,24,60,.18)}
   <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></symbol>
   <symbol id="i-news" viewBox="0 0 24 24"><rect x="4" y="5" width="13" height="14" rx="2"/><path d="M17 9h2.5a.5.5 0 0 1 .5.5V17a2 2 0 0 1-2 2H6M7.5 9h6M7.5 12.5h6M7.5 16h3.5"/></symbol>
   <symbol id="i-nav" viewBox="0 0 24 24"><path d="M20 4 3.5 11.2l7 2.3 2.3 7z"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path d="M3.5 7.5h17v3.5h-17z"/><path d="M5 11v8.5h14V11"/><path d="M10 14.5h4"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13M10 11v5.5M14 11v5.5"/></symbol>
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5 19 6v5.5c0 4.3-3 7.6-7 9-4-1.4-7-4.7-7-9V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></symbol>
   <symbol id="i-send" viewBox="0 0 24 24"><path d="M20.5 3.5 10.5 13.5M20.5 3.5l-6.5 17-3.5-7-7-3.5z"/></symbol>
@@ -1078,7 +1092,7 @@ const SB_URL = 'https://tgrfwgzfjrwgkkvpgbqq.supabase.co';
 // chave pública (anon): pode ficar no navegador; quem protege os dados de cada usuário é o RLS do banco
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ3Z3pmanJ3Z2trdnBnYnFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2OTMxMDYsImV4cCI6MjExMDI2OTEwNn0.O2xXMY9NAQSeuxYmbOvT20u9UXaFp9Fr73W2HMcju4Q';
 const sb = window.supabase.createClient(SB_URL, SB_KEY);
-const CATS = {lembrete:'Novo lembrete',compromisso:'Compromisso próximo',vencer:'Conta a vencer',vencida:'Conta vencida',pendente:'Tarefa pendente',concluida:'Tarefa concluída',resposta:'Resposta da IA',resumo:'Resumo diário',sair:'Hora de sair',noticia:'Notícia em destaque',aniversario:'Aniversário',semana:'Resumo da semana',lista:'Lista compartilhada',prioritario:'Alerta prioritário'};
+const CATS = {lembrete:'Novo lembrete',compromisso:'Compromisso próximo',vencer:'Conta a vencer',vencida:'Conta vencida',pendente:'Tarefa pendente',concluida:'Tarefa concluída',resposta:'Resposta da IA',resumo:'Resumo diário',sair:'Hora de sair',noticia:'Notícia em destaque',aniversario:'Aniversário',semana:'Resumo da semana',lista:'Lista compartilhada',balanco:'Como foi o compromisso',prioritario:'Alerta prioritário'};
 const defCats = () => Object.fromEntries(Object.keys(CATS).map(k=>[k, k !== 'noticia']));
 const LOCAL = 'meudia.local';
 let session = null;
@@ -1105,10 +1119,10 @@ const MAP = {
 async function loadAll(){
   const [p, ev, tk, fn, rm] = await Promise.all([
     sb.from('profiles').select('name,sounds,sound_cats,quiet_start,quiet_end,event_advance_min,summary_time,home_addr,home_lat,home_lon,work_addr,work_lat,work_lon,travel_on,travel_arrive_min,plan').maybeSingle(),
-    sb.from('events').select('*').order('date'),
+    sb.from('events').select('*').is('archived_at', null).order('date'),
     sb.from('tasks').select('*'),
     sb.from('finance_entries').select('*').order('date'),
-    sb.from('reminders').select('*').order('date'),
+    sb.from('reminders').select('*').is('archived_at', null).order('date'),
   ]);
   const bad = [p, ev, tk, fn, rm].find(r => r.error); if (bad) throw bad.error;
   if (p.data){
@@ -1323,14 +1337,100 @@ function swipeDelete(key){
     restore = () => S.notes.push(n); commit = () => sb.from('notes').delete().eq('id', id); label = 'Nota excluída'; }
   else if (k === 'ativo'){ const a = (S.watch || []).find(x => x.id === id); if (!a) return; S.watch = S.watch.filter(x => x !== a);
     restore = () => { S.watch.push(a); S.watch.sort((x, y) => String(x.created_at).localeCompare(String(y.created_at))); }; commit = () => sb.from('watchlist').delete().eq('id', id); label = `${esc(a.symbol)} removido`; }
-  else if (k === 'rem'){ const r = S.rems.find(x => x.id === id); if (!r) return; S.rems = S.rems.filter(x => x !== r);
-    restore = () => S.rems.push(r); commit = () => sb.from('reminders').delete().eq('id', id); label = 'Lembrete excluído'; }
+  else if (k === 'rem' || k === 'ev'){ return archiveItem(k, id); }
   else return;
   render();
   let undone = false;
   const timer = setTimeout(() => { if (!undone) persist(Promise.resolve(commit()).then(r => { if (r && r.error) throw r.error; })); }, 4500);
   toast(`<span style="flex:1;white-space:nowrap">${label}</span><button class="undo" data-undo>Desfazer</button>`, 4500);
   const b = $('#toast [data-undo]'); if (b) b.onclick = () => { undone = true; clearTimeout(timer); restore(); render(); $('#toast').hidden = true; };
+}
+
+/* ---------- arquivar: sai da agenda mas continua guardado em "Arquivados" ---------- */
+const ARQ = { ev:{ arr:'events', table:'events', n:'Compromisso' }, rem:{ arr:'rems', table:'reminders', n:'Lembrete' } };
+function archiveItem(k, id, extra){
+  const A = ARQ[k]; if (!A) return;
+  const it = S[A.arr].find(x => x.id === id); if (!it) return;
+  const prevDone = it.done;
+  S[A.arr] = S[A.arr].filter(x => x !== it);
+  if (extra && extra.done) it.done = true;
+  render();
+  let undone = false;
+  const timer = setTimeout(() => { if (!undone) persist(sb.from(A.table).update({ archived_at: new Date().toISOString(), ...(extra && extra.done ? { done: true } : {}) }).eq('id', id).then(r => { if (r.error) throw r.error; })); }, 4500);
+  toast(`<span style="flex:1;white-space:nowrap">${(extra && extra.label) || A.n + ' arquivado'}</span><button class="undo" data-undo>Desfazer</button>`, 4500);
+  const b = $('#toast [data-undo]'); if (b) b.onclick = () => { undone = true; clearTimeout(timer); it.done = prevDone; S[A.arr].push(it); render(); $('#toast').hidden = true; };
+}
+// compromissos que já terminaram e ainda não foram confirmados (o app pergunta 1 h depois)
+function toConfirm(){
+  const t = today(), lim = iso(addDays(new Date(), -14)), now = Date.now();
+  return S.events.filter(e => !e.done && e.date >= lim && e.date <= t &&
+      now - (fromIso(e.date).getTime() + hhmm(e.end || e.time) * 60e3) >= 3600e3)
+    .sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
+}
+const hhmm = t => { const [h, m] = String(t || '23:59').split(':').map(Number); return (h || 0) * 60 + (m || 0); };
+function confirmCard(){
+  const l = toConfirm(); if (!l.length) return '';
+  const e = l[0];
+  return `<section class="conf-card"><div class="cc-h"><span class="cc-ic">${ic('ok')}</span><div><b>Como foi?</b><small>${esc(e.title)} · ${rel(e.date)} às ${e.time}${l.length > 1 ? ` · e mais ${l.length - 1}` : ''}</small></div></div>
+    <div class="cc-b"><button class="cc-ok" data-conf="ok:${e.id}">${ic('ok')}Concluído</button><button data-conf="move:${e.id}">Foi remarcado</button><button data-conf="no:${e.id}">Não aconteceu</button></div></section>`;
+}
+function bindConfirm(root){
+  (root || $('#view')).querySelectorAll('[data-conf]').forEach(b => b.onclick = e => { e.stopPropagation(); const [act, id] = b.dataset.conf.split(':'); confirmAct(act, id); });
+}
+function confirmAct(act, id){
+  const ev = S.events.find(x => x.id === id); if (!ev){ toast('Esse compromisso não existe mais.'); render(); return; }
+  if (act === 'move'){ $('#sheet').hidden = true; openEntity('ev', id); toast('Escolha a nova data e salve.'); return; }
+  if (act === 'ok'){ play('concluida'); archiveItem('ev', id, { done: true, label: 'Concluído e arquivado' }); }
+  else archiveItem('ev', id, { label: 'Arquivado sem concluir' });
+  if (!$('#sheet').hidden){ $('#sheet').hidden = true; $('#sheet').innerHTML = ''; }
+}
+// aberto pelo alerta "Como foi: ..." (1 h depois do compromisso)
+function openConfirm(id){
+  const ev = S.events.find(x => x.id === id);
+  if (!ev){ toast('Esse compromisso não está mais na agenda.'); return; }
+  const el = $('#sheet');
+  el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="Como foi o compromisso"><div class="bar"><span style="min-width:70px"></span><b>Como foi?</b><button class="save" data-x>Fechar</button></div>
+    <div class="body"><div class="card"><div class="t" style="font-size:17px;font-weight:600">${esc(ev.title)}</div>
+      <div class="s" style="color:var(--fg2)">${rel(ev.date)} às ${ev.time}${ev.end ? '–' + ev.end : ''}${ev.place ? ' · ' + esc(ev.place) : ''}</div></div>
+    <div class="cc-b big"><button class="cc-ok" data-conf="ok:${ev.id}">${ic('ok')}Concluído</button><button data-conf="move:${ev.id}">Foi remarcado</button><button data-conf="no:${ev.id}">Não aconteceu</button></div>
+    <div class="foot">Ao confirmar, o compromisso sai da agenda e fica guardado em Arquivados (no menu Mais).</div></div></div>`;
+  el.hidden = false;
+  el.querySelector('[data-x]').onclick = () => { el.hidden = true; el.innerHTML = ''; };
+  el.onclick = e => { if (e.target === el){ el.hidden = true; el.innerHTML = ''; } };
+  bindConfirm(el);
+}
+/* ---------- tela Arquivados ---------- */
+async function loadArq(){
+  if (S.arqBusy) return; S.arqBusy = true;
+  const [ev, rm] = await Promise.all([
+    sb.from('events').select('id,title,date,start_time,place,done,archived_at').not('archived_at', 'is', null).order('date', { ascending: false }).limit(200),
+    sb.from('reminders').select('id,title,date,time,done,archived_at').not('archived_at', 'is', null).order('date', { ascending: false }).limit(200),
+  ]);
+  S.arqBusy = false; S.arqAt = Date.now();
+  S.arq = [...(ev.data || []).map(r => ({ k:'ev', id:r.id, title:r.title, date:r.date, time:tm(r.start_time), sub:r.place || '', done:r.done, at:r.archived_at })),
+    ...(rm.data || []).map(r => ({ k:'rem', id:r.id, title:r.title, date:r.date, time:tm(r.time), sub:'Lembrete', done:r.done, at:r.archived_at }))]
+    .sort((a, b) => String(b.at).localeCompare(String(a.at)));
+  if (view === 'arquivados') render();
+}
+function vArq(){
+  if (!S.arq || Date.now() - (S.arqAt || 0) > 60e3) loadArq();
+  const l = S.arq || [];
+  return `${back()}<div class="head"><div><h1 class="lt">Arquivados</h1><div class="sub">Compromissos e lembretes que saíram da agenda</div></div></div>
+  <div class="group">${l.length ? l.map(x => `<div class="row"><button class="main" data-reopen="${x.k}:${x.id}" style="text-align:left"><div class="t">${esc(x.title)}${x.done ? ' <span class="chip good">Concluído</span>' : ''}</div>
+      <div class="s">${rel(x.date)}${x.time ? ' às ' + x.time : ''}${x.sub ? ' · ' + esc(x.sub) : ''} · arquivado ${agoTxt(x.at)}</div></button>
+      <button class="pay" data-unarq="${x.k}:${x.id}">Restaurar</button></div>`).join('')
+    : `<div class="empty">${S.arq ? 'Nada arquivado ainda. Arraste um compromisso para o lado na agenda, ou confirme em "Como foi?".' : 'Carregando…'}</div>`}</div>
+  <div class="foot">Restaurar devolve o item para a agenda na mesma data. Para apagar de vez, restaure e exclua pelo próprio item.</div>`;
+}
+function bindArq(){
+  $('#view').querySelectorAll('[data-unarq]').forEach(b => b.onclick = async () => {
+    const [k, id] = b.dataset.unarq.split(':'), A = ARQ[k]; b.disabled = true;
+    const { error } = await sb.from(A.table).update({ archived_at: null }).eq('id', id);
+    if (error){ b.disabled = false; toast('Não consegui restaurar agora.'); return; }
+    S.arq = (S.arq || []).filter(x => !(x.k === k && x.id === id));
+    await loadAll(); render(); toast(`${A.n} de volta na agenda`);
+  });
+  $('#view').querySelectorAll('[data-reopen]').forEach(b => b.onclick = () => toast('Restaure o item para abrir e editar.'));
 }
 
 /* ---------- cálculos ---------- */
@@ -1362,13 +1462,13 @@ document.querySelectorAll('#tabs [data-v]').forEach(b => b.onclick = () => go(b.
 $('#fab').onclick = () => openNewMenu();
 
 function render(){
-  const MAIS = ['mais','tarefas','lembretes','financas','listas','lista','invest','mercado','noticias','clima','ajustes','admin'];
+  const MAIS = ['mais','tarefas','lembretes','financas','listas','lista','invest','mercado','noticias','clima','ajustes','admin','arquivados'];
   document.querySelectorAll('#tabs [data-v]').forEach(b => { if (b.dataset.v===view || (b.dataset.v==='listas' && view==='lista') || (b.dataset.v==='mais' && MAIS.includes(view))) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
   // computador: as listas abrem ao lado (a primeira já aberta); notas continuam na tela própria
   if (desk() && view==='listas' && (ui.lnTab||'listas')==='listas' && S.lists.length){ if (!S.lists.some(l => l.id===ui.listId)) ui.listId = S.lists[0].id; view = 'lista'; }
   if (desk() && view==='lista'){ if (ui.lnTab==='notas' || !S.lists.length) view = 'listas'; else if (!S.lists.some(l => l.id===ui.listId)) ui.listId = S.lists[0].id; }
   const D = desk();
-  const V = {inicio:vHome, agenda:D?vAgendaDesk:vAgenda, assistente:vAssist, tarefas:vTasks, financas:D?vFinDesk:vFin, lembretes:vTasks, ajustes:vSettings, mais:vMais, admin:vAdmin, clima:vClima, mercado:D?vMercadoDesk:vMercado, noticias:vNoticias, listas:vListas, lista:D?vListaDesk:vLista, invest:D?vInvestDesk:vInvest}[view] || vHome;
+  const V = {inicio:vHome, agenda:D?vAgendaDesk:vAgenda, assistente:vAssist, tarefas:vTasks, financas:D?vFinDesk:vFin, lembretes:vTasks, ajustes:vSettings, mais:vMais, admin:vAdmin, clima:vClima, mercado:D?vMercadoDesk:vMercado, noticias:vNoticias, listas:vListas, lista:D?vListaDesk:vLista, invest:D?vInvestDesk:vInvest, arquivados:vArq}[view] || vHome;
   const m = $('#view'); m.classList.toggle('chat', view==='assistente');
   const hadQ = document.activeElement && document.activeElement.id === 'topq'; hvHide();
   m.innerHTML = `${side() ? topbar() : ''}<div class="wrap v-${view}${D ? ' desk' : ''}">${V()}</div>`;
@@ -1378,6 +1478,8 @@ function render(){
   if (D && view==='financas') bindFinDesk();
   if (D && view==='invest') bindInvestDesk();
   if (D && view==='mercado') bindMercadoDesk();
+  if (view==='arquivados') bindArq();
+  bindConfirm();
   if (D && view==='inicio') bindBoard();
   fitCols();
   mouseText(m);
@@ -1483,7 +1585,7 @@ function vHome(){
   };
   // computador (tela larga): painel com coluna principal e coluna lateral
   if (desk()) return vHomeDesk(P, hp, items, card);
-  return `${P.hero}${P.wx}${hp.sair ? nextLeave() : ''}${hp.indicadores ? tickerBand() : ''}${P.ask}${P.sug}${exBanner()}${pushBanner()}${hp.contas ? billsCard() : ''}${P.resumo}${P.tiles}${P.prog}${hp.noticias ? newsBlock() : ''}`;
+  return `${P.hero}${P.wx}${hp.sair ? nextLeave() : ''}${hp.indicadores ? tickerBand() : ''}${confirmCard()}${P.ask}${P.sug}${exBanner()}${pushBanner()}${hp.contas ? billsCard() : ''}${P.resumo}${P.tiles}${P.prog}${hp.noticias ? newsBlock() : ''}`;
 }
 
 /* ---------- Agenda ---------- */
@@ -1532,7 +1634,7 @@ function timeline(d){
   const hrs = timed.map(i=>Number(i.time.slice(0,2)));
   const from = Math.min(7, ...hrs, isT ? nh : 24), to = Math.max(20, ...hrs, isT ? nh : 0);
   const cardOf = i => { const r = i.ref;
-    return `<div class="ev ${i.k==='rem'?'rem':''} ${i.done?'done':''}">
+    return `<div class="ev ${i.k==='rem'?'rem':''} ${i.done?'done':''}" data-swipe="${i.k}:${r.id}">
       <button class="main" data-edit="${i.k}:${r.id}"><div class="t">${esc(r.title)}</div>
         <div class="s">${i.k==='ev' ? `${r.time}${r.end?'–'+r.end:''}${r.place?' · '+esc(r.place):''}${leaveTxt(r)}` : `Lembrete · ${r.time} · avisar ${ADV[r.adv]}`}</div></button>
       ${same.has(r.id) ? '<span class="chip warn">Conflito</span>' : ''}${i.k==='ev' ? routeBtn(r) : ''}
@@ -2640,6 +2742,7 @@ function vMais(){
     ${tile('data-go="mercado"', 'globe', 'Economia', mkt && mkt.moedas ? 'US$ ' + n2(mkt.moedas.usd.value) : '—')}
     ${tile('data-go="noticias"', 'news', 'Notícias', '')}
     ${tile('data-go="clima"', 'spark', 'Clima', wx ? wx.temp + '°C' : '—')}
+    ${tile('data-go="arquivados"', 'ok', 'Arquivados', (S.arq || []).length || '')}
     ${tile('data-go="agenda"', 'cal', 'Agenda', S.events.filter(e => e.date === t).length + ' hoje')}
     ${tile('data-go="ajustes"', 'gear', 'Ajustes', '')}
   </div>
@@ -2756,6 +2859,7 @@ function inboxGo(n){
   if (n.kind === 'sair' || n.kind === 'sairja'){ if (S.events.some(e => e.id === n.ref)) openRoute(n.ref); else go('agenda'); return; }
   if (n.kind === 'lista'){ openSharedList(n.ref); return; }
   if (n.kind === 'noticia' && /^https?:/.test(n.url || '')){ window.open(n.url, '_blank', 'noopener'); return; }
+  if (n.kind === 'balanco'){ go('inicio'); setTimeout(() => openConfirm(n.ref), 250); return; }
   go({ lembrete:'tarefas', compromisso:'agenda', vencer:'financas', vencida:'financas', pendente:'tarefas', aniversario:'tarefas', semana:'financas' }[n.kind] || 'inicio');
 }
 function openInbox(){
@@ -2939,6 +3043,7 @@ async function startApp(){
   saveLocationSoon(); loadMarket(); loadInbox(); loadInvest(); setTimeout(() => showOnboarding(), 800);
   sb.rpc('my_recurring_bills').then(r => { if (r.data > 0) loadAll().then(render).catch(() => {}); });
   if (pendingRoute){ const r = pendingRoute; pendingRoute = null; setTimeout(() => openRoute(r), 300); }
+  if (pendingConf){ const c = pendingConf; pendingConf = null; setTimeout(() => openConfirm(c), 300); }
   if (pendingList){ const r = pendingList; pendingList = null; setTimeout(() => openSharedList(r), 300); }
   refreshPush().then(() => { if (pushOn && (view === 'inicio' || view === 'ajustes')) render(); });
 }
@@ -3368,9 +3473,10 @@ setInterval(() => {
   document.querySelectorAll('[data-ago]').forEach(e => e.textContent = agoTxt(e.dataset.ago));
 }, 20e3);
 setInterval(() => { if (session && document.visibilityState === 'visible' && (view === 'inicio' || view === 'mercado') && $('#sheet').hidden) loadMarket(true); }, 60e3);
-let pendingRoute = null, pendingList = null;
+let pendingRoute = null, pendingList = null, pendingConf = null;
 try { const q = new URLSearchParams(location.search).get('lista'); if (q){ pendingList = q; history.replaceState(null, '', location.pathname); } } catch(e) {}
 try { const r = new URLSearchParams(location.search).get('rota'); if (r){ pendingRoute = r; history.replaceState(null, '', location.pathname); } } catch(e) {}
+try { const c = new URLSearchParams(location.search).get('conf'); if (c){ pendingConf = c; history.replaceState(null, '', location.pathname); } } catch(e) {}
 
 /* ---------- busca de local: nome do lugar, endereço ou CEP ---------- */
 // coloca o número logo depois do nome da rua: "Rua X, Bairro, Cidade" + 120 → "Rua X, 120, Bairro, Cidade"
@@ -3652,7 +3758,7 @@ function vNoticias(){
   const head = `${back()}<div class="head"><div><h1 class="lt">Notícias</h1><div class="sub">${nw ? 'Atualizado às ' + hm(nw.updated_at) : 'Agência Brasil'}</div></div>
     <button class="icon-btn" data-act="mkt-refresh" aria-label="Atualizar">${ic('refresh')}</button></div>`;
   if (!nw) return head + '<div class="card empty">Carregando…</div>';
-  const tab = ui.newsTab, list = nw[tab] || [], per = 6, pages = Math.max(1, Math.ceil(list.length / per));
+  const tab = ui.newsTab, list = desk() ? withImg(nw[tab]) : (nw[tab] || []), per = 6, pages = Math.max(1, Math.ceil(list.length / per));
   ui.newsPage = Math.min(Math.max(ui.newsPage || 0, 0), pages - 1);
   const items = list.slice(ui.newsPage * per, ui.newsPage * per + per);
   return `${head}
@@ -3858,7 +3964,7 @@ function openBudget(){
 
 /* ---------- alertas no celular (Web Push) ---------- */
 const VAPID_PUB = 'BDgwg6S3VsklJoKIWEaW5-z7AoGakq7C3AiwFy5TrjgAbpbB9Uq0o7DVFlDkSOLHkK7OYRed_DzTjZ5fz7t-39A';
-const PUSH_KINDS = ['lembrete','sair','compromisso','vencer','vencida','pendente','resumo','noticia','aniversario','semana','lista'];
+const PUSH_KINDS = ['lembrete','sair','compromisso','vencer','vencida','pendente','resumo','noticia','aniversario','semana','lista','balanco'];
 const PUSH_TXT = {
   ativo: 'Você recebe os alertas mesmo com o app fechado.',
   desligado: '⁠Toque em Ativar e permita as notificações.',
@@ -3978,6 +4084,9 @@ document.addEventListener('pointerover', e => {
   if (row === hvRow) return;
   if (hvRow) hvRow.classList.remove('hv');
   hvRow = row; row.classList.add('hv');
+  const arq = ARQ[String(row.dataset.swipe).split(':')[0]];
+  hvDel.innerHTML = ic(arq ? 'box' : 'trash'); hvDel.title = arq ? 'Arquivar' : 'Excluir';
+  hvDel.setAttribute('aria-label', hvDel.title); hvDel.classList.toggle('arq', !!arq);
   const r = row.getBoundingClientRect();
   hvDel.style.top = (r.top + r.height / 2 - 17) + 'px'; hvDel.style.left = (r.right - 46) + 'px'; hvDel.hidden = false;
 }, true);
@@ -4080,9 +4189,11 @@ function sideFoot(){
 }
 
 /* ----- Início no computador: painel denso (indicadores, 3 colunas, notícias com foto grande) ----- */
+// na tela larga mostra sempre n notícias, começando pelas que têm foto
+const withImg = l => [...(l || []).filter(x => x.img), ...(l || []).filter(x => !x.img)];
 function newsCards(list, n){
   const seen = newsSeen();
-  return `<div class="ngrid">${list.slice(0, n).map(x => `<a class="ncard" href="${esc(x.link)}" target="_blank" rel="noopener" data-newsopen="${esc(x.at || '')}">
+  return `<div class="ngrid">${withImg(list).slice(0, n).map(x => `<a class="ncard" href="${esc(x.link)}" target="_blank" rel="noopener" data-newsopen="${esc(x.at || '')}">
     <span class="nc-img">${x.img ? `<img src="${esc(x.img)}" alt="" loading="lazy" onerror="this.remove()">` : ''}${ic('news')}</span>
     <span class="nc-tx">${x.at && x.at > seen ? '<span class="mk-new">Nova</span>' : ''}<b>${esc(x.title)}</b><small>${agoTxt(x.at)} · Agência Brasil</small></span></a>`).join('')}</div>`;
 }
@@ -4118,7 +4229,7 @@ function vHomeDesk(P, hp, items, card){
   return `<div class="dh">${P.hero}${hp.clima || (hp.familia && fam && fam.group) ? `<div class="dh-wx">${P.wx}</div>` : ''}</div>
   ${hp.assistente || hp.sair ? `<div class="dh2">${hp.assistente ? P.ask : ''}${hp.sair ? nextLeave() : ''}</div>` : ''}
   ${hp.indicadores ? tickerBand() : ''}
-  ${exBanner()}${pushBanner()}
+  ${confirmCard()}${exBanner()}${pushBanner()}
   ${true ? `<div class="kpis">
     ${kpi('data-go="tarefas"', 'task', 'Tarefas pendentes', pend.length, lateT ? `${lateT} atrasada${lateT > 1 ? 's' : ''}` : 'Nenhuma atrasada', lateT ? 'bad' : '')}
     ${kpi('data-go="financas"', 'fin', 'A pagar no mês (R$)', acc(owed), lateB ? `${lateB} vencida${lateB > 1 ? 's' : ''}` : `${bills.length} conta${bills.length === 1 ? '' : 's'} em aberto`, lateB ? 'bad' : '')}
@@ -4128,7 +4239,7 @@ function vHomeDesk(P, hp, items, card){
   ${hp.programacao ? `<div class="kboard" aria-label="Quadro do dia">
     ${by.late.length ? col('late', 'Atrasado') : ''}${col('hoje', 'Hoje', t)}${col('amanha', 'Amanhã', tm)}${col('prox', 'Próximos dias')}${by.semdata.length ? col('semdata', 'Tarefas sem data') : ''}${col('feito', 'Concluído hoje')}
   </div><div class="foot">Arraste um cartão para Hoje ou Amanhã para mudar a data, ou para Concluído hoje quando terminar. Clique no cartão para abrir.</div>` : ''}
-  ${hp.noticias && nlist.length ? `<section class="dnews"><div class="sh"><span class="live-h"><i></i>Notícias de economia · ${hm(nw.updated_at)}</span><button data-act="news-eco">Ver todas</button></div>${newsCards(nlist, 4)}</section>` : ''}`;
+  ${hp.noticias && nlist.length ? `<section class="dnews"><div class="sh"><span class="live-h"><i></i>Notícias de economia · ${hm(nw.updated_at)}</span><button data-act="news-eco">Ver todas</button></div>${newsCards(nlist, 6)}</section>` : ''}`;
 }
 // arrastar cartões entre as colunas do quadro
 function bindBoard(){
