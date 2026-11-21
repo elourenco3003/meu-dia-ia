@@ -184,6 +184,36 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 .set-ic{width:32px;height:32px;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none;margin-right:2px}
 .set-ic svg{width:18px;height:18px}
 .tone-sel{max-width:132px}
+/* orçamento do mês */
+.bud{display:block;width:100%;text-align:left;font:inherit;color:inherit;border:0;background:var(--card);border-radius:18px;padding:14px;box-shadow:var(--shadow)}
+.bud-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.bud-h b{font-size:15.5px}
+.bud-p{font-weight:700;font-size:15.5px}
+.bud-bar{display:block;position:relative;height:12px;border-radius:8px;background:var(--fill);margin:10px 0 8px;overflow:hidden}
+.bud-bar i{position:absolute;left:0;top:0;bottom:0;border-radius:8px}
+.bud-bar i.com{background:color-mix(in srgb,var(--fg2) 26%,transparent)}
+.bud-bar i.use{background:var(--good)}
+.bud-bar i.use.warn{background:var(--now)}
+.bud-bar i.use.bad{background:var(--bad)}
+.bud-g{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 12px;font-size:12.5px;color:var(--fg2)}
+.bud-g>span{display:block}
+.bud-g b{display:block;color:var(--fg);font-weight:600;font-size:14px;margin-top:1px}
+.bud-r{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;font-size:13px;color:var(--fg2)}
+.bud-r button{color:var(--accent);font-weight:600;font-size:14px;flex:none}
+/* rotinas e remédios */
+.rot{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:16px;padding:10px 12px;box-shadow:var(--shadow)}
+.rot+.rot{margin-top:8px}
+.rot .main{flex:1;min-width:0;text-align:left;background:none;border:0;font:inherit;color:inherit;padding:0}
+.rot .t{font-weight:600;font-size:15.5px}
+.rot .s{font-size:13px;color:var(--fg2)}
+.rot-h{font-weight:700;font-size:14px;color:var(--accent);min-width:46px;flex:none}
+.rot-h.late{color:var(--bad)}
+.rot.done{opacity:.6}.rot.done .t{text-decoration:line-through}
+.rot.skip{opacity:.55}
+.dose-ic{width:54px;height:54px;border-radius:50%;margin:0 auto;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent)}
+.dose-ic svg{width:26px;height:26px}
+.dose-b{gap:10px}.dose-b svg{width:19px;height:19px;color:var(--fg2)}
+.dose-b.ok svg{color:var(--good)}
 .back{display:inline-flex;align-items:center;gap:2px;color:var(--accent);font-weight:600;font-size:16px;align-self:flex-start;margin-left:-6px}
 .chead{display:grid;grid-template-columns:44px 1fr 44px;align-items:center}
 .ctitle{margin:0;text-align:center;font-size:18px;font-weight:600}
@@ -436,9 +466,10 @@ body{margin:0}
 .auth-or{display:flex;align-items:center;gap:10px;margin:18px 0 12px;color:var(--fg2);font-size:13px}
 .auth-or::before,.auth-or::after{content:"";flex:1;height:1px;background:var(--sep)}
 .auth-social{display:flex;flex-direction:column;gap:8px}
-.auth-social .social{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;border-radius:14px;background:var(--card);border:1px solid var(--sep);box-shadow:var(--shadow);color:var(--fg);font:inherit;font-size:15px;font-weight:600}
-.auth-social .social img{width:20px;height:20px;object-fit:contain;flex:none}
-.auth-social .social-ini{width:20px;text-align:center;font-weight:800;flex:none}
+.auth-social .social{display:flex;align-items:center;width:100%;padding:13px 18px;border-radius:14px;background:var(--card);border:1px solid var(--sep);box-shadow:var(--shadow);color:var(--fg);font:inherit;font-size:15px;font-weight:600}
+/* a logo ocupa sempre a mesma caixa, à esquerda, e o texto fica centrado no resto: os três botões ficam iguais */
+.auth-social .social img,.auth-social .social .social-ini{width:22px;height:22px;flex:none;object-fit:contain;text-align:center;line-height:22px;font-weight:800}
+.auth-social .social .lbl{flex:1;text-align:center;padding-right:22px}
 .auth-links{display:flex;justify-content:space-between;gap:12px;margin-top:14px;flex-wrap:wrap}
 .auth-links button{color:var(--accent);font-weight:600;font-size:14px}
 button:disabled{cursor:default}
@@ -1038,6 +1069,7 @@ body.mouse .cc-b button:hover{filter:brightness(.97)}
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13M10 11v5.5M14 11v5.5"/></symbol>
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5 19 6v5.5c0 4.3-3 7.6-7 9-4-1.4-7-4.7-7-9V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></symbol>
   <symbol id="i-send" viewBox="0 0 24 24"><path d="M20.5 3.5 10.5 13.5M20.5 3.5l-6.5 17-3.5-7-7-3.5z"/></symbol>
+  <symbol id="i-pill" viewBox="0 0 24 24"><rect x="2.6" y="8.6" width="18.8" height="6.8" rx="3.4" transform="rotate(-45 12 12)"/><path d="M9.5 9.5 14.5 14.5"/></symbol>
 </svg>
 
 <div id="auth" hidden></div>
@@ -1104,11 +1136,11 @@ const SB_URL = 'https://tgrfwgzfjrwgkkvpgbqq.supabase.co';
 // chave pública (anon): pode ficar no navegador; quem protege os dados de cada usuário é o RLS do banco
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ3Z3pmanJ3Z2trdnBnYnFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2OTMxMDYsImV4cCI6MjExMDI2OTEwNn0.O2xXMY9NAQSeuxYmbOvT20u9UXaFp9Fr73W2HMcju4Q';
 const sb = window.supabase.createClient(SB_URL, SB_KEY);
-const CATS = {lembrete:'Novo lembrete',compromisso:'Compromisso próximo',vencer:'Conta a vencer',vencida:'Conta vencida',pendente:'Tarefa pendente',concluida:'Tarefa concluída',resposta:'Resposta da IA',resumo:'Resumo diário',sair:'Hora de sair',noticia:'Notícia em destaque',aniversario:'Aniversário',semana:'Resumo da semana',lista:'Lista compartilhada',item:'Item incluído na lista',balanco:'Como foi o compromisso',prioritario:'Alerta prioritário'};
+const CATS = {lembrete:'Novo lembrete',compromisso:'Compromisso próximo',vencer:'Conta a vencer',vencida:'Conta vencida',pendente:'Tarefa pendente',concluida:'Tarefa concluída',resposta:'Resposta da IA',resumo:'Resumo diário',sair:'Hora de sair',noticia:'Notícia em destaque',aniversario:'Aniversário',semana:'Resumo da semana',lista:'Lista compartilhada',item:'Item incluído na lista',rotina:'Rotina do dia',remedio:'Hora do remédio',consulta:'Consulta e exame',balanco:'Como foi o compromisso',prioritario:'Alerta prioritário'};
 const defCats = () => Object.fromEntries(Object.keys(CATS).map(k=>[k, k !== 'noticia']));
 const LOCAL = 'meudia.local';
 let session = null;
-const blankState = () => ({ name:'', sounds:true, quiet_start:'', quiet_end:'', event_adv:30, summary_time:'07:30', home:{addr:''}, work:{addr:''}, travel_on:true, travel_arrive:30, cats:defCats(), example:false, fired:{}, chat:[], chatLoaded:false, events:[], tasks:[], fin:[], rems:[], lists:[], items:[], notes:[], recurring:[], birthdays:[] });
+const blankState = () => ({ name:'', sounds:true, reserve:0, quiet_start:'', quiet_end:'', event_adv:30, summary_time:'07:30', home:{addr:''}, work:{addr:''}, travel_on:true, travel_arrive:30, cats:defCats(), example:false, fired:{}, chat:[], chatLoaded:false, events:[], tasks:[], fin:[], rems:[], lists:[], items:[], notes:[], recurring:[], birthdays:[], rots:[], rlogs:[] });
 let S = blankState();
 try { S.fired = (JSON.parse(localStorage.getItem(LOCAL)) || {}).fired || {}; } catch(e) {}
 const save = () => { try { localStorage.setItem(LOCAL, JSON.stringify({ fired: S.fired })); } catch(e) {} };
@@ -1116,8 +1148,16 @@ const tm = v => (v || '').slice(0,5);
 const MAP = {
   ev:   { table:'events',
           to: r => ({id:r.id, title:r.title, date:r.date, time:tm(r.start_time), end:tm(r.end_time), place:r.place||'', cat:r.category, done:r.done,
-                from:r.travel_from||'auto', plat:r.place_lat ?? null, plon:r.place_lon ?? null, plabel:r.place_label||'', tmin:r.travel_min ?? null, leave:r.leave_at||null, torig:r.travel_origin||'', tsrc:r.travel_source||'', alert: r.alert_min == null ? '' : String(r.alert_min)}),
-          from: o => ({title:o.title, date:o.date, start_time:o.time, end_time:o.end || null, place:o.place || '', category:o.cat || 'pessoal', done:!!o.done, travel_from:o.from || 'auto', alert_min: o.alert === '' || o.alert == null ? null : Number(o.alert), ...(o.pgeoSet ? { place_geo:o.place, place_lat:o.plat, place_lon:o.plon, place_label:o.plabel } : {})}) },
+                from:r.travel_from||'auto', plat:r.place_lat ?? null, plon:r.place_lon ?? null, plabel:r.place_label||'', tmin:r.travel_min ?? null, leave:r.leave_at||null, torig:r.travel_origin||'', tsrc:r.travel_source||'', alert: r.alert_min == null ? '' : String(r.alert_min),
+                ekind:r.kind || 'normal', prep:r.prep || '', jejum: r.fasting_h == null ? '' : String(r.fasting_h), retorno: r.followup_days == null ? '' : String(r.followup_days)}),
+          from: o => ({title:o.title, date:o.date, start_time:o.time, end_time:o.end || null, place:o.place || '', category:o.cat || 'pessoal', done:!!o.done, travel_from:o.from || 'auto', alert_min: o.alert === '' || o.alert == null ? null : Number(o.alert),
+                kind:o.ekind || 'normal', prep:o.prep || '', fasting_h: o.jejum === '' || o.jejum == null ? null : Number(o.jejum), followup_days: o.retorno === '' || o.retorno == null ? null : Number(o.retorno), ...(o.pgeoSet ? { place_geo:o.place, place_lat:o.plat, place_lon:o.plon, place_label:o.plabel } : {})}) },
+  rot:  { table:'routines',
+          to: r => ({id:r.id, kind:r.kind, title:r.title, dose:r.dose || '', mode:r.mode, times:(r.times || []).map(tm), every:r.every_min ?? null,
+                ws:tm(r.win_start), we:tm(r.win_end), days:r.days || [0,1,2,3,4,5,6], start:r.start_date, end:r.end_date || '', fam:!!r.notify_family, active:r.active !== false}),
+          from: o => ({kind:o.kind || 'habito', title:o.title, dose:o.dose || '', mode:o.mode || 'horarios', times:o.times || [], every_min:o.every || null,
+                win_start:o.ws || '08:00', win_end:o.we || '20:00', days:o.days || [0,1,2,3,4,5,6], start_date:o.start || today(), end_date:o.end || null,
+                notify_family:!!o.fam, active:o.active !== false}) },
   task: { table:'tasks',
           to: r => ({id:r.id, title:r.title, due:r.due_date || '', pri:r.priority, cat:r.category, done:r.done, parent:r.parent_id || null}),
           from: o => ({title:o.title, due_date:o.due || null, priority:o.pri || 'media', category:o.cat || 'pessoal', done:!!o.done, done_at:o.done ? new Date().toISOString() : null, parent_id:o.parent || null}) },
@@ -1130,7 +1170,7 @@ const MAP = {
 };
 async function loadAll(){
   const [p, ev, tk, fn, rm] = await Promise.all([
-    sb.from('profiles').select('name,sounds,sound_cats,quiet_start,quiet_end,event_advance_min,summary_time,home_addr,home_lat,home_lon,work_addr,work_lat,work_lon,travel_on,travel_arrive_min,plan').maybeSingle(),
+    sb.from('profiles').select('name,sounds,sound_cats,quiet_start,quiet_end,event_advance_min,summary_time,home_addr,home_lat,home_lon,work_addr,work_lat,work_lon,travel_on,travel_arrive_min,reserve_pct,plan').maybeSingle(),
     sb.from('events').select('*').is('archived_at', null).order('date'),
     sb.from('tasks').select('*'),
     sb.from('finance_entries').select('*').order('date'),
@@ -1142,14 +1182,18 @@ async function loadAll(){
     S.quiet_start = tm(p.data.quiet_start); S.quiet_end = tm(p.data.quiet_end); S.event_adv = p.data.event_advance_min ?? 30; S.summary_time = tm(p.data.summary_time) || '07:30';
     S.home = { addr:p.data.home_addr || '', lat:p.data.home_lat, lon:p.data.home_lon }; S.work = { addr:p.data.work_addr || '', lat:p.data.work_lat, lon:p.data.work_lon };
     S.travel_on = p.data.travel_on !== false; S.travel_arrive = p.data.travel_arrive_min || 30; S.plan = p.data.plan || 'free';
+    S.reserve = Number(p.data.reserve_pct) || 0;
   }
   S.events = ev.data.map(MAP.ev.to); S.tasks = tk.data.map(MAP.task.to); S.fin = fn.data.map(MAP.fin.to); S.rems = rm.data.map(MAP.rem.to);
-  const [ls, li, nt, rb, bd] = await Promise.all([
+  const [ls, li, nt, rb, bd, rt, rl] = await Promise.all([
     sb.from('lists').select('*').order('updated_at', { ascending:false }), sb.from('list_items').select('*').order('created_at'),
     sb.from('notes').select('*').order('updated_at', { ascending:false }), sb.from('recurring_bills').select('*').order('day'),
     sb.from('birthdays').select('*').order('month').order('day'),
+    sb.from('routines').select('*').order('created_at'),
+    sb.from('routine_logs').select('*').gte('due_on', today()),
   ]);
   S.lists = ls.data || []; S.items = li.data || []; S.notes = nt.data || []; S.recurring = rb.data || []; S.birthdays = bd.data || [];
+  S.rots = (rt.data || []).map(MAP.rot.to); S.rlogs = rl.data || [];
 }
 async function dbSave(k, o, isNew){
   const m = MAP[k];
@@ -1162,7 +1206,7 @@ const persist = p => Promise.resolve(p).catch(fail);
 let profT;
 function saveProfile(){
   clearTimeout(profT);
-  profT = setTimeout(() => persist(sb.from('profiles').update({ name:S.name, sounds:S.sounds, sound_cats:S.cats, quiet_start:S.quiet_start || null, quiet_end:S.quiet_end || null, event_advance_min:Number(S.event_adv) || 0, summary_time:S.summary_time || '07:30', travel_on:!!S.travel_on, travel_arrive_min:Number(S.travel_arrive) || 30 }).eq('id', session.user.id).then(r => { if (r.error) throw r.error; })), 500);
+  profT = setTimeout(() => persist(sb.from('profiles').update({ name:S.name, sounds:S.sounds, sound_cats:S.cats, quiet_start:S.quiet_start || null, quiet_end:S.quiet_end || null, event_advance_min:Number(S.event_adv) || 0, summary_time:S.summary_time || '07:30', travel_on:!!S.travel_on, travel_arrive_min:Number(S.travel_arrive) || 30, reserve_pct:Number(S.reserve) || 0 }).eq('id', session.user.id).then(r => { if (r.error) throw r.error; })), 500);
 }
 
 /* ---------- sons (originais, gerados no aparelho) ---------- */
@@ -1170,6 +1214,7 @@ const TONES = {
   lembrete:[[880,0],[1318,.12]], compromisso:[[659,0],[880,.13],[988,.26]], vencer:[[523,0],[659,.15]],
   vencida:[[440,0],[349,.2]], pendente:[[740,0],[740,.16]], concluida:[[784,0],[1047,.1]],
   resposta:[[1175,0]], resumo:[[523,0],[659,.12],[784,.24],[1047,.36]], prioritario:[[988,0],[988,.17],[988,.34]], sair:[[587,0],[784,.12],[988,.24],[784,.36]], noticia:[[698,0],[880,.14]], aniversario:[[523,0],[659,.12],[784,.24],[1047,.4]], semana:[[659,0],[523,.15]], lista:[[784,0],[988,.1],[1175,.2]], item:[[1047,0],[1319,.09]],
+  rotina:[[880,0],[1047,.1]], remedio:[[988,0],[1175,.12],[988,.24],[1175,.36]], consulta:[[659,0],[880,.12],[1047,.24]],
 };
 // toques curtos que a pessoa pode escolher para cada tipo de alerta
 const SHORT_TONES = {
@@ -1476,13 +1521,13 @@ document.querySelectorAll('#tabs [data-v]').forEach(b => b.onclick = () => go(b.
 $('#fab').onclick = () => openNewMenu();
 
 function render(){
-  const MAIS = ['mais','tarefas','lembretes','financas','listas','lista','invest','mercado','noticias','clima','ajustes','admin','arquivados'];
+  const MAIS = ['mais','tarefas','lembretes','rotinas','financas','listas','lista','invest','mercado','noticias','clima','ajustes','admin','arquivados'];
   document.querySelectorAll('#tabs [data-v]').forEach(b => { if (b.dataset.v===view || (b.dataset.v==='listas' && view==='lista') || (b.dataset.v==='mais' && MAIS.includes(view))) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
   // computador: as listas abrem ao lado (a primeira já aberta); notas continuam na tela própria
   if (desk() && view==='listas' && (ui.lnTab||'listas')==='listas' && S.lists.length){ if (!S.lists.some(l => l.id===ui.listId)) ui.listId = S.lists[0].id; view = 'lista'; }
   if (desk() && view==='lista'){ if (ui.lnTab==='notas' || !S.lists.length) view = 'listas'; else if (!S.lists.some(l => l.id===ui.listId)) ui.listId = S.lists[0].id; }
   const D = desk();
-  const V = {inicio:vHome, agenda:D?vAgendaDesk:vAgenda, assistente:vAssist, tarefas:vTasks, financas:D?vFinDesk:vFin, lembretes:vTasks, ajustes:vSettings, mais:vMais, admin:vAdmin, clima:vClima, mercado:D?vMercadoDesk:vMercado, noticias:vNoticias, listas:vListas, lista:D?vListaDesk:vLista, invest:D?vInvestDesk:vInvest, arquivados:vArq}[view] || vHome;
+  const V = {inicio:vHome, agenda:D?vAgendaDesk:vAgenda, assistente:vAssist, tarefas:vTasks, financas:D?vFinDesk:vFin, lembretes:vTasks, ajustes:vSettings, mais:vMais, admin:vAdmin, clima:vClima, mercado:D?vMercadoDesk:vMercado, noticias:vNoticias, listas:vListas, lista:D?vListaDesk:vLista, invest:D?vInvestDesk:vInvest, rotinas:vRotinas, arquivados:vArq}[view] || vHome;
   const m = $('#view'); m.classList.toggle('chat', view==='assistente');
   const hadQ = document.activeElement && document.activeElement.id === 'topq'; hvHide();
   m.innerHTML = `${side() ? topbar() : ''}<div class="wrap v-${view}${D ? ' desk' : ''}">${V()}</div>`;
@@ -1599,7 +1644,7 @@ function vHome(){
   };
   // computador (tela larga): painel com coluna principal e coluna lateral
   if (desk()) return vHomeDesk(P, hp, items, card);
-  return `${P.hero}${P.wx}${hp.sair ? nextLeave() : ''}${hp.indicadores ? tickerBand() : ''}${confirmCard()}${P.ask}${P.sug}${exBanner()}${pushBanner()}${hp.contas ? billsCard() : ''}${P.resumo}${P.tiles}${P.prog}${hp.noticias ? newsBlock() : ''}`;
+  return `${P.hero}${P.wx}${hp.sair ? nextLeave() : ''}${hp.indicadores ? tickerBand() : ''}${doseCard()}${confirmCard()}${P.ask}${P.sug}${exBanner()}${pushBanner()}${hp.contas ? billsCard() : ''}${hp.orcamento ? budgetCard(true) : ''}${P.resumo}${P.tiles}${P.prog}${hp.noticias ? newsBlock() : ''}`;
 }
 
 /* ---------- Agenda ---------- */
@@ -1674,14 +1719,14 @@ function openNewMenu(){
   el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="Adicionar">
     <div class="bar"><span style="min-width:70px"></span><b>Adicionar</b><button class="save" data-x>Fechar</button></div>
     <div class="body">
-      <div class="group">${[['ev','cal','Compromisso'],['tr','task','Tarefa ou lembrete'],['fin','fin','Conta, despesa ou receita'],['list','cart','Lista (mercado, compras…)'],['note','note','Nota']].map(([k,i,l])=>`<button class="row" data-k="${k}"><span class="mi">${ic(i)}</span><span class="main t">${l}</span>${ic('r','i chev')}</button>`).join('')}</div>
+      <div class="group">${[['ev','cal','Compromisso'],['tr','task','Tarefa ou lembrete'],['fin','fin','Conta, despesa ou receita'],['list','cart','Lista (mercado, compras…)'],['note','note','Nota'],['med','pill','Remédio'],['rot','repeat','Rotina do dia a dia']].map(([k,i,l])=>`<button class="row" data-k="${k}"><span class="mi">${ic(i)}</span><span class="main t">${l}</span>${ic('r','i chev')}</button>`).join('')}</div>
       <div class="group"><button class="row" data-ai><span class="mi">${ic('spark')}</span><span class="main"><div class="t">Pedir ao assistente</div><div class="s">Diga do seu jeito e ele organiza</div></span>${ic('r','i chev')}</button></div>
     </div></div>`;
   el.hidden = false;
   const close = () => { el.hidden = true; el.innerHTML = ''; };
   el.onclick = e => { if (e.target === el) close(); };
   el.querySelector('[data-x]').onclick = close;
-  el.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { close(); const k = b.dataset.k; if (k === 'list') openListForm(null); else if (k === 'note') openNote(null); else if (k === 'tr') openTaskOrRem(); else openEntity(k); });
+  el.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { close(); const k = b.dataset.k; if (k === 'list') openListForm(null); else if (k === 'note') openNote(null); else if (k === 'tr') openTaskOrRem(); else if (k === 'med') openRoutine('remedio', null); else if (k === 'rot') openRoutine('habito', null); else openEntity(k); });
   el.querySelector('[data-ai]').onclick = () => { close(); go('assistente'); setTimeout(()=>{ const i = $('#chat-in'); if (i) i.focus(); }, 60); };
 }
 
@@ -1746,6 +1791,7 @@ function vFin(){
     <div><div class="k">Despesas</div><div class="v">${acc(m.desp,'neg')}</div></div>
     <div><div class="k">Saldo</div><div class="v">${acc(m.saldo, m.saldo<0?'neg':'')}</div></div>
   </div>
+  ${budgetCard(false, mk)}
   <section>
     <div class="sh">Contas a pagar</div>
     <div class="group">
@@ -1862,6 +1908,12 @@ function bindView(){
   V.querySelectorAll('[data-say]').forEach(b => b.onclick = () => send(b.dataset.say));
   V.querySelectorAll('[data-new]').forEach(b => b.onclick = () => openEntity(b.dataset.new));
   V.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => { const [k,id] = b.dataset.edit.split(':'); openEntity(k, id); });
+  V.querySelectorAll('[data-rotok]').forEach(b => b.onclick = () => { const [id, t] = b.dataset.rotok.split('|'); rotMark(id, t, 'feito'); });
+  V.querySelectorAll('[data-rotundo]').forEach(b => b.onclick = () => { const [id, t] = b.dataset.rotundo.split('|'); rotUndo(id, t); });
+  V.querySelectorAll('[data-rotedit]').forEach(b => b.onclick = () => { const r = (S.rots || []).find(x => x.id === b.dataset.rotedit); if (r) openRoutine(r.kind, r); });
+  V.querySelectorAll('[data-rotnew]').forEach(b => b.onclick = () => openRoutine(b.dataset.rotnew, null));
+  V.querySelectorAll('[data-reserva]').forEach(b => b.onclick = e => { e.stopPropagation(); openReserva(); });
+  V.querySelectorAll('[data-dosecard]').forEach(b => b.onclick = () => { const [st, id, t] = b.dataset.dosecard.split('|'); rotMark(id, t, st); });
   V.querySelectorAll('[data-toggle]').forEach(b => b.onclick = () => {
     const [k,id] = b.dataset.toggle.split(':'); const it = S[ARR[k]].find(x=>x.id===id); if (!it) return;
     it.done = !it.done; if (it.done){ play('concluida'); (ui.keep = ui.keep || new Set()).add(id); } render(); persist(dbSave(k, it, false));
@@ -1910,7 +1962,7 @@ function bindView(){
   V.querySelectorAll('[data-setsub]').forEach(b => b.onclick = () => { ui.setSub = b.dataset.setsub || null; ui.wipe = false; render(); $('#view').scrollTop = 0; });
   V.querySelectorAll('[data-tone]').forEach(sl => sl.onchange = () => { const t = catTones(); t[sl.dataset.tone] = sl.value; try { localStorage.setItem('meudia.tones', JSON.stringify(t)); } catch(e) {} play(sl.dataset.tone, true); });
   V.querySelectorAll('[data-cat]').forEach(c => c.onchange = () => { S.cats[c.dataset.cat] = c.checked; saveProfile(); });
-  V.querySelectorAll('[data-mic]').forEach(b => b.onclick = micNote);
+  V.querySelectorAll('[data-mic]').forEach(bindMic);
   V.querySelectorAll('[data-act]').forEach(b => b.onclick = () => {
     const a = b.dataset.act;
     if (a==='logout'){ inbox = []; unsubscribePush().finally(() => sb.auth.signOut()); }
@@ -1980,6 +2032,21 @@ function bindView(){
 const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null;
 function micNote(e){ startDictation(e.currentTarget); }
+// segure para falar e solte para enviar; um toque rápido deixa ouvindo até tocar de novo
+function bindMic(b){
+  let t0 = 0;
+  b.onpointerdown = e => {
+    e.preventDefault();
+    if (rec){ rec.stop(); return; }          // já estava ouvindo: este toque para
+    t0 = Date.now();
+    try { b.setPointerCapture(e.pointerId); } catch(x) {}
+    startDictation(b);
+  };
+  const solta = () => { if (rec && Date.now() - t0 > 450) rec.stop(); };
+  b.onpointerup = solta; b.onpointercancel = solta;
+  b.onclick = e => e.preventDefault();
+  b.onkeydown = e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); micNote({ currentTarget: b }); } };
+}
 function startDictation(btn, onDone){
   const form = btn.closest('form'), input = form && form.querySelector('textarea, input');
   if (!input) return;
@@ -1987,7 +2054,7 @@ function startDictation(btn, onDone){
   if (rec){ rec.stop(); return; }
   const ph = input.placeholder; let finalText = '', failed = false;
   rec = new SpeechRec(); rec.lang = 'pt-BR'; rec.interimResults = true; rec.continuous = false; rec.maxAlternatives = 1;
-  btn.classList.add('rec'); btn.setAttribute('aria-label', 'Parar de ouvir'); input.placeholder = 'Ouvindo… pode falar';
+  btn.classList.add('rec'); btn.setAttribute('aria-label', 'Parar de ouvir'); input.placeholder = 'Ouvindo… solte para enviar';
   rec.onresult = ev => {
     let t = ''; for (const r of ev.results) t += r[0].transcript;
     input.value = t; input.scrollLeft = input.scrollWidth;   // ditando: acompanha as últimas palavras
@@ -2062,7 +2129,7 @@ function openForm({title, fields, values={}, onSave, onDelete, saveLabel}){
 }
 
 const FIELDS = {
-  ev: [{k:'title',label:'Título',type:'title',req:1},{type:'break'},{k:'date',label:'Data',type:'date',req:1},{k:'time',label:'Início',type:'time',req:1},{k:'end',label:'Fim',type:'time'},{type:'break'},{k:'place',label:'Local',type:'place',ph:'Local: nome do lugar, endereço ou CEP'},{k:'from',label:'Sair de',type:'select',def:'auto',options:[['auto','Automático'],['casa','Casa'],['trabalho','Trabalho']]},{k:'alert',label:'Avisar',type:'select',def:'',options:[['','Padrão (Ajustes)'],['0','No horário'],['5','5 min antes'],['15','15 min antes'],['30','30 min antes'],['60','1 hora antes'],['120','2 horas antes']]},{k:'cat',label:'Categoria',type:'select',def:'pessoal',options:[['pessoal','Pessoal'],['trabalho','Trabalho']]}],
+  ev: [{k:'title',label:'Título',type:'title',req:1},{type:'break'},{k:'date',label:'Data',type:'date',req:1},{k:'time',label:'Início',type:'time',req:1},{k:'end',label:'Fim',type:'time'},{type:'break'},{k:'place',label:'Local',type:'place',ph:'Local: nome do lugar, endereço ou CEP'},{k:'from',label:'Sair de',type:'select',def:'auto',options:[['auto','Automático'],['casa','Casa'],['trabalho','Trabalho']]},{k:'alert',label:'Avisar',type:'select',def:'',options:[['','Padrão (Ajustes)'],['0','No horário'],['5','5 min antes'],['15','15 min antes'],['30','30 min antes'],['60','1 hora antes'],['120','2 horas antes']]},{k:'cat',label:'Categoria',type:'select',def:'pessoal',options:[['pessoal','Pessoal'],['trabalho','Trabalho']]},{type:'break'},{k:'ekind',label:'Tipo',type:'select',def:'normal',options:[['normal','Compromisso comum'],['consulta','Consulta ou exame']]},{k:'prep',label:'Levar / preparo',type:'text',ph:'Pedido médico, carteirinha, exames…'},{k:'jejum',label:'Jejum',type:'select',def:'',options:[['','Sem jejum'],['4','4 horas'],['6','6 horas'],['8','8 horas'],['12','12 horas']]},{k:'retorno',label:'Lembrar o retorno',type:'select',def:'',options:[['','Não'],['30','Em 30 dias'],['60','Em 60 dias'],['90','Em 90 dias'],['180','Em 6 meses'],['365','Em 1 ano']]}],
   task: [{k:'title',label:'Título',type:'title',req:1},{type:'break'},{k:'due',label:'Data',type:'date'},{k:'pri',label:'Prioridade',type:'select',def:'media',options:[['alta','Alta'],['media','Média'],['baixa','Baixa']]},{k:'cat',label:'Categoria',type:'select',def:'pessoal',options:[['pessoal','Pessoal'],['trabalho','Trabalho']]}],
   fin: [{k:'type',label:'Tipo',type:'select',def:'conta',options:[['conta','Conta a pagar'],['despesa','Despesa'],['receita','Receita']]},{k:'title',label:'Descrição',type:'title',req:1},{type:'break'},{k:'cents',label:'Valor',type:'money',req:1},{k:'date',label:'Data ou vencimento',type:'date',req:1}],
   rem: [{k:'title',label:'Título',type:'title',req:1},{type:'break'},{k:'date',label:'Data',type:'date',req:1},{k:'time',label:'Hora',type:'time',req:1},{k:'adv',label:'Avisar',type:'select',def:0,options:Object.entries(ADV)}],
@@ -2724,7 +2791,7 @@ function drawChart(box, pts, opt = CHART_DAY){
 const HOME_BLOCKS = [
   ['clima','Previsão do tempo',true], ['familia','Família',true], ['sair','Próximo compromisso e hora de sair',true],
   ['indicadores','Indicadores (dólar, bolsa, frete…)',true], ['assistente','Campo do assistente',true], ['sugestoes','Sugestões para o assistente',false],
-  ['contas','Contas a vencer',true], ['resumo','Resumo do dia (gráfico)',false], ['programacao','Minha programação de hoje',true],
+  ['contas','Contas a vencer',true], ['orcamento','Orçamento do mês',true], ['resumo','Resumo do dia (gráfico)',false], ['programacao','Minha programação de hoje',true],
   ['atalhos','Atalhos (agenda, tarefas, listas…)',false], ['noticias','Notícias de economia',true],
 ];
 function homePrefs(){ let p = {}; try { p = JSON.parse(localStorage.getItem('meudia.home') || '{}') || {}; } catch(e) {} return Object.fromEntries(HOME_BLOCKS.map(([k, , d]) => [k, p[k] === undefined ? d : !!p[k]])); }
@@ -2756,6 +2823,7 @@ function vMais(){
     ${tile('data-go="financas"', 'fin', lateB ? `<span style="color:var(--bad)">Finanças · ${lateB} vencida${lateB > 1 ? 's' : ''}</span>` : 'Finanças', acc(openBills().reduce((s, b) => s + b.cents, 0)))}
     ${tile('data-golistas', 'cart', 'Listas', S.items.filter(i => !i.done).length)}
     ${tile('data-lnnotes', 'note', 'Notas', S.notes.length)}
+    ${tile('data-go="rotinas"', 'pill', 'Rotinas e remédios', rotPend() || '✓')}
     ${tile('data-go="invest"', 'chart', 'Investimentos', (S.watch || []).length || '+')}
     ${tile('data-go="mercado"', 'globe', 'Economia', mkt && mkt.moedas ? 'US$ ' + n2(mkt.moedas.usd.value) : '—')}
     ${tile('data-go="noticias"', 'news', 'Notícias', '')}
@@ -3019,7 +3087,7 @@ function renderAuth(){
     </form>
     ${(authMode === 'entrar' || authMode === 'criar') && OAUTH_ON.length ? `<div class="auth-or"><span>ou</span></div>
     <div class="auth-social">${OAUTH.filter(([k]) => OAUTH_ON.includes(k)).map(([k, l, c, ini]) =>
-      `<button type="button" class="social" data-oauth="${k}"><img src="/${k.split('_')[0]}.svg" alt="" data-ini="${ini}" data-cor="${c}"><span>Continuar com ${l}</span></button>`).join('')}</div>` : ''}
+      `<button type="button" class="social" data-oauth="${k}"><img src="/${k.split('_')[0]}.svg" alt="" data-ini="${ini}" data-cor="${c}"><span class="lbl">Continuar com ${l}</span></button>`).join('')}</div>` : ''}
     <div class="auth-links">
       ${authMode === 'entrar' ? `<button data-amode="criar">Criar conta grátis</button><button data-amode="esqueci">Esqueci minha senha</button>` : ''}
       ${authMode === 'criar' || authMode === 'esqueci' ? `<button data-amode="entrar">Já tenho conta</button>` : ''}
@@ -3086,6 +3154,7 @@ async function startApp(){
   if (pendingRoute){ const r = pendingRoute; pendingRoute = null; setTimeout(() => openRoute(r), 300); }
   if (pendingConf){ const c = pendingConf; pendingConf = null; setTimeout(() => openConfirm(c), 300); }
   if (pendingList){ const r = pendingList; pendingList = null; setTimeout(() => openSharedList(r), 300); }
+  if (pendingDose){ const q = pendingDose; pendingDose = null; setTimeout(() => { doseAlarm(true); openDose(q); }, 300); }
   refreshPush().then(() => { if (pushOn && (view === 'inicio' || view === 'ajustes')) render(); });
 }
 sb.auth.onAuthStateChange((event, s) => {
@@ -3478,6 +3547,208 @@ function nextEventCard(){
     <span class="lc-s">${esc(e.title)}${e.place ? ' · ' + esc(e.place) : ''}</span></span>
     <span class="lc-go">Ver</span></button>`;
 }
+/* ---------- Rotinas: hábitos do dia a dia e remédios ---------- */
+const DAYSETS = { todos:[0,1,2,3,4,5,6], uteis:[1,2,3,4,5], fds:[0,6] };
+const daySetOf = d => { const k = [...(d || [])].sort().join(','); return Object.keys(DAYSETS).find(x => DAYSETS[x].join(',') === k) || 'todos'; };
+const DAYLBL = { todos:'todo dia', uteis:'seg a sex', fds:'sáb e dom' };
+const ROT_EVERY = [[30,'30 min'],[60,'1 hora'],[90,'1 h 30'],[120,'2 horas'],[180,'3 horas'],[240,'4 horas'],[360,'6 horas']];
+const hm2m = v => { const [h, m] = String(v || '0:0').split(':').map(Number); return (h || 0) * 60 + (m || 0); };
+const m2hm = t => `${pad(Math.floor(t / 60) % 24)}:${pad(t % 60)}`;
+// horários do dia de uma rotina (os mesmos que o servidor calcula)
+function rotSlots(r){
+  if (r.mode === 'intervalo' && r.every > 0){
+    const out = [], a = hm2m(r.ws), b = hm2m(r.we);
+    for (let t = a; t <= b; t += r.every) out.push(m2hm(t));
+    return out;
+  }
+  return [...(r.times || [])].sort();
+}
+const rotOnDay = (r, d) => r.active && r.start <= d && (!r.end || r.end >= d) && (r.days || []).includes(fromIso(d).getDay());
+const rotLog = (id, t, d) => (S.rlogs || []).find(g => g.routine_id === id && g.due_on === (d || today()) && tm(g.due_time) === t);
+function rotAgenda(){
+  const d = today(), out = [];
+  (S.rots || []).forEach(r => { if (rotOnDay(r, d)) rotSlots(r).forEach(t => out.push({ r, t, log: rotLog(r.id, t, d) })); });
+  return out.sort((a, b) => a.t.localeCompare(b.t));
+}
+// doses de remédio que já passaram da hora e continuam sem resposta
+const dosesAbertas = () => rotAgenda().filter(x => x.r.kind === 'remedio' && !x.log && x.t <= nowHM());
+const rotPend = () => rotAgenda().filter(x => !x.log).length;
+
+function rotMark(id, t, status){
+  const row = { routine_id:id, due_on:today(), due_time:t, status };
+  const old = rotLog(id, t);
+  if (old) old.status = status; else (S.rlogs = S.rlogs || []).push(row);
+  if (status === 'feito') play('concluida');
+  render();
+  persist(sb.from('routine_logs').upsert(row, { onConflict:'routine_id,due_on,due_time' }).then(r => { if (r.error) throw r.error; }));
+}
+function rotUndo(id, t){
+  S.rlogs = (S.rlogs || []).filter(g => !(g.routine_id === id && g.due_on === today() && tm(g.due_time) === t));
+  render();
+  persist(sb.from('routine_logs').delete().eq('routine_id', id).eq('due_on', today()).eq('due_time', t).then(r => { if (r.error) throw r.error; }));
+}
+function rotDesc(r){
+  const quando = r.mode === 'intervalo'
+    ? `a cada ${(ROT_EVERY.find(([v]) => v === r.every) || [0, r.every + ' min'])[1]}, das ${r.ws} às ${r.we}`
+    : (r.times || []).join(', ');
+  return `${quando} · ${DAYLBL[daySetOf(r.days)]}${r.end ? ' · até ' + r.end.split('-').reverse().join('/') : ''}${r.kind === 'remedio' && r.fam ? ' · avisa a família' : ''}`;
+}
+function vRotinas(){
+  const ag = rotAgenda(), feitos = ag.filter(x => x.log && x.log.status === 'feito').length, agora = nowHM();
+  const card = x => {
+    const done = x.log && x.log.status === 'feito', skip = x.log && x.log.status === 'pulado', late = !x.log && x.t <= agora;
+    return `<div class="rot ${done ? 'done' : ''} ${skip ? 'skip' : ''}">
+      <span class="rot-h ${late ? 'late' : ''}">${x.t}</span>
+      <button class="main" data-rotedit="${x.r.id}"><div class="t">${esc(x.r.title)}</div>
+        <div class="s">${x.r.kind === 'remedio' ? (x.r.dose ? esc(x.r.dose) : 'Remédio') : 'Rotina'}${skip ? ' · pulado' : late && !done ? ' · esperando resposta' : ''}</div></button>
+      ${x.log ? `<button class="check2 on" data-rotundo="${x.r.id}|${x.t}" aria-label="Desmarcar ${esc(x.r.title)}">${ic('ok')}</button>`
+              : `<button class="check2" data-rotok="${x.r.id}|${x.t}" aria-label="Marcar ${esc(x.r.title)} das ${x.t}"></button>`}</div>`; };
+  const lista = kind => (S.rots || []).filter(r => r.kind === kind).map(r => `<button class="row" data-rotedit="${r.id}">
+      <span class="mi">${ic(kind === 'remedio' ? 'pill' : 'repeat')}</span>
+      <span class="main"><div class="t">${esc(r.title)}${r.active ? '' : ' · pausado'}</div><div class="s">${esc(rotDesc(r))}</div></span>${ic('r','i chev')}</button>`).join('')
+    || '<div class="row"><span class="main s" style="color:var(--fg2)">Nada por aqui ainda.</span></div>';
+  return `<div class="head"><div><h1 class="lt">Rotinas</h1><div class="sub">${ag.length ? `${feitos} de ${ag.length} ${ag.length === 1 ? 'marcado' : 'marcados'} hoje` : 'Hábitos do dia a dia e remédios'}</div></div></div>
+  ${ag.length ? `<section><div class="sh">Hoje</div><div class="list">${ag.map(card).join('')}</div></section>` : ''}
+  <section><div class="sh">Remédios<button data-rotnew="remedio">Adicionar</button></div><div class="group">${lista('remedio')}</div></section>
+  <section><div class="sh">Hábitos do dia a dia<button data-rotnew="habito">Adicionar</button></div><div class="group">${lista('habito')}</div></section>
+  <div class="foot">O remédio avisa na hora e insiste 10 e 20 minutos depois enquanto você não responder. Marcando aqui, ou na pergunta do alerta, ele para.</div>`;
+}
+const parseTimes = v => String(v || '').split(/[^0-9:h]+/i).map(x => x.trim()).filter(Boolean)
+  .map(x => { const m = x.match(/^(\d{1,2})[:h]?(\d{2})?$/); return m ? `${pad(Math.min(23, Number(m[1])))}:${pad(Math.min(59, Number(m[2] || 0)))}` : null; })
+  .filter(Boolean);
+function openRoutine(kind, it){
+  const med = kind === 'remedio';
+  const fields = [
+    {k:'title',label: med ? 'Remédio' : 'Rotina', type:'title', req:1},
+    ...(med ? [{k:'dose',label:'Dose',type:'text',ph:'1 comprimido, 20 gotas…'}] : []),
+    {type:'break'},
+    {k:'mode',label:'Quando',type:'select',def:'horarios',options:[['horarios','Em horários fixos'],['intervalo','De tempos em tempos']]},
+    {k:'times',label:'Horários',type:'text',ph:'08:00, 14:00, 20:00'},
+    {k:'every',label:'A cada',type:'select',def:120,options:ROT_EVERY},
+    {k:'ws',label:'Das',type:'time',def:'08:00'},
+    {k:'we',label:'Até as',type:'time',def:'20:00'},
+    {type:'break'},
+    {k:'dayset',label:'Dias',type:'select',def:'todos',options:[['todos','Todos os dias'],['uteis','Segunda a sexta'],['fds','Sábado e domingo']]},
+    {k:'end',label:'Até o dia',type:'date'},
+    ...(med ? [{k:'fam',label:'Avisar a família',type:'select',def:'0',options:[['0','Não'],['1','Sim, se eu não confirmar']]}] : []),
+    {k:'active',label:'Situação',type:'select',def:'1',options:[['1','Ativa'],['0','Pausada']]},
+  ];
+  const values = it ? { ...it, times:(it.times || []).join(', '), dayset:daySetOf(it.days), fam: it.fam ? '1' : '0', active: it.active ? '1' : '0' } : {};
+  openForm({
+    title: it ? (med ? 'Remédio' : 'Rotina') : (med ? 'Novo remédio' : 'Nova rotina'),
+    fields, values,
+    onSave: async v => {
+      const o = it || { kind };
+      o.kind = kind; o.title = v.title; o.dose = v.dose || ''; o.mode = v.mode;
+      o.times = v.mode === 'horarios' ? parseTimes(v.times) : [];
+      o.every = v.mode === 'intervalo' ? Number(v.every) : null;
+      o.ws = v.ws || '08:00'; o.we = v.we || '20:00';
+      o.days = DAYSETS[v.dayset] || DAYSETS.todos;
+      o.start = o.start || today(); o.end = v.end || null;
+      o.fam = v.fam === '1'; o.active = v.active !== '0';
+      if (o.mode === 'horarios' && !o.times.length){ const e = new Error('horário'); e.userMsg = 'Coloque pelo menos um horário, por exemplo 08:00.'; throw e; }
+      if (o.mode === 'intervalo' && hm2m(o.we) <= hm2m(o.ws)){ const e = new Error('janela'); e.userMsg = 'A hora final precisa ser depois da inicial.'; throw e; }
+      if (it) await dbSave('rot', o, false);
+      else { const rec = await dbSave('rot', o, true); S.rots.push(rec); }
+      return med ? 'Remédio salvo' : 'Rotina salva';
+    },
+    onDelete: it ? async () => { await dbDel('rot', it.id); S.rots = S.rots.filter(x => x !== it); } : null,
+  });
+}
+// alarme do remédio: toca até a pessoa responder (ou 1 min, se ninguém estiver por perto)
+function doseAlarm(on){
+  try {
+    if (!on){ if (alarmEl){ delete alarmEl.dataset.on; alarmEl.pause(); alarmEl.currentTime = 0; } clearInterval(alarmVib); clearTimeout(alarmStopT); if (navigator.vibrate) navigator.vibrate(0); return; }
+    alarmEl = alarmEl || Object.assign(new Audio(sirenUrl()), { loop:true, preload:'auto' });
+    if (alarmEl.src !== sirenUrl()) alarmEl.src = sirenUrl();
+    alarmEl.dataset.on = '1'; alarmEl.muted = false; alarmEl.volume = 1; alarmEl.currentTime = 0;
+    alarmEl.play().catch(() => play('remedio', true));
+    if (navigator.vibrate){ navigator.vibrate([500, 200, 500]); clearInterval(alarmVib); alarmVib = setInterval(() => navigator.vibrate([500, 200, 500]), 2500); }
+    clearTimeout(alarmStopT); alarmStopT = setTimeout(() => doseAlarm(false), 60e3);
+  } catch(e) { play('remedio', true); }
+}
+// "Tomou o remédio?" — aberto pelo alerta ou pelo cartão do Início
+function openDose(ref){
+  const [id, hhmm] = String(ref || '').split(':');
+  const t = hhmm && hhmm.length === 4 ? `${hhmm.slice(0, 2)}:${hhmm.slice(2)}` : (hhmm || '');
+  const r = (S.rots || []).find(x => x.id === id);
+  if (!r){ doseAlarm(false); toast('Esse remédio não está mais cadastrado.'); return; }
+  const el = $('#sheet');
+  el.innerHTML = `<div class="pane" role="alertdialog" aria-modal="true" aria-label="Tomou o remédio?">
+    <div class="bar"><span style="min-width:70px"></span><b>Tomou o remédio?</b><span style="min-width:70px"></span></div>
+    <div class="body">
+      <div class="card" style="text-align:center;padding:18px 14px">
+        <div class="dose-ic">${ic('pill')}</div>
+        <div style="font-size:20px;font-weight:700;margin-top:8px">${esc(r.title)}</div>
+        <div style="font-size:14px;color:var(--fg2);margin-top:4px">${r.dose ? esc(r.dose) + ' · ' : ''}dose das ${t}</div>
+      </div>
+      <div class="group" style="margin-top:12px">
+        <button class="row dose-b ok" data-dose="feito">${ic('ok')}<span class="main t">Tomei agora</span></button>
+        <button class="row dose-b" data-dose="adiar">${ic('repeat')}<span class="main t">Adiar 10 minutos</span></button>
+        <button class="row dose-b" data-dose="pulado">${ic('info')}<span class="main t">Pulei esta dose</span></button>
+      </div></div></div>`;
+  el.hidden = false;
+  const close = () => { doseAlarm(false); el.hidden = true; el.innerHTML = ''; };
+  el.onclick = e => { if (e.target === el) close(); };
+  el.querySelectorAll('[data-dose]').forEach(b => b.onclick = () => {
+    const a = b.dataset.dose;
+    if (a === 'adiar'){ close(); toast('Aviso de novo em 10 minutos.'); setTimeout(() => { if (!rotLog(id, t)){ doseAlarm(true); openDose(ref); } }, 10 * 60e3); return; }
+    rotMark(id, t, a); close(); toast(a === 'feito' ? 'Dose confirmada' : 'Dose pulada');
+  });
+}
+// cartão no Início quando passou da hora e a dose segue sem resposta
+function doseCard(){
+  const l = dosesAbertas(); if (!l.length) return '';
+  const x = l[0];
+  return `<section class="conf-card"><div class="cc-h"><span class="cc-ic">${ic('pill')}</span><div><b>Tomou o remédio?</b><small>${esc(x.r.title)}${x.r.dose ? ' · ' + esc(x.r.dose) : ''} · dose das ${x.t}${l.length > 1 ? ` · e mais ${l.length - 1}` : ''}</small></div></div>
+    <div class="cc-b"><button class="cc-ok" data-dosecard="feito|${x.r.id}|${x.t}">${ic('ok')}Tomei</button><button data-dosecard="pulado|${x.r.id}|${x.t}">Pulei</button></div></section>`;
+}
+/* ---------- Orçamento do mês: salário, reserva e quanto já foi usado ---------- */
+function budget(mk){
+  const m = finMonth(mk), pct = Number(S.reserve) || 0;
+  const reserva = Math.round(m.rec * pct / 100), disp = Math.max(0, m.rec - reserva);
+  const aPagar = S.fin.filter(f => f.type === 'conta' && !f.paid && monthKey(f.date) === mk).reduce((a, f) => a + f.cents, 0);
+  const usado = disp ? Math.min(100, m.desp / disp * 100) : 0;
+  const com = disp ? Math.min(100, (m.desp + aPagar) / disp * 100) : 0;
+  const n = new Date(), fimMes = new Date(n.getFullYear(), n.getMonth() + 1, 0).getDate();
+  const dias = mk === monthKey(today()) ? Math.max(1, fimMes - n.getDate() + 1) : 0;
+  return { ...m, pct, reserva, disp, aPagar, usado, com, dias, sobra: disp - m.desp - aPagar };
+}
+function budgetCard(mini, mk){
+  mk = mk || monthKey(today());
+  const b = budget(mk);
+  if (!b.rec) return mini ? '' : `<section class="bud"><span class="bud-h"><b>Orçamento do mês</b></span>
+    <span style="display:block;font-size:13px;color:var(--fg2);margin-top:6px">Lance o seu salário como receita e o app passa a mostrar quanto do mês você já usou.</span></section>`;
+  const faixa = b.usado >= 100 ? 'bad' : b.usado >= 70 ? 'warn' : 'good';
+  const cor = faixa === 'good' ? 'var(--good)' : faixa === 'warn' ? 'var(--now)' : 'var(--bad)';
+  const barra = `<span class="bud-bar" role="img" aria-label="${Math.round(b.usado)} por cento do disponível já gasto"><i class="com" style="width:${b.com}%"></i><i class="use ${faixa}" style="width:${b.usado}%"></i></span>`;
+  const mes = MONL[Number(mk.slice(5)) - 1];
+  if (mini) return `<button class="bud" data-go="financas" aria-label="Orçamento do mês">
+    <span class="bud-h"><b>Orçamento de ${mes}</b><span class="bud-p" style="color:${cor}">${Math.round(b.usado)}% usado</span></span>
+    ${barra}
+    <span class="bud-r"><span>Sobram ${acc(Math.max(0, b.sobra))} de ${acc(b.disp)} disponíveis${b.dias ? ` · ${b.dias} ${b.dias === 1 ? 'dia' : 'dias'} até o fim do mês` : ''}</span></span></button>`;
+  const cel = (k, v) => `<span><span>${k}</span><b>${v}</b></span>`;
+  return `<section class="bud">
+    <span class="bud-h"><b>Orçamento de ${mes}</b><span class="bud-p" style="color:${cor}">${Math.round(b.usado)}% usado</span></span>
+    ${barra}
+    <span class="bud-g">
+      ${cel('Salário e receitas (R$)', acc(b.rec))}
+      ${cel(`Reserva ${b.pct}% (R$)`, acc(b.reserva))}
+      ${cel('Disponível para gastar (R$)', acc(b.disp))}
+      ${cel('Já gasto (R$)', acc(b.desp, 'neg'))}
+      ${b.aPagar ? cel('Contas ainda a pagar (R$)', acc(b.aPagar)) : ''}
+      ${cel('Sobra livre (R$)', acc(b.sobra, b.sobra < 0 ? 'neg' : 'pos'))}
+    </span>
+    <span class="bud-r"><span>${b.sobra < 0 ? `Passou ${acc(-b.sobra)} do disponível` : b.dias ? `Dá para gastar ${acc(Math.floor(b.sobra / b.dias))} por dia até o fim do mês` : 'Mês fechado'}</span><button data-reserva>Mudar reserva</button></span>
+  </section>`;
+}
+function openReserva(){
+  const opts = [0,5,10,15,20,25,30,40,50].map(v => [String(v), v === 0 ? 'Não guardar nada' : `${v}% da receita`]);
+  openForm({ title:'Reserva do mês', saveLabel:'Salvar',
+    fields:[{k:'pct',label:'Guardar todo mês',type:'select',def:String(S.reserve || 0),options:opts}],
+    values:{ pct:String(S.reserve || 0) },
+    onSave: async v => { S.reserve = Number(v.pct); saveProfile(); return 'Reserva salva'; } });
+}
 function addrRow(k, label){
   const a = S[k];
   return `<button class="row" data-addr="${k}"><span class="main"><div class="t">${label}</div><div class="s">${a.addr ? esc(a.addr) : '⁠Toque para cadastrar o endereço'}</div></span>${ic('r','i chev')}</button>`;
@@ -3554,7 +3825,9 @@ setInterval(() => {
   document.querySelectorAll('[data-nxt]').forEach(e => e.textContent = nxtTxt(new Date(e.dataset.nxt)));
 }, 20e3);
 setInterval(() => { if (session && document.visibilityState === 'visible' && (view === 'inicio' || view === 'mercado') && $('#sheet').hidden) loadMarket(true); }, 60e3);
-let pendingRoute = null, pendingList = null, pendingConf = null;
+let pendingRoute = null, pendingList = null, pendingConf = null, pendingDose = null;
+try { const q = new URLSearchParams(location.search).get('dose'); if (q){ pendingDose = q; history.replaceState(null, '', location.pathname); } } catch(e) {}
+try { const q = new URLSearchParams(location.search).get('rotina'); if (q){ pendingDose = null; history.replaceState(null, '', location.pathname); setTimeout(() => go('rotinas'), 400); } } catch(e) {}
 try { const q = new URLSearchParams(location.search).get('lista'); if (q){ pendingList = q; history.replaceState(null, '', location.pathname); } } catch(e) {}
 try { const r = new URLSearchParams(location.search).get('rota'); if (r){ pendingRoute = r; history.replaceState(null, '', location.pathname); } } catch(e) {}
 try { const c = new URLSearchParams(location.search).get('conf'); if (c){ pendingConf = c; history.replaceState(null, '', location.pathname); } } catch(e) {}
@@ -4047,7 +4320,7 @@ function openBudget(){
 
 /* ---------- alertas no celular (Web Push) ---------- */
 const VAPID_PUB = 'BDgwg6S3VsklJoKIWEaW5-z7AoGakq7C3AiwFy5TrjgAbpbB9Uq0o7DVFlDkSOLHkK7OYRed_DzTjZ5fz7t-39A';
-const PUSH_KINDS = ['lembrete','sair','compromisso','vencer','vencida','pendente','resumo','noticia','aniversario','semana','lista','balanco'];
+const PUSH_KINDS = ['lembrete','sair','compromisso','vencer','vencida','pendente','resumo','noticia','aniversario','semana','lista','item','balanco','rotina','remedio','consulta'];
 const PUSH_TXT = {
   ativo: 'Você recebe os alertas mesmo com o app fechado.',
   desligado: '⁠Toque em Ativar e permita as notificações.',
@@ -4113,9 +4386,12 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('mess
   const d = e.data || {};
   if (d.type === 'push') setTimeout(loadInbox, 1500);
   if (d.type === 'push' && d.kind === 'sairja'){ const ev = S.events.find(x => x.id === d.ref); alarmFire(ev || null); return; }
+  if (d.type === 'push' && d.kind === 'remedio'){ doseAlarm(true); openDose(String(d.ref || '').split(':').slice(0, 2).join(':')); return; }
   if (d.type === 'push' && document.visibilityState === 'visible' && TONES[d.kind] && !sysSound()) play(d.kind);
-  if (d.type === 'open' && d.url){ const q = new URL(d.url, location.origin).searchParams, r = q.get('rota'), li = q.get('lista'); if (r) openRoute(r); if (li) openSharedList(li); }
+  if (d.type === 'open' && d.url){ const q = new URL(d.url, location.origin).searchParams, r = q.get('rota'), li = q.get('lista'), ds = q.get('dose'), rt = q.get('rotina');
+    if (r) openRoute(r); if (li) openSharedList(li); if (ds) openDose(ds); if (rt) go('rotinas'); }
   if (d.type === 'push' && (d.kind === 'lista' || d.kind === 'item')) loadAll().then(() => { if (view === 'listas' || view === 'inicio') render(); }).catch(() => {});
+  if (d.type === 'push' && d.kind === 'rotina' && (view === 'rotinas' || view === 'inicio')) render();
 });
 
 function checkReminders(){
