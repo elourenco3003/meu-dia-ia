@@ -658,6 +658,11 @@ a.row.news .t{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp
 .ncar>a:active{transform:scale(.985);transition:transform .08s}
 .ncar .nb-tx{gap:4px;padding:10px 14px 14px}
 .ncar .nb-tx b{font-size:16px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.ncar.sm>a{flex:0 0 74%;max-width:300px}
+.ncar.sm .nb-img{aspect-ratio:2/1}
+.ncar.sm .nb-tx{padding:9px 12px 12px}
+.ncar.sm .nb-tx b{font-size:15px;-webkit-line-clamp:2}
+.ncar.sm .nb-tx small{font-size:12px}
 .ncar-dots{display:flex;justify-content:center;gap:6px;margin-top:10px}
 .ncar-dots i{width:6px;height:6px;border-radius:999px;background:var(--fg3);opacity:.3;transition:width .2s,opacity .2s}
 .ncar-dots i.on{width:18px;opacity:1;background:var(--accent)}
@@ -4132,11 +4137,16 @@ function openInfo(k){
 }
 function newsBlock(){
   const nw = mkt && mkt.noticias; if (!nw) return '';
-  const list = (nw.economia || []).slice(0, 3);
+  const all = nw.economia || [];
+  const list = all.slice(0, 3);
   if (!list.length) return '';
   const seen = newsSeen(), [top, ...rest] = list;
   const badge = n => n.at && n.at > seen ? '<span class="mk-new">Nova</span>' : '';
-  return `<section><div class="sh"><span class="live-h"><i></i>Notícias de economia · ${hm(nw.updated_at)}</span><button data-act="news-eco">Ver mais</button></div>
+  const head = `<div class="sh"><span class="live-h"><i></i>Notícias de economia · ${hm(nw.updated_at)}</span><button data-act="news-eco">Ver mais</button></div>`;
+  // com foto, as manchetes viram cartões que deslizam para o lado
+  const feat = all.filter(x => x.img).slice(0, 5);
+  if (feat.length > 1) return `<section>${head}${newsCarousel(feat, 'sm')}</section>`;
+  return `<section>${head}
     <a class="news-big" href="${esc(top.link)}" target="_blank" rel="noopener" data-newsopen="${esc(top.at || '')}">
       ${top.img ? `<span class="nb-img"><img src="${esc(top.img)}" alt="" loading="lazy" onerror="this.parentNode.remove()"><small>Foto: Agência Brasil</small></span>` : ''}
       <span class="nb-tx">${badge(top)}<b>${esc(top.title)}</b><small>${agoTxt(top.at)} · Agência Brasil</small></span></a>
@@ -4145,9 +4155,9 @@ function newsBlock(){
   </section>`;
 }
 // destaques com foto grande que deslizam para o lado com o dedo; as bolinhas mostram em qual está
-function newsCarousel(list){
+function newsCarousel(list, cls){
   const seen = newsSeen();
-  return `<div class="ncar" data-ncar>${list.map(x => `<a href="${esc(x.link)}" target="_blank" rel="noopener" data-newsopen="${esc(x.at || '')}">
+  return `<div class="ncar${cls ? ' ' + cls : ''}" data-ncar>${list.map(x => `<a href="${esc(x.link)}" target="_blank" rel="noopener" data-newsopen="${esc(x.at || '')}">
     <span class="nb-img"><img src="${esc(x.img)}" alt="" loading="lazy" onerror="this.parentNode.remove()"><small>Foto: Agência Brasil</small></span>
     <span class="nb-tx">${x.at && x.at > seen ? '<span class="mk-new">Nova</span>' : ''}<b>${esc(x.title)}</b><small>${agoTxt(x.at)} · Agência Brasil</small></span></a>`).join('')}</div>
   <div class="ncar-dots" aria-hidden="true">${list.map((_, i) => `<i${i ? '' : ' class="on"'}></i>`).join('')}</div>`;
