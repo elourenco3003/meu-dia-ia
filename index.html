@@ -202,9 +202,6 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 .askbox>svg{color:var(--accent)}
 .askbox input{flex:1;min-width:0;background:none;border:0;outline:0;font-size:16px;padding:9px 4px}
 .askbox input::placeholder{color:var(--fg2)}
-.askbox textarea{flex:1;min-width:0;background:none;border:0;outline:0;font:inherit;font-size:16px;line-height:1.35;padding:8px 4px;resize:none;max-height:116px;overflow-y:auto}
-.askbox textarea::placeholder{color:var(--fg2)}
-.askbox.multi{align-items:flex-end;border-radius:22px}
 .askbox .mic{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--fg2);flex:none}
 .askbox .mic.rec{background:var(--bad);color:#fff;animation:ouvindo 1.2s ease-in-out infinite}
 @keyframes ouvindo{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--bad) 45%,transparent)}50%{box-shadow:0 0 0 8px transparent}}
@@ -1179,6 +1176,8 @@ const SHORT_TONES = {
   padrao:['Padrão', null], sino:['Sino', [[880,0],[660,.28]]], gota:['Gota', [[1318,0],[1760,.07]]], acorde:['Acorde', [[523,0],[659,.04],[784,.08]]],
   bipe:['Bipe', [[1000,0],[1000,.16]]], marimba:['Marimba', [[523,0],[659,.1],[784,.2],[1047,.3]]], alerta:['Alerta', [[988,0],[988,.17],[988,.34]]], suave:['Suave', [[440,0],[554,.18]]],
 };
+// alertas com o som de notificação do próprio aparelho (padrão); desligado, o app toca o toque dele
+const sysSound = () => { try { return localStorage.getItem('meudia.sysSound') !== '0'; } catch(e) { return true; } };
 const catTones = () => { try { return JSON.parse(localStorage.getItem('meudia.tones') || '{}') || {}; } catch(e) { return {}; } };
 let actx = null;
 function play(cat, force){
@@ -1568,7 +1567,7 @@ function vHome(){
   ${hp.familia && fam && fam.group && fam.members.length > 1 ? `<button class="famline" data-go="ajustes" aria-label="Minha família"><span class="fam-dots">${fam.members.slice(0,5).map(m => `<span class="fam-av sm">${esc(m.name[0] || '?')}</span>`).join('')}</span><span>${esc(fam.group.name)} · ${fam.members.map(m => esc(nameCase(m.name.split(' ')[0]))).join(', ')}</span></button>` : ''}</div>`,
     ask: `  ${hp.assistente ? `<form class="askbox" id="ask" aria-label="Assistente">
     ${ic('spark')}
-    <textarea id="ask-in" rows="1" placeholder="Fale ou escreva o que precisa" aria-label="Pedir ao assistente" maxlength="2000">${esc(ui.askDraft || '')}</textarea>
+    <input id="ask-in" placeholder="Fale ou escreva o que precisa" autocomplete="off" aria-label="Pedir ao assistente" maxlength="2000" value="${esc(ui.askDraft || '')}">
     <button type="button" class="mic" data-mic aria-label="Falar">${ic('mic')}</button>
     <button class="go" aria-label="Enviar">${ic('up')}</button>
   </form>` : ''}`, sug: `  ${hp.sugestoes ? `<div class="sugs3" aria-label="Sugestões">
@@ -1973,12 +1972,9 @@ function bindView(){
   V.querySelectorAll('[data-apage]').forEach(b => b.onclick = () => { adminPage += Number(b.dataset.apage); render(); $('#view').scrollTop = 0; });
   V.querySelectorAll('[data-pref]').forEach(inp => inp.onchange = () => { S[inp.dataset.pref] = inp.value; saveProfile(); toast('Preferência salva'); });
   const snd = $('#set-sounds'); if (snd) snd.onchange = () => { S.sounds = snd.checked; saveProfile(); };
+  const sys = $('#set-syssnd'); if (sys) sys.onchange = () => { try { localStorage.setItem('meudia.sysSound', sys.checked ? '1' : '0'); } catch(e) {} render(); };
   const ask = $('#ask'); if (ask) ask.onsubmit = e => { e.preventDefault(); const v = $('#ask-in').value; if (!v.trim()) return; ui.askDraft = ''; send(v); };
-  V.querySelectorAll('.askbox textarea').forEach(t => {
-    growBox(t);
-    t.oninput = () => { growBox(t); if (t.id === 'ask-in') ui.askDraft = t.value; };
-    t.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); if (t.form) { if (t.form.requestSubmit) t.form.requestSubmit(); else t.form.dispatchEvent(new Event('submit', { cancelable:true })); } } };
-  });
+  const ai = $('#ask-in'); if (ai) ai.oninput = () => { ui.askDraft = ai.value; };
 }
 /* ---------- ditado por voz (reconhecimento de fala do próprio aparelho) ---------- */
 const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1994,7 +1990,7 @@ function startDictation(btn, onDone){
   btn.classList.add('rec'); btn.setAttribute('aria-label', 'Parar de ouvir'); input.placeholder = 'Ouvindo… pode falar';
   rec.onresult = ev => {
     let t = ''; for (const r of ev.results) t += r[0].transcript;
-    input.value = t; growBox(input); input.scrollTop = input.scrollHeight;
+    input.value = t; input.scrollLeft = input.scrollWidth;   // ditando: acompanha as últimas palavras
     if (input.id === 'ask-in') ui.askDraft = t;
     if (ev.results[ev.results.length - 1].isFinal) finalText = t;
   };
@@ -2007,7 +2003,7 @@ function startDictation(btn, onDone){
   rec.onend = () => {
     btn.classList.remove('rec'); btn.setAttribute('aria-label', 'Falar'); input.placeholder = ph; rec = null;
     const t = (finalText || input.value).trim();
-    if (t && !failed){ input.value = ''; growBox(input); if (input.id === 'ask-in') ui.askDraft = ''; (onDone || send)(t); }
+    if (t && !failed){ input.value = ''; if (input.id === 'ask-in') ui.askDraft = ''; (onDone || send)(t); }
   };
   try { rec.start(); } catch(err) { rec = null; btn.classList.remove('rec'); input.placeholder = ph; toast('Não consegui abrir o microfone. Use o microfone do teclado.'); }
 }
@@ -2119,7 +2115,7 @@ function vAssist(){
   ${quotaHtml()}
   <div id="msgs"><div class="in" id="msgs-in"></div></div>
   <form class="askbox composer" id="chat-form">
-    <textarea id="chat-in" rows="1" placeholder="Mensagem…" aria-label="Mensagem para o assistente" maxlength="2000"></textarea>
+    <input id="chat-in" placeholder="Mensagem…" autocomplete="off" aria-label="Mensagem para o assistente" maxlength="2000">
     <button type="button" class="mic" data-mic aria-label="Falar">${ic('mic')}</button>
     <button class="go" aria-label="Enviar">${ic('send')}</button>
   </form>`;
@@ -2139,7 +2135,7 @@ function welcome(){
   if (!S.chat.length) S.chat.push({ id:'local-hello', role:'ia', text:`Oi, ${S.name ? firstName() : 'tudo bem'}! O que você quer organizar? Eu confirmo com você antes de salvar qualquer coisa.`, chips:SUGS });
 }
 function bindChat(){
-  $('#chat-form').onsubmit = e => { e.preventDefault(); const i = $('#chat-in'); send(i.value); i.value = ''; growBox(i); };
+  $('#chat-form').onsubmit = e => { e.preventDefault(); const i = $('#chat-in'); send(i.value); i.value = ''; };
   renderChat();
   ensureChat().then(() => { welcome(); renderChat(); });
 }
@@ -2992,7 +2988,7 @@ const authText = m => (AUTH_ERR.find(([r]) => r.test(m || '')) || [null, 'Não f
 // marca, nome, cor e letra de reserva (aparece só se o arquivo da logo ainda não estiver no site)
 const OAUTH = [['google','Google','#EA4335','G'], ['facebook','Facebook','#1877F2','f'], ['linkedin_oidc','LinkedIn','#0A66C2','in']];
 // provedores JÁ ativados no Supabase (Authentication › Providers). Acrescente aqui quando ativar os outros.
-const OAUTH_ON = ['google'];
+const OAUTH_ON = ['google', 'facebook', 'linkedin_oidc'];
 async function entrarCom(p){
   const o = { redirectTo: location.origin };
   if (p === 'google') o.queryParams = { prompt: 'select_account' };
@@ -3433,13 +3429,23 @@ function gpsEta(e, ask){
     navigator.geolocation.getCurrentPosition(onPos, onErr, { enableHighAccuracy:false, timeout:15000, maximumAge:5 * 60e3 });
   }, { enableHighAccuracy:true, timeout:15000, maximumAge:0 });
 }
-// campo do assistente: cresce até 4 linhas para a frase inteira aparecer
-function growBox(t){
-  if (!t || t.tagName !== 'TEXTAREA') return;
-  t.style.height = 'auto';
-  t.style.height = Math.min(t.scrollHeight, 116) + 'px';
-  const box = t.closest('.askbox'); if (box) box.classList.toggle('multi', t.scrollHeight > 46);
-}
+// campo do assistente: a frase não quebra linha — ela corre sozinha de um lado para o outro,
+// como a faixa de indicadores, para dar para ler tudo. Para quando a pessoa está digitando no campo.
+const rollSt = new WeakMap();
+setInterval(() => {
+  ['#ask-in', '#chat-in'].forEach(sel => {
+    const el = document.querySelector(sel); if (!el) return;
+    const over = el.scrollWidth - el.clientWidth;
+    if (over < 6 || el === document.activeElement){ rollSt.delete(el); return; }
+    if (rec){ el.scrollLeft = over; rollSt.set(el, { dir:-1, hold:30 }); return; }
+    const st = rollSt.get(el) || { dir:1, hold:30 };
+    if (st.hold > 0){ st.hold--; rollSt.set(el, st); return; }
+    el.scrollLeft += st.dir;
+    if (el.scrollLeft >= over - 0.5){ st.dir = -1; st.hold = 30; }
+    else if (el.scrollLeft <= 0.5){ st.dir = 1; st.hold = 30; }
+    rollSt.set(el, st);
+  });
+}, 30);
 // quanto falta para o compromisso (texto curto, atualizado a cada 20 s)
 function nxtTxt(st){
   const m = Math.round((st.getTime() - Date.now()) / 60e3), r = rel(iso(st));
@@ -3480,13 +3486,14 @@ function soundsSection(){
   return `<section>
     <div class="sh">Sons de cada alerta</div>
     <div class="group">
+      <div class="row"><span class="main"><div class="t">Som de notificação do celular</div><div class="s">Usa o mesmo toque dos outros avisos do aparelho</div></span><label class="switch"><input type="checkbox" id="set-syssnd" ${sysSound()?'checked':''} aria-label="Som de notificação do celular"><span></span></label></div>
       <div class="row"><span class="main"><div class="t">Sons com o app aberto</div></span><label class="switch"><input type="checkbox" id="set-sounds" ${S.sounds?'checked':''} aria-label="Sons com o app aberto"><span></span></label></div>
       ${Object.entries(CATS).map(([k,l]) => `
-        <div class="row"><button class="main" data-test="${k}" style="text-align:left;background:none;border:0;font:inherit;color:inherit;padding:0"><div class="t">${l}</div><div class="s">${PUSH_KINDS.includes(k) ? 'Celular e app' : 'Só no app'}</div></button>
-          <select class="field-in tone-sel" data-tone="${k}" aria-label="Som de ${l}">${Object.entries(SHORT_TONES).map(([t, [n]]) => `<option value="${t}" ${(catTones()[k] || 'padrao') === t ? 'selected' : ''}>${n}</option>`).join('')}</select>
+        <div class="row"><button class="main" data-test="${k}" style="text-align:left;background:none;border:0;font:inherit;color:inherit;padding:0"><div class="t">${l}</div><div class="s">${PUSH_KINDS.includes(k) ? (sysSound() ? 'Som do celular' : 'Celular e app') : 'Só no app'}</div></button>
+          ${sysSound() && PUSH_KINDS.includes(k) ? '' : `<select class="field-in tone-sel" data-tone="${k}" aria-label="Som de ${l}">${Object.entries(SHORT_TONES).map(([t, [n]]) => `<option value="${t}" ${(catTones()[k] || 'padrao') === t ? 'selected' : ''}>${n}</option>`).join('')}</select>`}
           <label class="switch"><input type="checkbox" id="cat-${k}" data-cat="${k}" ${S.cats[k]?'checked':''} aria-label="${l}"><span></span></label></div>`).join('')}
     </div>
-    <div class="foot">⁠Toque no nome para ouvir o som; ao trocar, ele toca uma amostra. Desligar um tipo desliga também o alerta no celular. Com o app fechado, o celular usa o som de notificação dele. O alarme "Saia já" tem toques próprios, em Hora de sair.</div>
+    <div class="foot">Com o som do celular ligado, o aviso toca o toque de notificação que você escolheu nas configurações do aparelho — para trocar o toque, é lá. Desligando, o app usa os toques próprios dele. ⁠Toque no nome para ouvir o som; ao trocar, ele toca uma amostra. Desligar um tipo desliga também o alerta no celular. O alarme "Saia já" tem toques próprios, em Hora de sair.</div>
   </section>`;
 }
 function themeSection(){
@@ -4106,7 +4113,7 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('mess
   const d = e.data || {};
   if (d.type === 'push') setTimeout(loadInbox, 1500);
   if (d.type === 'push' && d.kind === 'sairja'){ const ev = S.events.find(x => x.id === d.ref); alarmFire(ev || null); return; }
-  if (d.type === 'push' && document.visibilityState === 'visible' && TONES[d.kind]) play(d.kind);
+  if (d.type === 'push' && document.visibilityState === 'visible' && TONES[d.kind] && !sysSound()) play(d.kind);
   if (d.type === 'open' && d.url){ const q = new URL(d.url, location.origin).searchParams, r = q.get('rota'), li = q.get('lista'); if (r) openRoute(r); if (li) openSharedList(li); }
   if (d.type === 'push' && (d.kind === 'lista' || d.kind === 'item')) loadAll().then(() => { if (view === 'listas' || view === 'inicio') render(); }).catch(() => {});
 });
@@ -4119,7 +4126,7 @@ function checkReminders(){
     const [y,m,d] = r.date.split('-').map(Number), [hh,mm] = r.time.split(':').map(Number);
     const at = new Date(y, m-1, d, hh, mm).getTime() - (r.adv||0)*60000;
     if (now >= at && now - at < 5*60000){
-      S.fired[r.id] = 1; save(); play('lembrete');
+      S.fired[r.id] = 1; save(); play('lembrete', true);   // sem alerta no celular, o som é o do app
       toast(`${ic('bell')}<span><b>${esc(r.title)}</b> · ${r.adv ? ADV[r.adv].replace(' antes',' para') + ' às ' + r.time : 'agora'}</span>`);
     }
   });
