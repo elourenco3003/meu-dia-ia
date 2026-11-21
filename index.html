@@ -184,6 +184,7 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 .set-ic{width:32px;height:32px;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none;margin-right:2px}
 .set-ic svg{width:18px;height:18px}
 .tone-sel{max-width:132px}
+.pane .row[hidden]{display:none}
 /* orçamento do mês */
 .bud{display:block;width:100%;text-align:left;font:inherit;color:inherit;border:0;background:var(--card);border-radius:18px;padding:14px;box-shadow:var(--shadow)}
 .bud-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
@@ -2076,10 +2077,11 @@ function startDictation(btn, onDone){
 }
 
 /* ---------- formulários ---------- */
-function openForm({title, fields, values={}, onSave, onDelete, saveLabel}){
+function openForm({title, fields, values={}, onSave, onDelete, saveLabel, onField}){
   const okLabel = saveLabel || (onDelete ? 'Salvar' : 'Adicionar');
   const el = $('#sheet');
-  const f = fd => {
+  const f = fd => f0(fd).replace('class="row', `data-fk="${fd.k}" class="row`);
+  const f0 = fd => {
     const v = values[fd.k] ?? fd.def ?? '';
     if (fd.type==='title') return `<div class="row"><input class="full" id="f-${fd.k}" placeholder="${esc(fd.label)}" value="${esc(v)}" aria-label="${esc(fd.label)}"></div>`;
     if (fd.type==='place') return `<div class="row place-wrap"><div class="place-in"><div class="place-line"><input class="full" id="f-${fd.k}" data-place autocomplete="off" placeholder="${esc(fd.ph || fd.label)}" value="${esc(v)}" aria-label="${esc(fd.label)}"><input class="pnum" id="n-${fd.k}" inputmode="numeric" maxlength="10" placeholder="Nº" aria-label="Número"></div><div class="phint" id="h-${fd.k}" hidden></div><div class="psugs" id="s-${fd.k}" hidden></div></div></div>`;
@@ -2097,6 +2099,17 @@ function openForm({title, fields, values={}, onSave, onDelete, saveLabel}){
       ${onDelete ? `<div class="group"><button class="row del" data-d>Excluir</button></div>` : ''}
     </div></div>`;
   el.hidden = false;
+  // campos que só aparecem conforme a escolha feita em outro campo
+  const vis = () => fields.filter(x => x.showIf).forEach(fd => {
+    const row = el.querySelector(`[data-fk="${fd.k}"]`), ctl = $('#f-' + fd.showIf.k);
+    if (row && ctl) row.hidden = !fd.showIf.in.includes(ctl.value);
+  });
+  const lerTudo = () => { const o = {}; fields.filter(x => x.type !== 'break').forEach(fd => { const i = $('#f-' + fd.k); if (i) o[fd.k] = i.value; }); return o; };
+  el.querySelectorAll('.body input, .body select').forEach(i => i.addEventListener('change', () => {
+    vis();
+    if (onField) onField(String(i.id).replace(/^f-/, ''), lerTudo(), (k, v) => { const t = $('#f-' + k); if (t) t.value = v; });
+  }));
+  vis();
   el.querySelectorAll('input[data-place]').forEach(bindPlace);
   // valor estilo caixa: ao começar a digitar apaga o valor e preenche a partir dos centavos (1 → 0,01; 1290 → 12,90)
   el.querySelectorAll('input[data-money]').forEach(inp => {
@@ -3055,8 +3068,18 @@ const authText = m => (AUTH_ERR.find(([r]) => r.test(m || '')) || [null, 'Não f
 /* ---------- entrar com conta de outro serviço ---------- */
 // marca, nome, cor e letra de reserva (aparece só se o arquivo da logo ainda não estiver no site)
 const OAUTH = [['google','Google','#EA4335','G'], ['facebook','Facebook','#1877F2','f'], ['linkedin_oidc','LinkedIn','#0A66C2','in']];
-// provedores JÁ ativados no Supabase (Authentication › Providers). Acrescente aqui quando ativar os outros.
-const OAUTH_ON = ['google', 'facebook', 'linkedin_oidc'];
+// quais provedores estão mesmo ligados no Supabase: o próprio servidor informa,
+// então nunca aparece um botão que não entra
+let oauthOn = null;
+async function loadOauth(){
+  if (oauthOn) return oauthOn;
+  try {
+    const r = await fetch(`${SB_URL}/auth/v1/settings`, { headers:{ apikey: SB_KEY } });
+    const j = await r.json();
+    oauthOn = Object.entries(j.external || {}).filter(([, v]) => v === true).map(([k]) => k);
+  } catch(e) { oauthOn = []; }
+  return oauthOn;
+}
 async function entrarCom(p){
   const o = { redirectTo: location.origin };
   if (p === 'google') o.queryParams = { prompt: 'select_account' };
@@ -3068,7 +3091,10 @@ async function entrarCom(p){
     renderAuth();
   }
 }
-function showAuth(){ $('#app').hidden = true; $('#sheet').hidden = true; $('#auth').hidden = false; renderAuth(); }
+function showAuth(){
+  $('#app').hidden = true; $('#sheet').hidden = true; $('#auth').hidden = false; renderAuth();
+  if (oauthOn === null) loadOauth().then(l => { if (l.length && !$('#auth').hidden) renderAuth(); });
+}
 function renderAuth(){
   const M = { entrar:['Entrar','Acesse sua conta'], criar:['Criar conta','Comece grátis em 1 minuto'], esqueci:['Recuperar senha','Enviaremos um link para o seu e-mail'], nova:['Nova senha','Escolha uma nova senha para sua conta'] }[authMode];
   $('#auth').innerHTML = `<div class="auth-card">
@@ -3085,8 +3111,8 @@ function renderAuth(){
       <div class="auth-msg ${authOk ? 'ok' : ''}" id="a-msg" ${authMsg ? '' : 'hidden'}>${esc(authMsg)}</div>
       <button class="auth-btn" id="a-go">${M[0]}</button>
     </form>
-    ${(authMode === 'entrar' || authMode === 'criar') && OAUTH_ON.length ? `<div class="auth-or"><span>ou</span></div>
-    <div class="auth-social">${OAUTH.filter(([k]) => OAUTH_ON.includes(k)).map(([k, l, c, ini]) =>
+    ${(authMode === 'entrar' || authMode === 'criar') && (oauthOn || []).length ? `<div class="auth-or"><span>ou</span></div>
+    <div class="auth-social">${OAUTH.filter(([k]) => oauthOn.includes(k)).map(([k, l, c, ini]) =>
       `<button type="button" class="social" data-oauth="${k}"><img src="/${k.split('_')[0]}.svg" alt="" data-ini="${ini}" data-cor="${c}"><span class="lbl">Continuar com ${l}</span></button>`).join('')}</div>` : ''}
     <div class="auth-links">
       ${authMode === 'entrar' ? `<button data-amode="criar">Criar conta grátis</button><button data-amode="esqueci">Esqueci minha senha</button>` : ''}
@@ -3119,6 +3145,9 @@ async function submitAuth(e){
       const { error } = await sb.auth.signInWithPassword({ email, password }); if (error) throw error;
     } else if (authMode === 'criar'){
       const { data, error } = await sb.auth.signUp({ email, password, options:{ data:{ name }, emailRedirectTo: location.origin } }); if (error) throw error;
+      // e-mail já cadastrado: o Supabase responde sem identidade e não manda e-mail nenhum (protege contra descobrir quem tem conta)
+      if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0)
+        return show('Esse e-mail já tem conta. Entre com a sua senha, ou com Google, ou use "Esqueci minha senha" para criar uma nova senha.');
       if (!data.session) show(`Enviamos um link de confirmação para ${email}. Abra seu e-mail e ⁠toque no link para entrar.`, true);
     } else if (authMode === 'esqueci'){
       const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: location.origin }); if (error) throw error;
@@ -3616,32 +3645,52 @@ function vRotinas(){
 const parseTimes = v => String(v || '').split(/[^0-9:h]+/i).map(x => x.trim()).filter(Boolean)
   .map(x => { const m = x.match(/^(\d{1,2})[:h]?(\d{2})?$/); return m ? `${pad(Math.min(23, Number(m[1])))}:${pad(Math.min(59, Number(m[2] || 0)))}` : null; })
   .filter(Boolean);
+// como as bulas mandam tomar: 1x ao dia, de 12 em 12 h, de 8 em 8 h, de 6 em 6 h
+const TOMADAS = [['1','1 vez ao dia'],['2','2 vezes ao dia (de 12 em 12 h)'],['3','3 vezes ao dia (de 8 em 8 h)'],['4','4 vezes ao dia (de 6 em 6 h)'],['livre','Nos horários que eu escolher']];
+const espalhaHoras = (primeira, n) => { const a = hm2m(primeira || '08:00'), passo = Math.round(1440 / n); return [...Array(n)].map((_, i) => m2hm((a + passo * i) % 1440)).join(', '); };
 function openRoutine(kind, it){
   const med = kind === 'remedio';
-  const fields = [
-    {k:'title',label: med ? 'Remédio' : 'Rotina', type:'title', req:1},
-    ...(med ? [{k:'dose',label:'Dose',type:'text',ph:'1 comprimido, 20 gotas…'}] : []),
+  const nT = it && it.mode === 'horarios' ? (it.times || []).length : 0;
+  const fields = med ? [
+    {k:'title',label:'Remédio',type:'title',req:1},
+    {k:'dose',label:'Dose',type:'text',ph:'20 mg, 1 comprimido, 20 gotas…'},
     {type:'break'},
-    {k:'mode',label:'Quando',type:'select',def:'horarios',options:[['horarios','Em horários fixos'],['intervalo','De tempos em tempos']]},
-    {k:'times',label:'Horários',type:'text',ph:'08:00, 14:00, 20:00'},
-    {k:'every',label:'A cada',type:'select',def:120,options:ROT_EVERY},
-    {k:'ws',label:'Das',type:'time',def:'08:00'},
-    {k:'we',label:'Até as',type:'time',def:'20:00'},
+    {k:'pattern',label:'Como tomar',type:'select',def:'1',options:TOMADAS},
+    {k:'first',label:'Primeira dose',type:'time',def:'08:00',showIf:{k:'pattern',in:['1','2','3','4']}},
+    {k:'times',label:'Horários do dia',type:'text',ph:'08:00, 20:00'},
+    {type:'break'},
+    {k:'dayset',label:'Dias',type:'select',def:'todos',options:[['todos','Todos os dias'],['uteis','Segunda a sexta'],['fds','Sábado e domingo']]},
+    {k:'end',label:'Tomar até o dia',type:'date'},
+    {k:'fam',label:'Avisar a família',type:'select',def:'0',options:[['0','Não'],['1','Sim, se eu não confirmar']]},
+    {k:'active',label:'Situação',type:'select',def:'1',options:[['1','Ativo'],['0','Pausado']]},
+  ] : [
+    {k:'title',label:'Rotina',type:'title',req:1},
+    {type:'break'},
+    {k:'mode',label:'Quando',type:'select',def:'intervalo',options:[['intervalo','De tempos em tempos'],['horarios','Em horários fixos']]},
+    {k:'every',label:'A cada',type:'select',def:120,options:ROT_EVERY,showIf:{k:'mode',in:['intervalo']}},
+    {k:'ws',label:'Começa às',type:'time',def:'08:00',showIf:{k:'mode',in:['intervalo']}},
+    {k:'we',label:'Para às',type:'time',def:'20:00',showIf:{k:'mode',in:['intervalo']}},
+    {k:'times',label:'Horários',type:'text',ph:'08:00, 14:00, 20:00',showIf:{k:'mode',in:['horarios']}},
     {type:'break'},
     {k:'dayset',label:'Dias',type:'select',def:'todos',options:[['todos','Todos os dias'],['uteis','Segunda a sexta'],['fds','Sábado e domingo']]},
     {k:'end',label:'Até o dia',type:'date'},
-    ...(med ? [{k:'fam',label:'Avisar a família',type:'select',def:'0',options:[['0','Não'],['1','Sim, se eu não confirmar']]}] : []),
     {k:'active',label:'Situação',type:'select',def:'1',options:[['1','Ativa'],['0','Pausada']]},
   ];
-  const values = it ? { ...it, times:(it.times || []).join(', '), dayset:daySetOf(it.days), fam: it.fam ? '1' : '0', active: it.active ? '1' : '0' } : {};
+  const values = it
+    ? { ...it, times:(it.times || []).join(', '), dayset:daySetOf(it.days), fam: it.fam ? '1' : '0', active: it.active ? '1' : '0',
+        pattern: nT >= 1 && nT <= 4 ? String(nT) : 'livre', first: (it.times || [])[0] || '08:00' }
+    : (med ? { pattern:'1', first:'08:00', times:'08:00' } : {});
   openForm({
     title: it ? (med ? 'Remédio' : 'Rotina') : (med ? 'Novo remédio' : 'Nova rotina'),
     fields, values,
+    onField: (k, v, set) => {
+      if (med && (k === 'pattern' || k === 'first') && v.pattern !== 'livre') set('times', espalhaHoras(v.first, Number(v.pattern)));
+    },
     onSave: async v => {
       const o = it || { kind };
-      o.kind = kind; o.title = v.title; o.dose = v.dose || ''; o.mode = v.mode;
-      o.times = v.mode === 'horarios' ? parseTimes(v.times) : [];
-      o.every = v.mode === 'intervalo' ? Number(v.every) : null;
+      o.kind = kind; o.title = v.title; o.dose = v.dose || ''; o.mode = med ? 'horarios' : v.mode;
+      o.times = o.mode === 'horarios' ? parseTimes(v.times) : [];
+      o.every = o.mode === 'intervalo' ? Number(v.every) : null;
       o.ws = v.ws || '08:00'; o.we = v.we || '20:00';
       o.days = DAYSETS[v.dayset] || DAYSETS.todos;
       o.start = o.start || today(); o.end = v.end || null;
