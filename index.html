@@ -3023,7 +3023,7 @@ function renderAuth(){
     </form>
     ${(authMode === 'entrar' || authMode === 'criar') && OAUTH_ON.length ? `<div class="auth-or"><span>ou</span></div>
     <div class="auth-social">${OAUTH.filter(([k]) => OAUTH_ON.includes(k)).map(([k, l, c, ini]) =>
-      `<button type="button" class="social" data-oauth="${k}"><img src="/marca/${k.split('_')[0]}.svg" alt="" data-ini="${ini}" data-cor="${c}"><span>Continuar com ${l}</span></button>`).join('')}</div>` : ''}
+      `<button type="button" class="social" data-oauth="${k}"><img src="/${k.split('_')[0]}.svg" alt="" data-ini="${ini}" data-cor="${c}"><span>Continuar com ${l}</span></button>`).join('')}</div>` : ''}
     <div class="auth-links">
       ${authMode === 'entrar' ? `<button data-amode="criar">Criar conta grátis</button><button data-amode="esqueci">Esqueci minha senha</button>` : ''}
       ${authMode === 'criar' || authMode === 'esqueci' ? `<button data-amode="entrar">Já tenho conta</button>` : ''}
@@ -3034,6 +3034,7 @@ function renderAuth(){
   document.querySelectorAll('[data-amode]').forEach(b => b.onclick = () => { authMode = b.dataset.amode; authMsg = ''; renderAuth(); });
   $('#auth-form').onsubmit = submitAuth;
   document.querySelectorAll('[data-oauth] img').forEach(im => { im.onerror = () => {
+    if (im.src.endsWith('.svg')){ im.src = im.src.replace(/\.svg$/, '.png'); return; }   // aceita .svg ou .png
     const s = document.createElement('span'); s.className = 'social-ini'; s.textContent = im.dataset.ini; s.style.color = im.dataset.cor; im.replaceWith(s); }; });
   document.querySelectorAll('[data-oauth]').forEach(b => b.onclick = () => entrarCom(b.dataset.oauth));
 }
@@ -3833,7 +3834,9 @@ function vNoticias(){
   if (!nw) return head + '<div class="card empty">Carregando…</div>';
   const tab = ui.newsTab, list = desk() ? withImg(nw[tab]) : (nw[tab] || []), per = 6, pages = Math.max(1, Math.ceil(list.length / per));
   ui.newsPage = Math.min(Math.max(ui.newsPage || 0, 0), pages - 1);
-  const items = list.slice(ui.newsPage * per, ui.newsPage * per + per);
+  // no computador a página é sempre cheia: na última, a janela recua para fechar as 6 notícias
+  const ini = desk() ? Math.min(ui.newsPage * per, Math.max(0, list.length - per)) : ui.newsPage * per;
+  const items = list.slice(ini, ini + per);
   return `${head}
   <section>
     <div class="seg" role="group" aria-label="Notícias">${[['brasil','Brasil'],['economia','Economia'],['internacional','Internacional']].map(([k,l]) => `<button data-newstab="${k}" aria-pressed="${tab === k}">${l}</button>`).join('')}</div>
