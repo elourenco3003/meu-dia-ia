@@ -1154,7 +1154,7 @@ const MAP = {
           from: o => ({title:o.title, date:o.date, start_time:o.time, end_time:o.end || null, place:o.place || '', category:o.cat || 'pessoal', done:!!o.done, travel_from:o.from || 'auto', alert_min: o.alert === '' || o.alert == null ? null : Number(o.alert),
                 kind:o.ekind || 'normal', prep:o.prep || '', fasting_h: o.jejum === '' || o.jejum == null ? null : Number(o.jejum), followup_days: o.retorno === '' || o.retorno == null ? null : Number(o.retorno), ...(o.pgeoSet ? { place_geo:o.place, place_lat:o.plat, place_lon:o.plon, place_label:o.plabel } : {})}) },
   rot:  { table:'routines',
-          to: r => ({id:r.id, kind:r.kind, title:r.title, dose:r.dose || '', mode:r.mode, times:(r.times || []).map(tm), every:r.every_min ?? null,
+          to: r => ({id:r.id, kind:r.kind, title:r.title, dose:r.dose || '', mode:r.mode, times:(r.times || []).map(tm), every:r.every_min ?? null, created:r.created_at || '',
                 ws:tm(r.win_start), we:tm(r.win_end), days:r.days || [0,1,2,3,4,5,6], start:r.start_date, end:r.end_date || '', fam:!!r.notify_family, active:r.active !== false}),
           from: o => ({kind:o.kind || 'habito', title:o.title, dose:o.dose || '', mode:o.mode || 'horarios', times:o.times || [], every_min:o.every || null,
                 win_start:o.ws || '08:00', win_end:o.we || '20:00', days:o.days || [0,1,2,3,4,5,6], start_date:o.start || today(), end_date:o.end || null,
@@ -3599,8 +3599,15 @@ function rotAgenda(){
   (S.rots || []).forEach(r => { if (rotOnDay(r, d)) rotSlots(r).forEach(t => out.push({ r, t, log: rotLog(r.id, t, d) })); });
   return out.sort((a, b) => a.t.localeCompare(b.t));
 }
-// doses de remédio que já passaram da hora e continuam sem resposta
-const dosesAbertas = () => rotAgenda().filter(x => x.r.kind === 'remedio' && !x.log && x.t <= nowHM());
+// doses de remédio que já passaram da hora e continuam sem resposta.
+// Não vale dose anterior ao cadastro do remédio, nem dose com mais de 4 h de atraso.
+function doseAberta(x){
+  if (x.r.kind !== 'remedio' || x.log || x.t > nowHM()) return false;
+  const quando = new Date(`${today()}T${x.t}:00`).getTime();
+  if (x.r.created && new Date(x.r.created).getTime() > quando) return false;
+  return Date.now() - quando <= 4 * 3600e3;
+}
+const dosesAbertas = () => rotAgenda().filter(doseAberta);
 const rotPend = () => rotAgenda().filter(x => !x.log).length;
 
 function rotMark(id, t, status){
@@ -3625,7 +3632,8 @@ function rotDesc(r){
 function vRotinas(){
   const ag = rotAgenda(), feitos = ag.filter(x => x.log && x.log.status === 'feito').length, agora = nowHM();
   const card = x => {
-    const done = x.log && x.log.status === 'feito', skip = x.log && x.log.status === 'pulado', late = !x.log && x.t <= agora;
+    const done = x.log && x.log.status === 'feito', skip = x.log && x.log.status === 'pulado';
+    const late = !x.log && x.t <= agora && (x.r.kind !== 'remedio' || doseAberta(x));
     return `<div class="rot ${done ? 'done' : ''} ${skip ? 'skip' : ''}">
       <span class="rot-h ${late ? 'late' : ''}">${x.t}</span>
       <button class="main" data-rotedit="${x.r.id}"><div class="t">${esc(x.r.title)}</div>
