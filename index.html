@@ -202,6 +202,9 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 .askbox>svg{color:var(--accent)}
 .askbox input{flex:1;min-width:0;background:none;border:0;outline:0;font-size:16px;padding:9px 4px}
 .askbox input::placeholder{color:var(--fg2)}
+.askbox textarea{flex:1;min-width:0;background:none;border:0;outline:0;font:inherit;font-size:16px;line-height:1.35;padding:8px 4px;resize:none;max-height:116px;overflow-y:auto}
+.askbox textarea::placeholder{color:var(--fg2)}
+.askbox.multi{align-items:flex-end;border-radius:22px}
 .askbox .mic{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--fg2);flex:none}
 .askbox .mic.rec{background:var(--bad);color:#fff;animation:ouvindo 1.2s ease-in-out infinite}
 @keyframes ouvindo{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--bad) 45%,transparent)}50%{box-shadow:0 0 0 8px transparent}}
@@ -433,6 +436,12 @@ body{margin:0}
 .auth-msg.ok{color:var(--good);background:color-mix(in srgb,var(--good) 12%,transparent)}
 .auth-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .upper,#set-name{text-transform:capitalize}
+.auth-or{display:flex;align-items:center;gap:10px;margin:18px 0 12px;color:var(--fg2);font-size:13px}
+.auth-or::before,.auth-or::after{content:"";flex:1;height:1px;background:var(--sep)}
+.auth-social{display:flex;flex-direction:column;gap:8px}
+.auth-social .social{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:13px;border-radius:14px;background:var(--card);border:1px solid var(--sep);box-shadow:var(--shadow);color:var(--fg);font:inherit;font-size:15px;font-weight:600}
+.auth-social .social img{width:20px;height:20px;object-fit:contain;flex:none}
+.auth-social .social-ini{width:20px;text-align:center;font-weight:800;flex:none}
 .auth-links{display:flex;justify-content:space-between;gap:12px;margin-top:14px;flex-wrap:wrap}
 .auth-links button{color:var(--accent);font-weight:600;font-size:14px}
 button:disabled{cursor:default}
@@ -517,6 +526,12 @@ button.quota{width:100%;background:none;border:0;padding:0;cursor:pointer;font:i
 .lc-t{font-weight:700;font-size:16px} .lc-s{font-size:13px;opacity:.9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lc-go{flex:none;font-size:13px;font-weight:700;background:#fff;color:var(--accent);padding:6px 12px;border-radius:999px}
 .leave-card.late .lc-go{color:var(--now)}
+.next-card{display:flex;align-items:center;gap:12px;width:100%;margin-top:-6px;padding:12px 14px;border-radius:18px;background:var(--card);color:var(--fg);text-align:left;font:inherit;border:0;box-shadow:var(--shadow)}
+.next-card .main{flex:1;min-width:0;display:flex;flex-direction:column}
+.next-card .lc-ic{background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent)}
+.next-card .lc-t{color:var(--accent)}
+.next-card .lc-s{color:var(--fg2);opacity:1}
+.next-card .lc-go{background:var(--pill);color:var(--accent)}
 .place-wrap{display:block}
 .place-in{display:flex;flex-direction:column;gap:6px;width:100%}
 .phint{font-size:12.5px;color:var(--accent)}
@@ -1092,7 +1107,7 @@ const SB_URL = 'https://tgrfwgzfjrwgkkvpgbqq.supabase.co';
 // chave pública (anon): pode ficar no navegador; quem protege os dados de cada usuário é o RLS do banco
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ3Z3pmanJ3Z2trdnBnYnFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2OTMxMDYsImV4cCI6MjExMDI2OTEwNn0.O2xXMY9NAQSeuxYmbOvT20u9UXaFp9Fr73W2HMcju4Q';
 const sb = window.supabase.createClient(SB_URL, SB_KEY);
-const CATS = {lembrete:'Novo lembrete',compromisso:'Compromisso próximo',vencer:'Conta a vencer',vencida:'Conta vencida',pendente:'Tarefa pendente',concluida:'Tarefa concluída',resposta:'Resposta da IA',resumo:'Resumo diário',sair:'Hora de sair',noticia:'Notícia em destaque',aniversario:'Aniversário',semana:'Resumo da semana',lista:'Lista compartilhada',balanco:'Como foi o compromisso',prioritario:'Alerta prioritário'};
+const CATS = {lembrete:'Novo lembrete',compromisso:'Compromisso próximo',vencer:'Conta a vencer',vencida:'Conta vencida',pendente:'Tarefa pendente',concluida:'Tarefa concluída',resposta:'Resposta da IA',resumo:'Resumo diário',sair:'Hora de sair',noticia:'Notícia em destaque',aniversario:'Aniversário',semana:'Resumo da semana',lista:'Lista compartilhada',item:'Item incluído na lista',balanco:'Como foi o compromisso',prioritario:'Alerta prioritário'};
 const defCats = () => Object.fromEntries(Object.keys(CATS).map(k=>[k, k !== 'noticia']));
 const LOCAL = 'meudia.local';
 let session = null;
@@ -1157,7 +1172,7 @@ function saveProfile(){
 const TONES = {
   lembrete:[[880,0],[1318,.12]], compromisso:[[659,0],[880,.13],[988,.26]], vencer:[[523,0],[659,.15]],
   vencida:[[440,0],[349,.2]], pendente:[[740,0],[740,.16]], concluida:[[784,0],[1047,.1]],
-  resposta:[[1175,0]], resumo:[[523,0],[659,.12],[784,.24],[1047,.36]], prioritario:[[988,0],[988,.17],[988,.34]], sair:[[587,0],[784,.12],[988,.24],[784,.36]], noticia:[[698,0],[880,.14]], aniversario:[[523,0],[659,.12],[784,.24],[1047,.4]], semana:[[659,0],[523,.15]], lista:[[784,0],[988,.1],[1175,.2]],
+  resposta:[[1175,0]], resumo:[[523,0],[659,.12],[784,.24],[1047,.36]], prioritario:[[988,0],[988,.17],[988,.34]], sair:[[587,0],[784,.12],[988,.24],[784,.36]], noticia:[[698,0],[880,.14]], aniversario:[[523,0],[659,.12],[784,.24],[1047,.4]], semana:[[659,0],[523,.15]], lista:[[784,0],[988,.1],[1175,.2]], item:[[1047,0],[1319,.09]],
 };
 // toques curtos que a pessoa pode escolher para cada tipo de alerta
 const SHORT_TONES = {
@@ -1553,7 +1568,7 @@ function vHome(){
   ${hp.familia && fam && fam.group && fam.members.length > 1 ? `<button class="famline" data-go="ajustes" aria-label="Minha família"><span class="fam-dots">${fam.members.slice(0,5).map(m => `<span class="fam-av sm">${esc(m.name[0] || '?')}</span>`).join('')}</span><span>${esc(fam.group.name)} · ${fam.members.map(m => esc(nameCase(m.name.split(' ')[0]))).join(', ')}</span></button>` : ''}</div>`,
     ask: `  ${hp.assistente ? `<form class="askbox" id="ask" aria-label="Assistente">
     ${ic('spark')}
-    <input id="ask-in" placeholder="Fale ou escreva o que precisa" autocomplete="off" aria-label="Pedir ao assistente">
+    <textarea id="ask-in" rows="1" placeholder="Fale ou escreva o que precisa" aria-label="Pedir ao assistente" maxlength="2000">${esc(ui.askDraft || '')}</textarea>
     <button type="button" class="mic" data-mic aria-label="Falar">${ic('mic')}</button>
     <button class="go" aria-label="Enviar">${ic('up')}</button>
   </form>` : ''}`, sug: `  ${hp.sugestoes ? `<div class="sugs3" aria-label="Sugestões">
@@ -1958,14 +1973,19 @@ function bindView(){
   V.querySelectorAll('[data-apage]').forEach(b => b.onclick = () => { adminPage += Number(b.dataset.apage); render(); $('#view').scrollTop = 0; });
   V.querySelectorAll('[data-pref]').forEach(inp => inp.onchange = () => { S[inp.dataset.pref] = inp.value; saveProfile(); toast('Preferência salva'); });
   const snd = $('#set-sounds'); if (snd) snd.onchange = () => { S.sounds = snd.checked; saveProfile(); };
-  const ask = $('#ask'); if (ask) ask.onsubmit = e => { e.preventDefault(); const v = $('#ask-in').value; if (!v.trim()) return; send(v); };
+  const ask = $('#ask'); if (ask) ask.onsubmit = e => { e.preventDefault(); const v = $('#ask-in').value; if (!v.trim()) return; ui.askDraft = ''; send(v); };
+  V.querySelectorAll('.askbox textarea').forEach(t => {
+    growBox(t);
+    t.oninput = () => { growBox(t); if (t.id === 'ask-in') ui.askDraft = t.value; };
+    t.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); if (t.form) { if (t.form.requestSubmit) t.form.requestSubmit(); else t.form.dispatchEvent(new Event('submit', { cancelable:true })); } } };
+  });
 }
 /* ---------- ditado por voz (reconhecimento de fala do próprio aparelho) ---------- */
 const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
 let rec = null;
 function micNote(e){ startDictation(e.currentTarget); }
 function startDictation(btn, onDone){
-  const form = btn.closest('form'), input = form && form.querySelector('input');
+  const form = btn.closest('form'), input = form && form.querySelector('textarea, input');
   if (!input) return;
   if (!SpeechRec){ toast('Aqui o ditado direto não está disponível. ⁠Toque no campo e use o microfone do teclado do celular.'); input.focus(); return; }
   if (rec){ rec.stop(); return; }
@@ -1974,7 +1994,9 @@ function startDictation(btn, onDone){
   btn.classList.add('rec'); btn.setAttribute('aria-label', 'Parar de ouvir'); input.placeholder = 'Ouvindo… pode falar';
   rec.onresult = ev => {
     let t = ''; for (const r of ev.results) t += r[0].transcript;
-    input.value = t; if (ev.results[ev.results.length - 1].isFinal) finalText = t;
+    input.value = t; growBox(input); input.scrollTop = input.scrollHeight;
+    if (input.id === 'ask-in') ui.askDraft = t;
+    if (ev.results[ev.results.length - 1].isFinal) finalText = t;
   };
   rec.onerror = ev => {
     failed = true;
@@ -1985,7 +2007,7 @@ function startDictation(btn, onDone){
   rec.onend = () => {
     btn.classList.remove('rec'); btn.setAttribute('aria-label', 'Falar'); input.placeholder = ph; rec = null;
     const t = (finalText || input.value).trim();
-    if (t && !failed){ input.value = ''; (onDone || send)(t); }
+    if (t && !failed){ input.value = ''; growBox(input); if (input.id === 'ask-in') ui.askDraft = ''; (onDone || send)(t); }
   };
   try { rec.start(); } catch(err) { rec = null; btn.classList.remove('rec'); input.placeholder = ph; toast('Não consegui abrir o microfone. Use o microfone do teclado.'); }
 }
@@ -2097,7 +2119,7 @@ function vAssist(){
   ${quotaHtml()}
   <div id="msgs"><div class="in" id="msgs-in"></div></div>
   <form class="askbox composer" id="chat-form">
-    <input id="chat-in" placeholder="Mensagem…" autocomplete="off" aria-label="Mensagem para o assistente" maxlength="2000">
+    <textarea id="chat-in" rows="1" placeholder="Mensagem…" aria-label="Mensagem para o assistente" maxlength="2000"></textarea>
     <button type="button" class="mic" data-mic aria-label="Falar">${ic('mic')}</button>
     <button class="go" aria-label="Enviar">${ic('send')}</button>
   </form>`;
@@ -2117,7 +2139,7 @@ function welcome(){
   if (!S.chat.length) S.chat.push({ id:'local-hello', role:'ia', text:`Oi, ${S.name ? firstName() : 'tudo bem'}! O que você quer organizar? Eu confirmo com você antes de salvar qualquer coisa.`, chips:SUGS });
 }
 function bindChat(){
-  $('#chat-form').onsubmit = e => { e.preventDefault(); const i = $('#chat-in'); send(i.value); i.value = ''; };
+  $('#chat-form').onsubmit = e => { e.preventDefault(); const i = $('#chat-in'); send(i.value); i.value = ''; growBox(i); };
   renderChat();
   ensureChat().then(() => { welcome(); renderChat(); });
 }
@@ -2704,7 +2726,7 @@ function drawChart(box, pts, opt = CHART_DAY){
 
 /* ---------- tela inicial: blocos que a pessoa liga e desliga ---------- */
 const HOME_BLOCKS = [
-  ['clima','Previsão do tempo',true], ['familia','Família',true], ['sair','Hora de sair do próximo compromisso',true],
+  ['clima','Previsão do tempo',true], ['familia','Família',true], ['sair','Próximo compromisso e hora de sair',true],
   ['indicadores','Indicadores (dólar, bolsa, frete…)',true], ['assistente','Campo do assistente',true], ['sugestoes','Sugestões para o assistente',false],
   ['contas','Contas a vencer',true], ['resumo','Resumo do dia (gráfico)',false], ['programacao','Minha programação de hoje',true],
   ['atalhos','Atalhos (agenda, tarefas, listas…)',false], ['noticias','Notícias de economia',true],
@@ -2966,6 +2988,22 @@ const AUTH_ERR = [
   [/same as the old|different from the old/i, 'A nova senha precisa ser diferente da anterior.'],
 ];
 const authText = m => (AUTH_ERR.find(([r]) => r.test(m || '')) || [null, 'Não foi possível continuar. Tente de novo.'])[1];
+/* ---------- entrar com conta de outro serviço ---------- */
+// marca, nome, cor e letra de reserva (aparece só se o arquivo da logo ainda não estiver no site)
+const OAUTH = [['google','Google','#EA4335','G'], ['facebook','Facebook','#1877F2','f'], ['linkedin_oidc','LinkedIn','#0A66C2','in']];
+// provedores JÁ ativados no Supabase (Authentication › Providers). Acrescente aqui quando ativar os outros.
+const OAUTH_ON = ['google'];
+async function entrarCom(p){
+  const o = { redirectTo: location.origin };
+  if (p === 'google') o.queryParams = { prompt: 'select_account' };
+  const { error } = await sb.auth.signInWithOAuth({ provider: p, options: o });
+  if (error){
+    authOk = false;
+    authMsg = /not enabled|unsupported|disabled/i.test(error.message || '')
+      ? 'Esse login ainda não está ativado. Entre com e-mail e senha.' : authText(error.message);
+    renderAuth();
+  }
+}
 function showAuth(){ $('#app').hidden = true; $('#sheet').hidden = true; $('#auth').hidden = false; renderAuth(); }
 function renderAuth(){
   const M = { entrar:['Entrar','Acesse sua conta'], criar:['Criar conta','Comece grátis em 1 minuto'], esqueci:['Recuperar senha','Enviaremos um link para o seu e-mail'], nova:['Nova senha','Escolha uma nova senha para sua conta'] }[authMode];
@@ -2983,6 +3021,9 @@ function renderAuth(){
       <div class="auth-msg ${authOk ? 'ok' : ''}" id="a-msg" ${authMsg ? '' : 'hidden'}>${esc(authMsg)}</div>
       <button class="auth-btn" id="a-go">${M[0]}</button>
     </form>
+    ${(authMode === 'entrar' || authMode === 'criar') && OAUTH_ON.length ? `<div class="auth-or"><span>ou</span></div>
+    <div class="auth-social">${OAUTH.filter(([k]) => OAUTH_ON.includes(k)).map(([k, l, c, ini]) =>
+      `<button type="button" class="social" data-oauth="${k}"><img src="/marca/${k.split('_')[0]}.svg" alt="" data-ini="${ini}" data-cor="${c}"><span>Continuar com ${l}</span></button>`).join('')}</div>` : ''}
     <div class="auth-links">
       ${authMode === 'entrar' ? `<button data-amode="criar">Criar conta grátis</button><button data-amode="esqueci">Esqueci minha senha</button>` : ''}
       ${authMode === 'criar' || authMode === 'esqueci' ? `<button data-amode="entrar">Já tenho conta</button>` : ''}
@@ -2992,6 +3033,9 @@ function renderAuth(){
   </div>`;
   document.querySelectorAll('[data-amode]').forEach(b => b.onclick = () => { authMode = b.dataset.amode; authMsg = ''; renderAuth(); });
   $('#auth-form').onsubmit = submitAuth;
+  document.querySelectorAll('[data-oauth] img').forEach(im => { im.onerror = () => {
+    const s = document.createElement('span'); s.className = 'social-ini'; s.textContent = im.dataset.ini; s.style.color = im.dataset.cor; im.replaceWith(s); }; });
+  document.querySelectorAll('[data-oauth]').forEach(b => b.onclick = () => entrarCom(b.dataset.oauth));
 }
 async function submitAuth(e){
   e.preventDefault();
@@ -3388,16 +3432,44 @@ function gpsEta(e, ask){
     navigator.geolocation.getCurrentPosition(onPos, onErr, { enableHighAccuracy:false, timeout:15000, maximumAge:5 * 60e3 });
   }, { enableHighAccuracy:true, timeout:15000, maximumAge:0 });
 }
-// cartão no Início: próxima saída nas próximas 18 h
+// campo do assistente: cresce até 4 linhas para a frase inteira aparecer
+function growBox(t){
+  if (!t || t.tagName !== 'TEXTAREA') return;
+  t.style.height = 'auto';
+  t.style.height = Math.min(t.scrollHeight, 116) + 'px';
+  const box = t.closest('.askbox'); if (box) box.classList.toggle('multi', t.scrollHeight > 46);
+}
+// quanto falta para o compromisso (texto curto, atualizado a cada 20 s)
+function nxtTxt(st){
+  const m = Math.round((st.getTime() - Date.now()) / 60e3), r = rel(iso(st));
+  if (m <= 0) return 'agora, ' + hm(st);
+  if (m < 60) return 'em ' + m + ' min, às ' + hm(st);
+  if (r === 'hoje'){ const h = Math.floor(m / 60), mm = m % 60; return 'em ' + h + ' h' + (mm ? ' ' + mm + ' min' : '') + ', às ' + hm(st); }
+  return r + ' às ' + hm(st);
+}
+const evStart = e => new Date(e.date + 'T' + e.time + ':00');
+// cartão no Início: próxima saída nas próximas 18 h; sem rota, mostra o próximo compromisso
 function nextLeave(){
   const now = Date.now();
   const e = S.events.filter(x => hasLeave(x) && new Date(x.leave).getTime() > now - 30 * 60e3 && new Date(x.leave).getTime() < now + 18 * 3600e3)
     .sort((a, b) => a.leave.localeCompare(b.leave))[0];
-  if (!e) return '';
+  if (!e) return nextEventCard();
   const late = new Date(e.leave).getTime() < now;
   return `<button class="leave-card ${late ? 'late' : ''}" data-route="${e.id}"><span class="lc-ic">${ic('nav')}</span>
     <span class="main"><span class="lc-t">${late ? 'Já passou da hora de sair' : `Sair ${rel(iso(new Date(e.leave))) === 'hoje' ? '' : rel(iso(new Date(e.leave))) + ' '}às ${hm(e.leave)}`}</span><span class="lc-s">${esc(e.title)} · ${e.tmin} min de viagem</span></span>
     <span class="lc-go">Waze</span></button>`;
+}
+// qualquer compromisso marcado nas próximas 36 h, tenha local ou não
+function nextEventCard(){
+  const now = Date.now();
+  const e = S.events.filter(x => !x.done && x.time && evStart(x).getTime() > now - 15 * 60e3 && evStart(x).getTime() < now + 36 * 3600e3)
+    .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time))[0];
+  if (!e) return '';
+  const st = evStart(e);
+  return `<button class="next-card" data-edit="ev:${e.id}" aria-label="Próximo compromisso: ${esc(e.title)}"><span class="lc-ic">${ic('cal')}</span>
+    <span class="main"><span class="lc-t">Próximo compromisso · <span data-nxt="${st.toISOString()}">${nxtTxt(st)}</span></span>
+    <span class="lc-s">${esc(e.title)}${e.place ? ' · ' + esc(e.place) : ''}</span></span>
+    <span class="lc-go">Ver</span></button>`;
 }
 function addrRow(k, label){
   const a = S[k];
@@ -3471,6 +3543,7 @@ function saveLocationSoon(){
 setInterval(() => {
   document.querySelectorAll('[data-clock]').forEach(e => e.textContent = nowHM());
   document.querySelectorAll('[data-ago]').forEach(e => e.textContent = agoTxt(e.dataset.ago));
+  document.querySelectorAll('[data-nxt]').forEach(e => e.textContent = nxtTxt(new Date(e.dataset.nxt)));
 }, 20e3);
 setInterval(() => { if (session && document.visibilityState === 'visible' && (view === 'inicio' || view === 'mercado') && $('#sheet').hidden) loadMarket(true); }, 60e3);
 let pendingRoute = null, pendingList = null, pendingConf = null;
@@ -4032,7 +4105,7 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('mess
   if (d.type === 'push' && d.kind === 'sairja'){ const ev = S.events.find(x => x.id === d.ref); alarmFire(ev || null); return; }
   if (d.type === 'push' && document.visibilityState === 'visible' && TONES[d.kind]) play(d.kind);
   if (d.type === 'open' && d.url){ const q = new URL(d.url, location.origin).searchParams, r = q.get('rota'), li = q.get('lista'); if (r) openRoute(r); if (li) openSharedList(li); }
-  if (d.type === 'push' && d.kind === 'lista') loadAll().then(() => { if (view === 'listas' || view === 'inicio') render(); }).catch(() => {});
+  if (d.type === 'push' && (d.kind === 'lista' || d.kind === 'item')) loadAll().then(() => { if (view === 'listas' || view === 'inicio') render(); }).catch(() => {});
 });
 
 function checkReminders(){
