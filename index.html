@@ -1082,6 +1082,15 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
   .q-r .eco-d{-webkit-line-clamp:2}
 }
 @media (max-width:1299px){ .q2{grid-template-columns:minmax(0,1fr)} .q-r{position:static} .q-add{width:260px} }
+/* duas colunas: o painel ocupa a altura toda da tela e o gráfico preenche o que sobra */
+@media (min-width:1300px){
+  .q2{grid-template-columns:minmax(0,1fr) 330px;gap:18px}
+  .q-r{height:calc(100vh - 84px);max-height:none;overflow:hidden}
+  .q-r .inv-chart{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+  .q-r .inv-chart .lc-box{flex:1 1 auto;min-height:70px}
+  .q-r .inv-chart .lc-ax{flex:none}
+}
+@media (min-width:1500px){ .q2{grid-template-columns:minmax(0,1fr) 380px} }
 
 /* início (computador): clima no topo e quadro de cartões */
 .dh{align-items:stretch}
@@ -2886,9 +2895,18 @@ const WD = ['dom','seg','ter','qua','qui','sex','sáb'];
 const CHART_DAY = { axis: brD, title: dt => { const [yy, mm, dd] = dt.split('-'); return `${WD[new Date(+yy, mm - 1, +dd).getDay()]}, ${dd}/${mm}/${yy}`; }, val: v => `R$ ${n2(v)}`, step: 'No dia' };
 function drawChart(box, pts, opt = CHART_DAY){
   if (!box) return;
-  const baixa = innerHeight < 880;
-  const curta = innerHeight < 720;
-  const W = Math.max(260, box.clientWidth), H = opt.h ? opt.h(W) : W > 560 ? (baixa ? 210 : 300) : (curta ? 112 : baixa ? 132 : 220), PL = 6, PR = 56, PT = 12, PB = 24;
+  const baixa = innerHeight < 880, curta = innerHeight < 720;
+  // dentro do painel lateral o gráfico ocupa a altura que sobrar (nada de valor fixo)
+  const livre = (() => {
+    const pai = box.closest('.q-r'); if (!pai) return 0;
+    const alvo = box.parentElement;
+    let usado = 16;
+    [...pai.children].forEach(c => { if (c !== alvo) usado += c.getBoundingClientRect().height + 7; });
+    [...alvo.children].forEach(c => { if (c !== box) usado += c.getBoundingClientRect().height; });
+    return Math.floor(pai.getBoundingClientRect().height - usado);
+  })();
+  const padrao = W > 560 ? (baixa ? 210 : 300) : (curta ? 112 : baixa ? 132 : 220);
+  const W = Math.max(260, box.clientWidth), H = opt.h ? opt.h(W) : livre > 80 ? Math.max(100, Math.min(livre, 330)) : padrao, PL = 6, PR = 56, PT = 12, PB = 24;
   const vs = pts.map(p => p[1]); let mn = Math.min(...vs), mx = Math.max(...vs);
   if (mx === mn){ mn -= 0.5; mx += 0.5; }
   const step = niceStep((mx - mn) / 4), lo = Math.floor(mn / step) * step, hi = Math.ceil(mx / step) * step;
@@ -5263,7 +5281,7 @@ function paintEcoPanel(){
     <div class="inv-chart">${pts.length > 1 ? '<div class="lc-box" data-lc role="img" aria-label="Histórico do indicador"></div><div class="lc-ax"><span></span><span class="lc-hint">Passe o mouse no gráfico para ver cada ponto</span><span></span></div>' : '<div class="q-empty">Sem histórico para este indicador.</div>'}</div>
     ${pts.length > 1 ? (() => { const vs = pts.map(p => p[1]); return `<div class="ip-stats"><div><small>Mais recente</small><b>${fmt(vs[vs.length - 1])}</b></div><div><small>Início do período</small><b>${fmt(vs[0])}</b></div><div><small>Mínimo</small><b>${fmt(Math.min(...vs))}</b></div><div><small>Máximo</small><b>${fmt(Math.max(...vs))}</b></div></div>`; })() : ''}`;
   el.querySelectorAll('[data-ecoser]').forEach(x => x.onclick = () => { ui.ecoSer = x.dataset.ecoser; paintEcoPanel(); });
-  if (pts.length > 1) drawChart(el.querySelector('[data-lc]'), pts, { axis: lbl, title: lbl, val: fmt, step: null, noRel: k !== 'IBOV' && k !== 'USD' && k !== 'EUR', color: k === 'IBOV' ? '' : 'var(--accent)', h: () => Math.max(200, Math.min(340, innerHeight - 620)) });
+  if (pts.length > 1) drawChart(el.querySelector('[data-lc]'), pts, { axis: lbl, title: lbl, val: fmt, step: null, noRel: k !== 'IBOV' && k !== 'USD' && k !== 'EUR', color: k === 'IBOV' ? '' : 'var(--accent)' });
 }
 function bindMercadoDesk(){
   const V = $('#view');
