@@ -417,6 +417,15 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 #alarm .sl-k{width:52px;height:52px;background:rgba(255,255,255,.94);color:var(--bad)}
 @keyframes alarmpulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
 @media (prefers-reduced-motion:reduce){#alarm{animation:none}}
+/* leitor do código de barras da caixa do remédio */
+#scan{position:fixed;inset:0;z-index:96;background:#000;color:#fff;display:flex;flex-direction:column}
+#scan[hidden]{display:none}
+#scan .sc-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;font-size:17px;font-weight:700}
+#scan .sc-bar button{color:#fff;font:inherit;font-weight:700;background:none;border:0;min-width:64px;text-align:left}
+#scan .sc-view{position:relative;flex:1;min-height:0;overflow:hidden}
+#scan video{width:100%;height:100%;object-fit:cover;display:block;background:#000}
+#scan .sc-alvo{position:absolute;left:8%;right:8%;top:50%;transform:translateY(-50%);height:130px;border:3px solid rgba(255,255,255,.92);border-radius:16px;box-shadow:0 0 0 2000px rgba(0,0,0,.45)}
+#scan .sc-tip{padding:16px 20px calc(22px + env(safe-area-inset-bottom,0px));font-size:15px;line-height:1.4;text-align:center;color:rgba(255,255,255,.92)}
 #sheet{position:fixed;inset:0;z-index:60;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center}
 #sheet .pane{background:var(--bg);width:100%;max-width:560px;border-radius:24px 24px 0 0;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));max-height:92%;overflow-y:auto;animation:up .25s ease}
 @media (min-width:640px){#sheet{align-items:center}#sheet .pane{border-radius:24px}}
@@ -581,6 +590,14 @@ button.quota{width:100%;background:none;border:0;padding:0;cursor:pointer;font:i
 .sug-it span{display:flex;flex-direction:column;min-width:0}
 .sug-it b{font-weight:600;font-size:15px} .sug-it small{font-size:13px;color:var(--fg2)}
 .sug-wait{font-size:13px;color:var(--fg2);padding:8px 4px}
+/* dose: campo com as dosagens da caixa logo abaixo */
+.row.dose-wrap{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:12px}
+.row.dose-wrap .dchips{grid-column:1 / -1}
+.dchips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 2px}
+.dchips[hidden]{display:none}
+.dchips button{border:1px solid var(--sep);background:var(--card);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:600;color:var(--fg)}
+.dchips button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.dchips button:active{transform:scale(.96)}
 .place-line{display:flex;align-items:center;gap:8px}
 .place-line .full{flex:1;min-width:0}
 #sheet input.pnum{flex:none;width:64px;text-align:center;color:var(--fg);background:var(--fill);border-radius:10px;padding:6px 4px}
@@ -1094,6 +1111,7 @@ body.mouse .cc-b button:hover{filter:brightness(.97)}
   <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l1 13h9l1-13M10 11v5.5M14 11v5.5"/></symbol>
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5 19 6v5.5c0 4.3-3 7.6-7 9-4-1.4-7-4.7-7-9V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></symbol>
   <symbol id="i-send" viewBox="0 0 24 24"><path d="M20.5 3.5 10.5 13.5M20.5 3.5l-6.5 17-3.5-7-7-3.5z"/></symbol>
+  <symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 7.5h3.2L8.8 5h6.4l1.6 2.5H20v11.5H4z"/><circle cx="12" cy="13.2" r="3.3"/></symbol>
   <symbol id="i-pill" viewBox="0 0 24 24"><rect x="2.6" y="8.6" width="18.8" height="6.8" rx="3.4" transform="rotate(-45 12 12)"/><path d="M9.5 9.5 14.5 14.5"/></symbol>
 </svg>
 
@@ -2131,6 +2149,8 @@ function openForm({title, fields, values={}, onSave, onDelete, saveLabel, onFiel
     const v = values[fd.k] ?? fd.def ?? '';
     if (fd.type==='title') return `<div class="row"><input class="full" id="f-${fd.k}" placeholder="${esc(fd.label)}" value="${esc(v)}" aria-label="${esc(fd.label)}"></div>`;
     if (fd.type==='place') return `<div class="row place-wrap"><div class="place-in"><div class="place-line"><input class="full" id="f-${fd.k}" data-place autocomplete="off" placeholder="${esc(fd.ph || fd.label)}" value="${esc(v)}" aria-label="${esc(fd.label)}"><input class="pnum" id="n-${fd.k}" inputmode="numeric" maxlength="10" placeholder="Nº" aria-label="Número"></div><div class="phint" id="h-${fd.k}" hidden></div><div class="psugs" id="s-${fd.k}" hidden></div></div></div>`;
+    if (fd.type==='med') return `<div class="row place-wrap"><div class="place-in"><div class="place-line"><input class="full" id="f-${fd.k}" data-med autocomplete="off" placeholder="${esc(fd.ph || fd.label)}" value="${esc(v)}" aria-label="${esc(fd.label)}"><button type="button" class="icon-btn" id="b-${fd.k}" aria-label="Ler o código de barras da caixa">${ic('cam')}</button></div><div class="phint" id="h-${fd.k}" hidden></div><div class="psugs" id="s-${fd.k}" hidden></div></div></div>`;
+    if (fd.type==='dose') return `<div class="row dose-wrap"><label class="lab" for="f-${fd.k}">${fd.label}</label><input id="f-${fd.k}" value="${esc(v)}" ${fd.ph?`placeholder="${esc(fd.ph)}"`:''}><div class="dchips" id="c-${fd.k}" hidden></div></div>`;
     if (fd.type==='select') return `<label class="row" for="f-${fd.k}"><span class="lab">${fd.label}</span><select id="f-${fd.k}">${fd.options.map(([o,l])=>`<option value="${o}" ${String(o)===String(v)?'selected':''}>${l}</option>`).join('')}</select></label>`;
     if (fd.type==='money') return `<label class="row" for="f-${fd.k}"><span class="lab">${fd.label}</span><input id="f-${fd.k}" data-money data-cents="${Number(v)||0}" inputmode="numeric" autocomplete="off" placeholder="R$ 0,00" value="${v ? 'R$ ' + brl(v) : ''}"></label>`;
     return `<label class="row" for="f-${fd.k}"><span class="lab">${fd.label}</span><input id="f-${fd.k}" type="${fd.type}" value="${esc(v)}" ${fd.ph?`placeholder="${esc(fd.ph)}"`:''}></label>`;
@@ -2157,6 +2177,7 @@ function openForm({title, fields, values={}, onSave, onDelete, saveLabel, onFiel
   }));
   vis();
   el.querySelectorAll('input[data-place]').forEach(bindPlace);
+  el.querySelectorAll('input[data-med]').forEach(bindMed);
   // valor estilo caixa: ao começar a digitar apaga o valor e preenche a partir dos centavos (1 → 0,01; 1290 → 12,90)
   el.querySelectorAll('input[data-money]').forEach(inp => {
     let fresh = true;
@@ -3706,8 +3727,8 @@ function openRoutine(kind, it){
   const med = kind === 'remedio';
   const nT = it && it.mode === 'horarios' ? (it.times || []).length : 0;
   const fields = med ? [
-    {k:'title',label:'Remédio',type:'title',req:1},
-    {k:'dose',label:'Dose',type:'text',ph:'20 mg, 1 comprimido, 20 gotas…'},
+    {k:'title',label:'Remédio',type:'med',req:1,ph:'Remédio: digite 3 letras do nome'},
+    {k:'dose',label:'Dose',type:'dose',ph:'20 mg, 1 comprimido, 20 gotas…'},
     {type:'break'},
     {k:'pattern',label:'Como tomar',type:'select',def:'1',options:TOMADAS},
     {k:'first',label:'Primeira dose',type:'time',def:'08:00',showIf:{k:'pattern',in:['1','2','3','4']}},
@@ -3963,6 +3984,132 @@ async function viaCep(cep){
     if (!j || j.erro) return null;
     return { street: j.logradouro || '', district: j.bairro || '', city: j.localidade || '', uf: j.uf || '', cep: j.cep || cep };
   } catch(e) { return null; }
+}
+/* ---------- Leitor do código de barras da caixa (a lista da Anvisa traz o código de todas) ---------- */
+const ZXING_CDN = 'https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/zxing-browser.min.js';
+function carregaScript(src){
+  return new Promise((ok, erro) => {
+    if ([...document.scripts].some(x => x.src === src)) return ok();
+    const t = document.createElement('script'); t.src = src; t.async = true;
+    t.onload = () => ok(); t.onerror = () => erro(new Error('script'));
+    document.head.appendChild(t);
+  });
+}
+async function abrirScanner(aoAchar){
+  let el = $('#scan');
+  if (!el){ el = document.createElement('div'); el.id = 'scan'; el.setAttribute('role', 'dialog'); el.setAttribute('aria-label', 'Ler o código de barras'); document.body.appendChild(el); }
+  el.innerHTML = `<div class="sc-bar"><button data-x>Fechar</button><b>Código de barras</b><span style="min-width:64px"></span></div>
+    <div class="sc-view"><video id="sc-v" playsinline muted autoplay></video><div class="sc-alvo"></div></div>
+    <div class="sc-tip" id="sc-tip">Aponte para o código de barras da caixa. Firme, com boa luz.</div>`;
+  el.hidden = false;
+  const v = el.querySelector('#sc-v'), tip = t => { const x = el.querySelector('#sc-tip'); if (x) x.textContent = t; };
+  let stream = null, vivo = true, ctrl = null;
+  const fechar = () => {
+    vivo = false;
+    try { if (ctrl && ctrl.stop) ctrl.stop(); } catch(e) {}
+    if (stream) stream.getTracks().forEach(t => t.stop());
+    el.hidden = true; el.innerHTML = '';
+  };
+  el.querySelector('[data-x]').onclick = fechar;
+  const achou = async codigo => {
+    const ean = String(codigo || '').replace(/\D/g, '');
+    if (!vivo || ean.length < 8) return;
+    vivo = false;
+    if (navigator.vibrate) navigator.vibrate(60);
+    play('concluida');
+    tip('Procurando na lista da Anvisa…');
+    let med = null;
+    try { const { data } = await sb.rpc('medicamento_por_ean', { p_ean: ean }); med = (data || [])[0] || null; } catch(e) {}
+    fechar();
+    aoAchar(med, ean);
+  };
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 } } });
+  } catch(e) {
+    tip('Não consegui abrir a câmera. Autorize o acesso à câmera para este site e tente de novo.');
+    return;
+  }
+  v.srcObject = stream; try { await v.play(); } catch(e) {}
+  // Android e Chrome já leem código de barras sozinhos; no iPhone entra a biblioteca
+  if ('BarcodeDetector' in window){
+    try {
+      const det = new window.BarcodeDetector({ formats: ['ean_13','ean_8','upc_a','upc_e','code_128'] });
+      const olha = async () => {
+        if (!vivo) return;
+        try { const r = await det.detect(v); if (r && r[0]) return achou(r[0].rawValue); } catch(e) {}
+        setTimeout(olha, 220);
+      };
+      olha();
+      return;
+    } catch(e) {}
+  }
+  try {
+    await carregaScript(ZXING_CDN);
+    const B = window.ZXingBrowser || window.ZXing;
+    const leitor = new B.BrowserMultiFormatReader();
+    const cb = res => { if (res && vivo) achou(res.getText ? res.getText() : res.text); };
+    if (leitor.decodeFromVideoElement) ctrl = await leitor.decodeFromVideoElement(v, cb);
+    else if (leitor.decodeFromStream) ctrl = await leitor.decodeFromStream(stream, v, cb);
+    else if (leitor.decodeFromConstraints) ctrl = await leitor.decodeFromConstraints({ video: { facingMode: 'environment' } }, v, cb);
+    else tip('Este aparelho não lê código de barras. Digite o nome do remédio.');
+  } catch(e) {
+    tip('Não consegui carregar o leitor. Confira a internet ou digite o nome do remédio.');
+  }
+}
+// catálogo de medicamentos registrados (Anvisa/CMED): sugere o nome certo e as dosagens da caixa.
+// É só catálogo: quanto tomar continua sendo o que o médico disse.
+function bindMed(inp){
+  const box = document.getElementById('s-' + inp.id.slice(2)), hint = document.getElementById('h-' + inp.id.slice(2));
+  let t = null, seq = 0;
+  const doses = async produto => {
+    const cx = document.getElementById('c-dose'); if (!cx) return;
+    cx.hidden = true; cx.innerHTML = '';
+    const { data, error } = await sb.rpc('doses_medicamento', { p_produto: produto });
+    if (error || !data) return;
+    const lista = [...new Set(data.map(d => d.dosagem).filter(Boolean))].slice(0, 12);
+    if (!lista.length) return;
+    cx.innerHTML = lista.map(d => `<button type="button" data-dc="${esc(d)}">${esc(d.toLowerCase())}</button>`).join('');
+    cx.hidden = false;
+    cx.querySelectorAll('[data-dc]').forEach(b => b.onclick = () => {
+      const f = document.getElementById('f-dose'); if (f) f.value = b.dataset.dc.toLowerCase();
+      cx.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    });
+  };
+  const cam = document.getElementById('b-' + inp.id.slice(2));
+  if (cam) cam.onclick = () => abrirScanner((med, ean) => {
+    box.hidden = true; box.innerHTML = '';
+    if (!med){
+      hint.textContent = `Código ${ean} não está na lista da Anvisa. Digite o nome.`; hint.hidden = false;
+      inp.focus(); return;
+    }
+    inp.value = med.produto;
+    hint.textContent = [med.substancia, med.laboratorio].filter(Boolean).join(' · ') || 'Medicamento registrado na Anvisa';
+    hint.hidden = false;
+    const f = document.getElementById('f-dose');
+    if (f && med.dosagem) f.value = med.dosagem.toLowerCase();
+    doses(med.produto);
+    toast('Remédio identificado pela caixa');
+  });
+  inp.addEventListener('input', () => {
+    hint.hidden = true; clearTimeout(t);
+    const q = inp.value.trim(), my = ++seq;
+    if (q.length < 3){ box.hidden = true; box.innerHTML = ''; return; }
+    t = setTimeout(async () => {
+      let res = [];
+      try { const { data } = await sb.rpc('busca_medicamento', { p_termo: q, p_limite: 8 }); res = data || []; } catch(e) { res = []; }
+      if (my !== seq) return;
+      if (!res.length){ box.hidden = true; box.innerHTML = ''; return; }
+      box.innerHTML = res.map((x, i) => `<button type="button" class="sug-it" data-i="${i}">${ic('pill')}<span><b>${esc(x.produto)}</b>${x.substancia && x.substancia !== x.produto ? `<small>${esc(x.substancia)}</small>` : ''}</span></button>`).join('');
+      box.hidden = false;
+      box.querySelectorAll('[data-i]').forEach(b => b.onclick = () => {
+        const x = res[Number(b.dataset.i)];
+        inp.value = x.produto; box.hidden = true; box.innerHTML = '';
+        hint.textContent = x.substancia && x.substancia !== x.produto ? x.substancia : 'Medicamento registrado na Anvisa';
+        hint.hidden = false;
+        doses(x.produto);
+      });
+    }, 250);
+  });
 }
 function bindPlace(inp){
   const box = document.getElementById('s-' + inp.id.slice(2)), hint = document.getElementById('h-' + inp.id.slice(2));
