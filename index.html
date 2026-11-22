@@ -993,8 +993,8 @@ body.mouse .pchips button:hover{border-color:var(--accent)}
 .qt th.q-n{max-width:none}
 .q-mini .q-n{width:auto}
 .qn{display:flex;gap:9px;align-items:center;min-width:0}
-.qn b{font-weight:650;flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.qn small{color:var(--fg2);font-size:12.5px;flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qn b{font-weight:650;flex:0 1 auto;flex-shrink:.12;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qn small{color:var(--fg2);font-size:12.5px;flex:1 1 auto;flex-shrink:8;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .qt .q-n{overflow:hidden}
 .q-logo{width:22px;height:22px;border-radius:5px;background:var(--accent-soft);color:var(--accent);font-size:9px;font-weight:700;display:grid;place-items:center;overflow:hidden;flex:none}
 .q-logo img{width:100%;height:100%;object-fit:cover}
@@ -1050,11 +1050,19 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
   .qt td{height:28px}
   .qt th{padding:5px 10px;font-size:12px}
   .inv-desk .foot{display:none}
-  .q-r{padding:10px;gap:8px}
+  .q-r{padding:10px;gap:7px;max-height:calc(100vh - 74px);overflow:auto;scrollbar-width:none}
+  .q-r::-webkit-scrollbar{display:none}
   .q-r .ip-head .main b{font-size:16px}
+  .q-r .ip-head .main small{font-size:12px}
   .q-r .ip-price b{font-size:19px}
-  .rtabs button{padding:4px 0}
+  .q-r .ip-stats{gap:6px 12px;font-size:12.5px}
+  .q-r .inv-chart{padding:4px 0}
+  .q-follow{padding:4px 11px;font-size:12.5px}
+  .rtabs button{padding:4px 0;font-size:12.5px}
+  .rtabs{gap:13px}
+  .lc-hint{font-size:11.5px}
   .q-mini td{height:28px}
+  .q2{grid-template-columns:minmax(0,1fr) 360px;gap:18px}
 }
 /* notebook de tela baixa: o mínimo para caber uma dúzia de linhas */
 @media (min-width:900px) and (max-height:700px){
@@ -2870,7 +2878,7 @@ const CHART_DAY = { axis: brD, title: dt => { const [yy, mm, dd] = dt.split('-')
 function drawChart(box, pts, opt = CHART_DAY){
   if (!box) return;
   const baixa = innerHeight < 880;
-  const W = Math.max(260, box.clientWidth), H = opt.h ? opt.h(W) : W > 560 ? (baixa ? 230 : 300) : (baixa ? 165 : 220), PL = 6, PR = 56, PT = 12, PB = 24;
+  const W = Math.max(260, box.clientWidth), H = opt.h ? opt.h(W) : W > 560 ? (baixa ? 220 : 300) : (baixa ? 140 : 220), PL = 6, PR = 56, PT = 12, PB = 24;
   const vs = pts.map(p => p[1]); let mn = Math.min(...vs), mx = Math.max(...vs);
   if (mx === mn){ mn -= 0.5; mx += 0.5; }
   const step = niceStep((mx - mn) / 4), lo = Math.floor(mn / step) * step, hi = Math.ceil(mx / step) * step;
@@ -5138,12 +5146,13 @@ function fitRows(chave){
   const V = $('#view'), tb = V && V.querySelector('table.qt'); if (!tb) return;
   const linhas = tb.querySelectorAll('tbody tr'), tr = linhas[0];
   if (!tr) return;
-  const alt = tr.getBoundingClientRect().height || 41;
-  const sobra = V.scrollHeight - V.clientHeight;        // quanto está passando da tela
+  const alt = tr.getBoundingClientRect().height || 30;
+  const corpo = tb.querySelector('tbody'), pai = tb.parentElement;
+  const rodape = pai && pai.querySelector('.q-foot');
+  const reserva = (rodape ? rodape.getBoundingClientRect().height + 10 : 0) + 14;
+  const livre = innerHeight - reserva - corpo.getBoundingClientRect().top;
   const atual = linhas.length;
-  let cabe = atual;
-  if (sobra > 2) cabe = Math.max(3, atual - Math.ceil(sobra / alt));
-  else if (sobra < -alt) cabe = atual + Math.floor(-sobra / alt);
+  const cabe = Math.max(3, Math.floor(livre / alt));
   ui.per = ui.per || {}; ui.fitLast = ui.fitLast || {};
   // só tenta cada valor uma vez por tela: evita ficar indo e voltando
   if (cabe !== atual && ui.fitLast[chave] !== cabe){ ui.fitLast[chave] = cabe; ui.per[chave] = cabe; render(); }
