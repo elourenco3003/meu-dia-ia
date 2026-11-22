@@ -908,6 +908,14 @@ body.mouse .mo-cell:hover{background:color-mix(in srgb,var(--accent) 5%,transpar
   main{padding-inline:22px!important}
   .topbar{margin-inline:-22px;padding-inline:22px}
   .wrap.desk.v-tarefas,.wrap.desk.v-lembretes,.wrap.desk.v-admin,.wrap.desk.v-ajustes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 20px;align-items:start}
+  /* Painel: colunas iguais, mesma altura, cartões encostando embaixo */
+  .wrap.desk.v-admin{grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:14px 16px}
+  .wrap.desk.v-admin>section{display:flex;flex-direction:column;min-width:0;gap:8px}
+  .wrap.desk.v-admin>section>.sh{margin:0}
+  .wrap.desk.v-admin>section>.group:last-of-type,.wrap.desk.v-admin>section>.card:last-of-type{flex:1 1 auto}
+  .wrap.desk.v-admin .row{min-height:var(--row);padding-top:4px;padding-bottom:4px}
+  .wrap.desk.v-admin .foot{margin-top:auto;padding-top:8px}
+  .wrap.desk.v-admin .tiles{gap:12px}
   .wrap.desk.v-tarefas>:not(section),.wrap.desk.v-lembretes>:not(section),.wrap.desk.v-admin>:not(section),.wrap.desk.v-ajustes>:not(section){grid-column:1/-1}
   .wrap.desk .head .lt,.wrap.desk .ag-head .lt{font-size:26px}
 }
@@ -5090,7 +5098,6 @@ function vHomeDesk(P, hp, items, card){
     ${wxl}
   </div>
   ${hp.assistente || hp.sair ? `<div class="dh2">${hp.assistente ? P.ask : ''}${hp.sair ? nextLeave() : ''}</div>` : ''}
-  ${hp.indicadores ? tickerBand() : ''}
   ${confirmCard()}${exBanner()}${pushBanner()}
   ${true ? `<div class="kpis">
     ${kpi('data-go="tarefas"', 'task', 'Tarefas pendentes', pend.length, lateT ? `${lateT} atrasada${lateT > 1 ? 's' : ''}` : 'Nenhuma atrasada', lateT ? 'bad' : '')}
