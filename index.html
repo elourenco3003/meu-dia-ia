@@ -448,6 +448,12 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 #sheet input,#sheet select{flex:1;min-width:0;text-align:right;background:none;border:0;outline:0;font-size:16px;color:var(--fg2)}
 #sheet input.full{text-align:left;color:var(--fg)}
 /* seta própria à direita: o indicador nativo do iPhone ia parar junto do rótulo */
+/* iPhone: o valor de hora e data ignora o text-align; isso alinha de verdade */
+#sheet input[type="time"]::-webkit-date-and-time-value,
+#sheet input[type="date"]::-webkit-date-and-time-value,
+input[type="time"].field-in::-webkit-date-and-time-value,
+input[type="date"].field-in::-webkit-date-and-time-value{text-align:right;margin:0}
+#sheet input[type="time"],#sheet input[type="date"]{-webkit-appearance:none;appearance:none;min-width:0}
 #sheet select,.field-in{direction:ltr;appearance:none;-webkit-appearance:none;padding-right:17px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 14' fill='none' stroke='%238A8FA3' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5.4 6 2.4 9 5.4'/%3E%3Cpath d='M3 8.6 6 11.6 9 8.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right center;background-size:11px 13px}
 #sheet select::-ms-expand,.field-in::-ms-expand{display:none}
 #sheet .err{color:var(--bad);font-size:13px;padding:0 16px}
