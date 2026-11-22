@@ -1125,20 +1125,23 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 .kcol{min-height:0}
 .kcards{overflow:hidden}
 .k-more{flex:none;font-size:11.5px;font-weight:600;color:var(--fg2);padding:4px 6px;text-align:center}
-/* banner de manchetes: uma de cada caderno, trocando sozinha */
-.nbanner{position:relative;display:block;height:74px;border-radius:12px;overflow:hidden;background:var(--card);box-shadow:var(--shadow);flex:none}
-.nb-s{position:absolute;inset:0;display:flex;align-items:center;gap:12px;padding:0 14px 0 0;text-decoration:none;color:var(--fg);opacity:0;transform:translateY(6px);transition:opacity .45s ease,transform .45s ease;pointer-events:none}
-.nb-s.on{opacity:1;transform:none;pointer-events:auto}
-.nb-s .ph{width:104px;height:100%;flex:none;background:var(--fill);overflow:hidden}
-.nb-s .ph img{width:100%;height:100%;object-fit:cover;display:block}
-.nb-s .tx{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px;padding:8px 0}
-.nb-s em{font-style:normal;font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
-.nb-s b{font-size:14px;font-weight:650;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.nb-s small{font-size:11px;color:var(--fg2)}
-.nb-dots{position:absolute;right:12px;bottom:8px;display:flex;gap:5px;z-index:2}
-.nb-dots i{width:5px;height:5px;border-radius:999px;background:var(--fg3);opacity:.4;cursor:pointer;transition:width .2s,opacity .2s}
-.nb-dots i.on{width:14px;opacity:1;background:var(--accent)}
-@media (min-width:900px){ .nbanner{height:62px} .nb-s .ph{width:96px} .nb-s b{font-size:13.5px;-webkit-line-clamp:2} }
+/* banner de manchetes: foto grande com o título por cima, como capa de portal */
+.nbanner{position:relative;display:block;height:168px;border-radius:14px;overflow:hidden;background:#171922;box-shadow:var(--shadow);flex:none;margin-bottom:2px}
+.nb-s{position:absolute;inset:0;opacity:0;transition:opacity .7s ease;pointer-events:none}
+.nb-s.on{opacity:1;pointer-events:auto}
+.nb-s img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scale(1.02)}
+.nb-s .ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,12,22,.94) 0%,rgba(10,12,22,.62) 38%,rgba(10,12,22,.18) 70%,rgba(10,12,22,.05) 100%)}
+.nb-s.noimg .ov{background:linear-gradient(130deg,var(--accent) 0%,#2B2F5E 100%)}
+.nb-s .tx{position:absolute;left:20px;right:20px;bottom:15px;color:#fff;text-decoration:none}
+.nb-s em{display:inline-block;font-style:normal;font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;background:var(--accent);color:#fff;padding:3px 9px;border-radius:5px}
+.nb-s.c-economia em{background:#0E8A5F} .nb-s.c-internacional em{background:#2A6BC4}
+.nb-s b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:20px;font-weight:700;line-height:1.26;margin:9px 0 4px;text-shadow:0 2px 14px rgba(0,0,0,.45)}
+.nb-s small{font-size:11.5px;color:rgba(255,255,255,.82)}
+.nb-s .nova{background:#E3A23B;color:#15161B;border-radius:4px;padding:1px 6px;font-size:9.5px;font-weight:800;margin-left:6px}
+.nb-dots{position:absolute;right:16px;bottom:16px;display:flex;gap:6px;z-index:3}
+.nb-dots i{width:6px;height:6px;border-radius:999px;background:#fff;opacity:.45;cursor:pointer;transition:width .25s,opacity .25s}
+.nb-dots i.on{width:20px;opacity:1}
+@media (max-width:899px){ .nbanner{height:152px;border-radius:16px} .nb-s b{font-size:17.5px} .nb-s .tx{left:15px;right:15px;bottom:13px} }
 /* notícias em faixa: convivem com o quadro sem empurrar nada para fora da tela */
 .nstrip{flex:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:stretch}
 .nstrip a{display:flex;flex-direction:column;gap:2px;background:var(--card);border:1px solid var(--sep);border-radius:8px;padding:6px 10px;text-decoration:none;color:var(--fg);box-shadow:var(--sh,0 1px 2px rgba(20,24,60,.06))}
@@ -4514,12 +4517,14 @@ const NB_CAD = [['brasil','Brasil'],['economia','Economia'],['internacional','In
 function newsBanner(){
   const nw = mkt && mkt.noticias; if (!nw) return '';
   const seen = newsSeen();
-  const slides = NB_CAD.map(([k, l]) => { const n = (nw[k] || [])[0]; return n ? { ...n, cad:l } : null; }).filter(Boolean);
+  // a mais recente de cada caderno, preferindo as que têm foto
+  const slides = NB_CAD.map(([k, l]) => { const lista = nw[k] || []; const n = lista.find(x => x.img) || lista[0]; return n ? { ...n, cad:l, k } : null; }).filter(Boolean);
   if (!slides.length) return '';
   return `<div class="nbanner" data-nb aria-label="Manchetes">
-    ${slides.map((n, i) => `<a class="nb-s ${i ? '' : 'on'}" data-i="${i}" href="${esc(n.link)}" target="_blank" rel="noopener" data-newsopen="${esc(n.at || '')}">
-      <span class="ph">${n.img ? `<img src="${esc(n.img)}" alt="" loading="lazy" onerror="this.remove()">` : ''}</span>
-      <span class="tx"><em>${esc(n.cad)}${n.at && n.at > seen ? ' · nova' : ''}</em><b>${esc(n.title)}</b><small>${agoTxt(n.at)} · Agência Brasil</small></span></a>`).join('')}
+    ${slides.map((n, i) => `<a class="nb-s c-${esc(n.k)} ${n.img ? '' : 'noimg'} ${i ? '' : 'on'}" data-i="${i}" href="${esc(n.link)}" target="_blank" rel="noopener" data-newsopen="${esc(n.at || '')}">
+      ${n.img ? `<img src="${esc(n.img)}" alt="" loading="lazy" onerror="this.closest('.nb-s').classList.add('noimg');this.remove()">` : ''}
+      <span class="ov"></span>
+      <span class="tx"><em>${esc(n.cad)}</em>${n.at && n.at > seen ? '<span class="nova">NOVA</span>' : ''}<b>${esc(n.title)}</b><small>${agoTxt(n.at)} · Agência Brasil</small></span></a>`).join('')}
     <span class="nb-dots">${slides.map((_, i) => `<i class="${i ? '' : 'on'}" data-nbd="${i}"></i>`).join('')}</span>
   </div>`;
 }
