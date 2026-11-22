@@ -1052,12 +1052,14 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
   .q-foot .icon-btn{width:26px;height:26px}
   .foot{padding-top:4px;font-size:12px}
   /* painel lateral: enxuto, com o gráfico preenchendo o que sobrar */
-  .q-r{padding:11px;gap:8px;top:64px}
+  .q-r{padding:10px;gap:6px;top:64px}
   .q-r .ip-head .main b{font-size:15px}
   .q-r .ip-head .main small{font-size:11.5px}
   .q-r .ip-price b{font-size:17px}
-  .q-r .ip-stats{gap:5px 12px;font-size:12px}
-  .q-r .eco-d{font-size:12.3px;line-height:1.42;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .q-r .ip-stats{gap:3px 10px;font-size:11.8px}
+  .q-r .ip-stats small{font-size:10.5px}
+  .q-r .eco-d{font-size:12.2px;line-height:1.38;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .q-r .eco-d.eco-r{-webkit-line-clamp:2}
   .q-r .inv-chart{padding:3px 0}
   .q-r .lc-hint{display:none}
   .q-r .lc-ax{margin-top:3px}
@@ -1094,7 +1096,9 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
   .q2{grid-template-columns:minmax(0,1fr) 316px;gap:16px}
   .q-r{height:calc(100vh - 82px);max-height:none;overflow:hidden}
   .q-r .inv-chart{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
-  .q-r .inv-chart .lc-box{flex:1 1 auto;min-height:110px}
+  .q-r .inv-chart .lc-box{flex:1 1 auto;min-height:72px}
+  .q-r .ip-stats{flex:none}
+  .q-r .q-mini{flex:none}
   .q-r .inv-chart .lc-ax{flex:none}
 }
 @media (min-width:1500px){ .q2{grid-template-columns:minmax(0,1fr) 360px} }
