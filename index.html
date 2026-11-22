@@ -1353,6 +1353,7 @@ body.mouse .cc-b button:hover{filter:brightness(.97)}
     <button data-v="listas" class="side-only"><svg class="i"><use href="#i-cart"/></svg>Listas e notas</button>
     <button data-v="invest" class="side-only"><svg class="i"><use href="#i-chart"/></svg>Investimentos</button>
     <button data-v="mercado" class="side-only"><svg class="i"><use href="#i-globe"/></svg>Economia</button>
+    <button data-v="arquivados" class="side-only"><svg class="i"><use href="#i-box"/></svg>Arquivados</button>
     <button data-v="ajustes" class="side-only"><svg class="i"><use href="#i-gear"/></svg>Ajustes</button>
   </nav>
   <main id="view"></main>
@@ -1657,7 +1658,8 @@ document.addEventListener('pointermove', e => {
 function endSwipe(){
   if (!swp) return; const s = swp; swp = null; if (!s.on) return;
   swipedAt = Date.now(); const w = s.row.offsetWidth; s.row.classList.add('sw-anim');
-  if (Math.abs(s.dx) > w * 0.35){ s.row.style.setProperty('--sw', (s.dx < 0 ? -w : w) + 'px'); s.row.style.setProperty('--swa', w + 'px'); setTimeout(() => swipeDelete(s.row.dataset.swipe), 170); }
+  const lim = Math.min(w * 0.3, 110);   // um empurrão de ~110px já basta, mesmo em tela larga
+  if (Math.abs(s.dx) > lim){ s.row.style.setProperty('--sw', (s.dx < 0 ? -w : w) + 'px'); s.row.style.setProperty('--swa', w + 'px'); setTimeout(() => swipeDelete(s.row.dataset.swipe), 170); }
   else { s.row.style.setProperty('--sw', '0px'); s.row.style.setProperty('--swa', '0px'); setTimeout(() => s.row.classList.remove('swiping', 'sw-anim', 'sw-right'), 220); }
 }
 document.addEventListener('pointerup', endSwipe, true);
@@ -1772,7 +1774,7 @@ function vArq(){
       <button class="pay" data-unarq="${x.k}:${x.id}">Restaurar</button>
       <button class="pay del" data-delarq="${x.k}:${x.id}">Excluir</button></div>`).join('')
     : `<div class="empty">${S.arq ? 'Nada arquivado ainda. Arraste um compromisso para o lado na agenda, ou confirme em "Como foi?".' : 'Carregando…'}</div>`}</div>
-  <div class="foot">Restaurar devolve o item para a agenda na mesma data. Para apagar de vez, deslize o item para o lado ou use Excluir — dá tempo de desfazer.</div>`;
+  <div class="foot">Restaurar devolve o item para a agenda na mesma data. Para apagar de vez, use o botão Excluir (ele pergunta antes) ou deslize a linha para o lado — nos dois casos dá tempo de desfazer.</div>`;
 }
 function bindArq(){
   $('#view').querySelectorAll('[data-unarq]').forEach(b => b.onclick = async () => {
@@ -5644,6 +5646,7 @@ function vAgendaDesk(){
     <h1 class="lt">Agenda</h1>
     <div class="ag-nav"><button class="icon-btn" data-cal="-1" aria-label="Anterior" title="Anterior (←)">${ic('l')}</button><button class="btn-ghost" data-act="today" title="Hoje (H)">Hoje</button><button class="icon-btn" data-cal="1" aria-label="Próximo" title="Próximo (→)">${ic('r')}</button><span class="ag-lbl">${label}</span></div>
     <div class="seg ag-mode" role="group" aria-label="Visualização"><button data-calmode="semana" aria-pressed="${wk}">Semana</button><button data-calmode="mes" aria-pressed="${!wk}">Mês</button></div>
+    <button class="icon-btn" data-go="arquivados" aria-label="Arquivados" title="Arquivados">${ic('box')}</button>
     <button class="btn-go" data-new="ev">${ic('plus')}Novo compromisso</button></div>`;
   const chip = i => { const r = i.ref;
     return `<div class="wk-ev ${i.k === 'rem' ? 'rem' : ''} ${i.done ? 'done' : ''} ${r.cat === 'trabalho' ? 'trab' : ''}"><button class="wk-main" data-edit="${i.k}:${r.id}" title="${esc(r.title)}${i.k === 'ev' && r.place ? ' · ' + esc(r.place) : ''}">
