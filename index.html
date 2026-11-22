@@ -5067,6 +5067,7 @@ function vHomeDesk(P, hp, items, card){
     ${add ? `<button class="k-add" data-kadd="${add}">${ic('plus')}Adicionar</button>` : ''}</section>`;
   const kpi = (go, icn, lab, val, sub, cls = '') => `<button class="kpi ${cls}" ${go}><span class="ic">${ic(icn)}</span><span class="kx"><small>${lab}</small><b>${val}</b><em>${sub}</em></span></button>`;
   const nw = mkt && mkt.noticias, nlist = (nw && nw.economia) || [];
+  const hi = dayPhase(n.getHours()).hi;          // a saudação é calculada aqui (no celular vem de vHome)
   const wxl = hp.clima && wx && wxState === 'ok'
     ? `<button class="wxl" data-go="clima" aria-label="Previsão do tempo">${wxIcon(wx.cond, !wx.is_day)}<b>${wx.temp}°C</b><span>${esc(wx.desc)} · máx ${wx.max}° mín ${wx.min}° · chuva ${wx.rain}%</span></button>`
     : hp.clima && wxState === 'off' ? `<button class="wxl" data-act="wx-on"><span>Ver a previsão do tempo</span></button>` : '';
