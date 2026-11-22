@@ -4820,15 +4820,6 @@ document.addEventListener('scroll', hvHide, true);
 hvDel.onclick = e => { e.stopPropagation(); const k = hvRow && hvRow.dataset.swipe; hvHide(); if (k) swipeDelete(k); };
 
 // atalhos de teclado
-const SHORTCUTS = [['N','Novo (compromisso, tarefa, conta…)'],['/','Buscar'],['1 a 6','Início, Agenda, Assistente, Tarefas, Finanças, Listas'],['← →','Semana ou mês anterior / seguinte (Agenda e Finanças)'],['H','Voltar para hoje (Agenda)'],['Esc','Fechar janela ou painel']];
-function openShortcuts(){
-  const el = $('#sheet');
-  el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="Atalhos de teclado"><div class="bar"><span style="min-width:70px"></span><b>Atalhos de teclado</b><button class="save" data-x>Fechar</button></div>
-    <div class="body"><div class="group">${SHORTCUTS.map(([k, l]) => `<div class="row"><span class="kbd">${k}</span><span class="main t">${l}</span></div>`).join('')}</div>
-    <div class="foot">Os atalhos funcionam quando você não está digitando em um campo.</div></div></div>`;
-  el.hidden = false; el.querySelector('[data-x]').onclick = () => { el.hidden = true; el.innerHTML = ''; };
-  el.onclick = e => { if (e.target === el){ el.hidden = true; el.innerHTML = ''; } };
-}
 document.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey || $('#app').hidden) return;
   const t = e.target, typing = t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
@@ -4837,7 +4828,6 @@ document.addEventListener('keydown', e => {
   const k = e.key;
   if (k === '/'){ e.preventDefault(); const q = $('#topq'); if (q) q.focus(); else go('assistente'); }
   else if (k === 'n' || k === 'N'){ e.preventDefault(); openNewMenu(); }
-  else if (k === '?'){ e.preventDefault(); openShortcuts(); }
   else if (/^[1-6]$/.test(k)){ go(['inicio','agenda','assistente','tarefas','financas','listas'][Number(k) - 1]); }
   else if ((k === 'ArrowLeft' || k === 'ArrowRight') && (view === 'agenda' || view === 'financas')){
     const b = $('#view').querySelector(view === 'agenda' ? `[data-cal="${k === 'ArrowLeft' ? -1 : 1}"]` : `[data-month="${k === 'ArrowLeft' ? -1 : 1}"]`); if (b){ e.preventDefault(); b.click(); } }
@@ -4850,7 +4840,6 @@ function topbar(){
   return `<div class="topbar"><div class="tb-in">
     <div class="tb-search" role="search">${ic('search')}<input id="topq" type="search" placeholder="Buscar compromissos, tarefas, notas, listas e contas" autocomplete="off" aria-label="Buscar" aria-controls="tb-res" value="${esc(ui.topq || '')}"><span class="kbd">/</span>
       <div class="tb-res" id="tb-res" role="listbox" hidden></div></div>
-    <button class="round" data-shortcuts aria-label="Atalhos de teclado" title="Atalhos de teclado (?)"><span style="font-weight:700">?</span></button>
     <button class="round bellbtn" data-inbox aria-label="Notificações${inbox.length ? ': ' + inbox.length + ' não lidas' : ''}" title="Notificações">${ic('bell')}${inbox.length ? `<span class="nbadge">${inbox.length > 9 ? '9+' : inbox.length}</span>` : ''}</button>
     <button class="round avatar" data-go="ajustes" aria-label="Ajustes" title="Ajustes">${esc(ini)}</button>
   </div></div>`;
@@ -4897,7 +4886,6 @@ function bindTopbar(){
       box.querySelectorAll('.tb-r').forEach((b, i) => b.classList.toggle('on', i === tbSel)); box.querySelector('.tb-r.on')?.scrollIntoView({ block: 'nearest' }); }
     else if (e.key === 'Enter'){ e.preventDefault(); tbOpen(tbList[tbSel]); }
   };
-  const sc = $('#view').querySelector('[data-shortcuts]'); if (sc) sc.onclick = openShortcuts;
 }
 
 // rodapé do menu lateral: quem está usando, plano, uso do assistente e atalhos
@@ -4908,9 +4896,8 @@ function sideFoot(){
   const ini = (S.name || 'Eu').trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
   el.innerHTML = `<button class="sf-me" data-sfgo aria-label="Minha conta e plano"><span class="round avatar">${esc(ini)}</span><span class="sf-tx"><b>${esc(nameCase(S.name || 'Você'))}</b><small>Plano ${plan === 'free' ? 'Grátis' : PLAN_NAME[plan] || plan}${fam && fam.group ? ' · ' + esc(fam.group.name) : ''}</small></span></button>
     ${pct != null ? `<button class="sf-q ${pct >= 100 ? 'full' : pct >= 75 ? 'warn' : ''}" data-plans="limite" aria-label="Uso do assistente hoje: ${pct}%"><span>Assistente hoje</span><span>${q.used} de ${q.limit}</span><span class="qb"><i style="width:${pct}%"></i></span></button>` : ''}
-    <button class="sf-keys" data-sfkeys><span class="kbd">N</span> novo <span class="kbd">/</span> buscar <span class="kbd">?</span> ajuda</button>`;
+    <div class="sf-keys"><span class="kbd">N</span> novo <span class="kbd">/</span> buscar</div>`;
   el.querySelector('[data-sfgo]').onclick = () => go('ajustes');
-  el.querySelector('[data-sfkeys]').onclick = openShortcuts;
   const pl = el.querySelector('[data-plans]'); if (pl) pl.onclick = () => openPlans('limite');
 }
 
