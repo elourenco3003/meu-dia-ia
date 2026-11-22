@@ -999,7 +999,7 @@ body.mouse .pchips button:hover{border-color:var(--accent)}
 .qt th.q-n{max-width:none}
 .q-mini .q-n{width:auto}
 .qn{display:flex;gap:9px;align-items:center;min-width:0}
-.qn b{font-weight:650;flex:0 1 auto;flex-shrink:.12;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qn b{font-weight:650;flex:0 0 auto;white-space:nowrap}
 .qn small{color:var(--fg2);font-size:12.5px;flex:1 1 auto;flex-shrink:8;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .qt .q-n{overflow:hidden}
 .q-logo{width:22px;height:22px;border-radius:5px;background:var(--accent-soft);color:var(--accent);font-size:9px;font-weight:700;display:grid;place-items:center;overflow:hidden;flex:none}
@@ -1082,7 +1082,7 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
   .q2{grid-template-columns:minmax(0,1fr) 316px;gap:16px}
   .q-r{height:calc(100vh - 82px);max-height:none;overflow:hidden}
   .q-r .inv-chart{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
-  .q-r .inv-chart .lc-box{flex:1 1 auto;min-height:70px}
+  .q-r .inv-chart .lc-box{flex:1 1 auto;min-height:110px}
   .q-r .inv-chart .lc-ax{flex:none}
 }
 @media (min-width:1500px){ .q2{grid-template-columns:minmax(0,1fr) 360px} }
@@ -2880,9 +2880,9 @@ async function openAsset(sym){
 }
 // gráfico de linha com escala de preço ao lado, linhas de grade e cursor (mouse ou dedo) mostrando o valor de cada dia
 const brD = s => { const [yy, mm, dd] = s.split('-'); return `${dd}/${mm}`; };
-function lineChart(pts, unit){
+function lineChart(pts, unit, cls){
   const vs = pts.map(p => p[1]), mn = Math.min(...vs), mx = Math.max(...vs);
-  return `<div class="lc-box" data-lc role="img" aria-label="Preço de ${brD(pts[0][0])} a ${brD(pts[pts.length - 1][0])}: mínimo R$ ${n2(mn)}, máximo R$ ${n2(mx)}"></div>
+  return `<div class="lc-box ${cls || ''}" data-lc role="img" aria-label="Preço de ${brD(pts[0][0])} a ${brD(pts[pts.length - 1][0])}: mínimo R$ ${n2(mn)}, máximo R$ ${n2(mx)}"></div>
     <div class="lc-ax"><span>máx ${unit ? n2(mx, 0) + ' ' + unit : 'R$ ' + n2(mx)}</span><span class="lc-hint">${matchMedia('(hover:hover)').matches ? 'Passe o mouse no gráfico para ver cada dia' : '⁠Toque e ⁠arraste no gráfico para ver cada dia'}</span><span>mín ${unit ? n2(mn, 0) + ' ' + unit : 'R$ ' + n2(mn)}</span></div>`;
 }
 function niceStep(raw){ const p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p; }
@@ -2891,17 +2891,11 @@ const CHART_DAY = { axis: brD, title: dt => { const [yy, mm, dd] = dt.split('-')
 function drawChart(box, pts, opt = CHART_DAY){
   if (!box) return;
   const baixa = innerHeight < 880, curta = innerHeight < 720;
-  // dentro do painel lateral o gráfico ocupa a altura que sobrar (nada de valor fixo)
-  const livre = (() => {
-    const pai = box.closest('.q-r'); if (!pai) return 0;
-    const alvo = box.parentElement;
-    let usado = 16;
-    [...pai.children].forEach(c => { if (c !== alvo) usado += c.getBoundingClientRect().height + 7; });
-    [...alvo.children].forEach(c => { if (c !== box) usado += c.getBoundingClientRect().height; });
-    return Math.floor(pai.getBoundingClientRect().height - usado);
-  })();
-  const padrao = W > 560 ? (baixa ? 210 : 300) : (curta ? 112 : baixa ? 132 : 220);
-  const W = Math.max(260, box.clientWidth), H = opt.h ? opt.h(W) : livre > 80 ? Math.max(100, Math.min(livre, 330)) : padrao, PL = 6, PR = 56, PT = 12, PB = 24;
+  const W = Math.max(260, box.clientWidth);
+  // no painel lateral o quadro do gráfico é elástico: usa a altura que ele tem agora
+  const elast = box.classList.contains('lc-fill') ? Math.round(box.getBoundingClientRect().height) : 0;
+  const padrao = W > 560 ? (baixa ? 210 : 300) : (curta ? 130 : baixa ? 150 : 220);
+  const H = opt.h ? opt.h(W) : elast > 80 ? Math.max(110, Math.min(elast, 340)) : padrao, PL = 6, PR = 56, PT = 12, PB = 24;
   const vs = pts.map(p => p[1]); let mn = Math.min(...vs), mx = Math.max(...vs);
   if (mx === mn){ mn -= 0.5; mx += 0.5; }
   const step = niceStep((mx - mn) / 4), lo = Math.floor(mn / step) * step, hi = Math.ceil(mx / step) * step;
@@ -5108,7 +5102,7 @@ async function addAsset(sym){
 async function paintAssetPanel(){
   const el = $('#inv-panel'), sym = ui.invSel; if (!el) return;
   const b = (mkt && mkt.bolsa) || {}, m = mkt && mkt.moedas;
-  const mini = `<table class="qt q-mini"><tbody>${[b.ibov && b.ibov.price != null && ['IBOV','Ibovespa', b.ibov.price, b.ibov.pct, 0], m && ['USD','Dólar', m.usd.value, m.usd.pct, 4], m && ['EUR','Euro', m.eur.value, m.eur.pct, 4]].filter(Boolean).map(([k, l, v, p, d]) =>
+  const mini = `<table class="qt q-mini"><tbody>${[b.ibov && b.ibov.price != null && ['IBOV','Ibovespa', b.ibov.price, b.ibov.pct, 0], m && ['USD','Dólar', m.usd.value, m.usd.pct, 2], m && ['EUR','Euro', m.eur.value, m.eur.pct, 2]].filter(Boolean).map(([k, l, v, p, d]) =>
     `<tr class="${k === 'IBOV' ? 'sel' : ''} ${k === sym ? 'on' : ''}" ${k === 'IBOV' ? 'data-panelsel="IBOV" tabindex="0"' : ''}><td class="q-n"><b>${l}</b></td><td>${n2(v, d)}</td><td class="${udCls(p)}"><b>${sgn(p)}%</b></td></tr>`).join('')}</tbody></table>`;
   if (!sym){ el.innerHTML = `<div class="q-empty">Escolha um ativo para ver o gráfico.</div>${mini}`; return; }
   let head, pts = [], opt = CHART_DAY, ranges = '', stats = '', note = 'Preço de fechamento de cada dia, em R$. Dados da B3 pela brapi.', hist = [];
@@ -5140,10 +5134,16 @@ async function paintAssetPanel(){
       <div class="ip-price"><b>${head.v}</b><span class="${udCls(head.p)}">${head.p != null ? sgn(Number(head.p)) + '% hoje' : ''}</span></div></div>
     ${sym !== 'IBOV' ? `<button class="q-follow ${head.wid ? 'on' : ''}" ${head.wid ? `data-unfollow="${head.wid.id}"` : `data-follow="${esc(sym)}"`}>${head.wid ? '★ Acompanhando' : '☆ Acompanhar em Meus ativos'}</button>` : ''}
     ${ranges}
-    <div class="inv-chart">${pts.length > 1 ? lineChart(pts, sym === 'IBOV' ? 'pts' : '') : `<div class="q-empty">${hist.length ? 'Ainda não há dados para esse período.' : sym === 'IBOV' ? 'O gráfico do Ibovespa aparece na próxima atualização do mercado.' : 'Sem histórico disponível para este ativo agora.'}</div>`}</div>
+    <div class="inv-chart">${pts.length > 1 ? lineChart(pts, sym === 'IBOV' ? 'pts' : '', 'lc-fill') : `<div class="q-empty">${hist.length ? 'Ainda não há dados para esse período.' : sym === 'IBOV' ? 'O gráfico do Ibovespa aparece na próxima atualização do mercado.' : 'Sem histórico disponível para este ativo agora.'}</div>`}</div>
     ${stats}<div class="foot">${note}</div>${mini}`;
   el.querySelectorAll('[data-rng]').forEach(x => x.onclick = () => { ui.invRange = x.dataset.rng; paintAssetPanel(); });
-  if (pts.length > 1){ ui.invPts = pts; drawChart(el.querySelector('[data-lc]'), pts, opt); }
+  if (pts.length > 1){
+    ui.invPts = pts;
+    const bx = el.querySelector('[data-lc]');
+    drawChart(bx, pts, opt);
+    // depois do layout a caixa já tem altura: redesenha no tamanho certo
+    requestAnimationFrame(() => { if (document.body.contains(bx)) drawChart(bx, pts, opt); });
+  }
   bindFollow(el);
   const ps = el.querySelector('[data-panelsel]'); if (ps) ps.onclick = () => { ui.invSel = 'IBOV'; $('#view').querySelectorAll('[data-invsel]').forEach(x => x.classList.toggle('on', x.dataset.invsel === 'IBOV')); paintAssetPanel(); };
 }
@@ -5255,15 +5255,19 @@ function paintEcoPanel(){
   if (!kinds.some(([s]) => s === ui.ecoSer)) ui.ecoSer = kinds[0] ? kinds[0][0] : null;
   const pts = ui.ecoSer ? series[ui.ecoSer] : [];
   const lbl = x => /^\d{4}-\d{2}-\d{2}$/.test(x) ? brD(x) : /^\d{4}-\d{2}$/.test(x) ? ymLbl(x).replace(/\/\d{2}(\d{2})$/, '/$1') : x;
-  const fmt = v => k === 'IBOV' ? `${n2(v, 0)} pts` : k === 'USD' || k === 'EUR' ? `R$ ${n2(v, 4)}` : `${n2(v)}%`;
+  const fmt = v => k === 'IBOV' ? `${n2(v, 0)} pts` : k === 'USD' || k === 'EUR' ? `R$ ${n2(v, 2)}` : `${n2(v)}%`;
   el.innerHTML = `<div class="ip-head"><div class="main"><b>${esc(info ? info.t : r.name)}</b><small>${esc(r.ref || '')}</small></div>
       <div class="ip-price"><b>${r.val}</b><span class="${udCls(r.day)}">${r.day != null ? sgn(Number(r.day)) + '% hoje' : esc(r.tag)}</span></div></div>
     ${info ? `<p class="eco-d">${esc(info.d)}</p><p class="eco-d eco-r">${esc(info.r)}</p>` : ''}
     ${kinds.length > 1 ? `<div class="rtabs" role="group" aria-label="Série">${kinds.map(([s, l]) => `<button data-ecoser="${s}" aria-pressed="${ui.ecoSer === s}">${l}</button>`).join('')}</div>` : kinds.length ? `<div class="rtabs"><button aria-pressed="true">${kinds[0][1]}</button></div>` : ''}
-    <div class="inv-chart">${pts.length > 1 ? '<div class="lc-box" data-lc role="img" aria-label="Histórico do indicador"></div><div class="lc-ax"><span></span><span class="lc-hint">Passe o mouse no gráfico para ver cada ponto</span><span></span></div>' : '<div class="q-empty">Sem histórico para este indicador.</div>'}</div>
+    <div class="inv-chart">${pts.length > 1 ? '<div class="lc-box lc-fill" data-lc role="img" aria-label="Histórico do indicador"></div><div class="lc-ax"><span></span><span class="lc-hint">Passe o mouse no gráfico para ver cada ponto</span><span></span></div>' : '<div class="q-empty">Sem histórico para este indicador.</div>'}</div>
     ${pts.length > 1 ? (() => { const vs = pts.map(p => p[1]); return `<div class="ip-stats"><div><small>Mais recente</small><b>${fmt(vs[vs.length - 1])}</b></div><div><small>Início do período</small><b>${fmt(vs[0])}</b></div><div><small>Mínimo</small><b>${fmt(Math.min(...vs))}</b></div><div><small>Máximo</small><b>${fmt(Math.max(...vs))}</b></div></div>`; })() : ''}`;
   el.querySelectorAll('[data-ecoser]').forEach(x => x.onclick = () => { ui.ecoSer = x.dataset.ecoser; paintEcoPanel(); });
-  if (pts.length > 1) drawChart(el.querySelector('[data-lc]'), pts, { axis: lbl, title: lbl, val: fmt, step: null, noRel: k !== 'IBOV' && k !== 'USD' && k !== 'EUR', color: k === 'IBOV' ? '' : 'var(--accent)' });
+  if (pts.length > 1){
+    const bx = el.querySelector('[data-lc]'), o = { axis: lbl, title: lbl, val: fmt, step: null, noRel: k !== 'IBOV' && k !== 'USD' && k !== 'EUR', color: k === 'IBOV' ? '' : 'var(--accent)' };
+    drawChart(bx, pts, o);
+    requestAnimationFrame(() => { if (document.body.contains(bx)) drawChart(bx, pts, o); });
+  }
 }
 function bindMercadoDesk(){
   const V = $('#view');
