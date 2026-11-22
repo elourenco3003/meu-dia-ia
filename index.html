@@ -406,6 +406,15 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 #alarm .al-knob{width:56px;height:56px;border-radius:50%;background:#fff;color:var(--bad);display:grid;place-items:center;flex:none;cursor:grab;box-shadow:0 4px 14px rgba(0,0,0,.25);touch-action:none;position:relative;z-index:1}
 #alarm .al-knob svg{width:28px;height:28px}
 #alarm .al-knob:focus-visible{outline:3px solid #fff;outline-offset:3px}
+/* "me dê uns minutos": deslizar para adiar, igual à soneca do celular */
+.sl{position:relative;height:56px;border-radius:28px;background:var(--fill);display:flex;align-items:center;padding:4px;touch-action:none;user-select:none;-webkit-user-select:none}
+.sl-t{position:absolute;inset:0;display:grid;place-items:center;font-size:15.5px;font-weight:700;color:var(--fg2);padding-left:36px;pointer-events:none}
+.sl-k{width:48px;height:48px;border-radius:50%;background:var(--card);color:var(--accent);display:grid;place-items:center;flex:none;cursor:grab;box-shadow:0 3px 10px rgba(0,0,0,.18);touch-action:none;position:relative;z-index:1}
+.sl-k svg{width:24px;height:24px}
+.sl-k:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+#alarm .sl{height:60px;border-radius:30px;background:rgba(0,0,0,.18)}
+#alarm .sl-t{color:#fff;font-size:16px}
+#alarm .sl-k{width:52px;height:52px;background:rgba(255,255,255,.94);color:var(--bad)}
 @keyframes alarmpulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
 @media (prefers-reduced-motion:reduce){#alarm{animation:none}}
 #sheet{position:fixed;inset:0;z-index:60;background:var(--scrim);display:flex;align-items:flex-end;justify-content:center}
@@ -1263,6 +1272,13 @@ function play(cat, force){
 let alarmEl = null, alarmReady = false, alarmVib = null, alarmStopT = null;
 // toques do alarme, todos gerados no aparelho (2 s, repetem em loop). O app não tem acesso aos toques do celular.
 const ALARM_TONES = { sirene:'Sirene', despertador:'Despertador', bipe:'Bipe digital', sino:'Sino', marimba:'Marimba', subida:'Subida' };
+/* "me dê uns minutos": quanto tempo cada alarme espera antes de voltar */
+const SNOOZE_OPTS = [5, 10, 15, 20, 30];
+const snoozeMin = k => { try { const v = Number(localStorage.getItem('meudia.snooze' + k)); return SNOOZE_OPTS.includes(v) ? v : (k === 'Med' ? 10 : 5); } catch(e) { return k === 'Med' ? 10 : 5; } };
+// grava no servidor: o alerta volta na hora marcada mesmo com o app fechado
+function snoozeSave(kind, ref, min){
+  persist(sb.from('alert_snoozes').insert({ kind, ref, due_at: new Date(Date.now() + min * 60e3).toISOString() }).then(r => { if (r.error) throw r.error; }));
+}
 const alarmTone = () => { try { const t = localStorage.getItem('meudia.alarmTone'); return ALARM_TONES[t] ? t : 'sirene'; } catch(e) { return 'sirene'; } };
 const toneCache = {};
 function toneSamples(kind, sr){
@@ -1314,14 +1330,22 @@ function alarmFire(e, test){
   let el = $('#alarm');
   if (!el){ el = document.createElement('div'); el.id = 'alarm'; el.setAttribute('role', 'alertdialog'); el.setAttribute('aria-label', 'Hora de sair'); document.body.appendChild(el); }
   const arrive = e ? `${e.time}` : '';
+  // só deixa adiar enquanto ainda sobra tempo de chegar
+  const minAdiar = snoozeMin('Go');
+  const podeAdiar = !!e && !test && new Date(`${e.date}T${e.time}`).getTime() > Date.now() + (minAdiar + 1) * 60e3;
   el.innerHTML = `<div class="al-ic">${ic('nav')}</div><div class="al-big">Saia já!</div>
     ${e ? `<div class="al-t">${esc(e.title)}</div><div class="al-s">${e.tmin ? `${e.tmin} min de viagem até ${esc(e.plabel || e.place)}. ` : ''}Começa às ${arrive}.</div>` : '<div class="al-s">Teste do alarme. É assim que ele toca na hora de sair.</div>'}
     <div class="al-go">${e ? `<a class="al-waze" href="${wazeUrl(e)}" target="_blank" rel="noopener" data-al="waze">${ic('nav')}Abrir no Waze</a>` : ''}
+      ${podeAdiar ? `<div class="sl" id="al-snooze"><span class="sl-t">Deslize: me dê ${minAdiar} min</span><span class="sl-k" role="slider" tabindex="0" aria-label="Deslize para a direita para adiar ${minAdiar} minutos" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">${ic('repeat')}</span></div>` : ''}
       <div class="al-slide" id="al-slide"><span class="al-slide-t">Deslize para parar</span><span class="al-knob" role="slider" tabindex="0" aria-label="Deslize para a direita para parar o alarme" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">${ic('r')}</span></div></div>`;
   el.hidden = false;
   const stop = () => alarmStop(test ? null : e);
   el.querySelectorAll('[data-al]').forEach(b => b.onclick = stop);
   bindSlide(el.querySelector('#al-slide'), stop);
+  if (podeAdiar) bindSlide(el.querySelector('#al-snooze'), () => {
+    snoozeSave('sairja', e.id, minAdiar); alarmStop(e);
+    toast(`Tudo bem. Aviso de novo em ${minAdiar} min.`);
+  });
   try {
     alarmEl = alarmEl || Object.assign(new Audio(sirenUrl()), { loop:true, preload:'auto' });
     if (alarmEl.src !== sirenUrl()) alarmEl.src = sirenUrl();
@@ -1342,9 +1366,9 @@ function previewTone(kind){
 }
 // "deslize para parar", igual ao despertador do celular
 function bindSlide(box, done){
-  const knob = box.querySelector('.al-knob'); let x0 = null, x = 0;
+  const knob = box.querySelector('.al-knob, .sl-k'); let x0 = null, x = 0;
   const max = () => box.clientWidth - knob.offsetWidth - 8;
-  const set = (v, anim) => { x = Math.max(0, Math.min(v, max())); knob.style.transition = anim ? 'transform .25s ease' : 'none'; knob.style.transform = `translateX(${x}px)`; box.querySelector('.al-slide-t').style.opacity = String(1 - x / max()); knob.setAttribute('aria-valuenow', String(Math.round(x / max() * 100))); };
+  const set = (v, anim) => { x = Math.max(0, Math.min(v, max())); knob.style.transition = anim ? 'transform .25s ease' : 'none'; knob.style.transform = `translateX(${x}px)`; box.querySelector('.al-slide-t, .sl-t').style.opacity = String(1 - x / max()); knob.setAttribute('aria-valuenow', String(Math.round(x / max() * 100))); };
   knob.addEventListener('pointerdown', ev => { x0 = ev.clientX - x; knob.setPointerCapture(ev.pointerId); ev.preventDefault(); });
   knob.addEventListener('pointermove', ev => { if (x0 !== null) set(ev.clientX - x0); });
   const end = () => { if (x0 === null) return; x0 = null; if (x >= max() * .8){ set(max(), true); setTimeout(done, 150); } else set(0, true); };
@@ -2039,6 +2063,7 @@ function bindView(){
     try { localStorage.setItem('meudia.theme', JSON.stringify(c)); } catch(e) {} applyTheme(); render(); }; });
   const at = $('#alarm-test'); if (at) at.onclick = () => alarmFire(null, true);
   const atn = $('#alarm-tone'); if (atn) atn.onchange = () => { try { localStorage.setItem('meudia.alarmTone', atn.value); } catch(e) {} previewTone(atn.value); };
+  [['snooze-go','Go'],['snooze-med','Med']].forEach(([id, k]) => { const sel = $('#' + id); if (sel) sel.onchange = () => { try { localStorage.setItem('meudia.snooze' + k, sel.value); } catch(e) {} toast(`Adiamento de ${sel.value} min`); }; });
   const st = $('#set-travel'); if (st) st.onchange = () => { S.travel_on = st.checked; saveProfile(); };
   const pa = $('#pref-arr'); if (pa) pa.onchange = () => { S.travel_arrive = Number(pa.value); saveProfile(); S.events.forEach(e => { if (e.date >= today() && e.place){ e.tsrc = ''; e.leave = null; } }); persist(sb.from('events').update({ travel_checked_at: null }).gte('date', today()).neq('place', '').then(r => { if (r.error) throw r.error; })); };
   const nm = $('#set-name'); if (nm) nm.oninput = () => { S.name = nameCase(nm.value); saveProfile(); };
@@ -3751,6 +3776,7 @@ function openDose(ref){
   const t = hhmm && hhmm.length === 4 ? `${hhmm.slice(0, 2)}:${hhmm.slice(2)}` : (hhmm || '');
   const r = (S.rots || []).find(x => x.id === id);
   if (!r){ doseAlarm(false); toast('Esse remédio não está mais cadastrado.'); return; }
+  const minAdiar = snoozeMin('Med');
   const el = $('#sheet');
   el.innerHTML = `<div class="pane" role="alertdialog" aria-modal="true" aria-label="Tomou o remédio?">
     <div class="bar"><span style="min-width:70px"></span><b>Tomou o remédio?</b><span style="min-width:70px"></span></div>
@@ -3762,16 +3788,23 @@ function openDose(ref){
       </div>
       <div class="group" style="margin-top:12px">
         <button class="row dose-b ok" data-dose="feito">${ic('ok')}<span class="main t">Tomei agora</span></button>
-        <button class="row dose-b" data-dose="adiar">${ic('repeat')}<span class="main t">Adiar 10 minutos</span></button>
         <button class="row dose-b" data-dose="pulado">${ic('info')}<span class="main t">Pulei esta dose</span></button>
-      </div></div></div>`;
+      </div>
+      <div class="sl" id="dose-snooze" style="margin-top:12px"><span class="sl-t">Deslize: me dê ${minAdiar} min</span><span class="sl-k" role="slider" tabindex="0" aria-label="Deslize para a direita para adiar ${minAdiar} minutos" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">${ic('repeat')}</span></div>
+      <div class="foot">Adiando, o aviso volta em ${minAdiar} min, mesmo com o app fechado. Você muda esse tempo em Ajustes › Alertas.</div>
+      </div></div>`;
   el.hidden = false;
   const close = () => { doseAlarm(false); el.hidden = true; el.innerHTML = ''; };
   el.onclick = e => { if (e.target === el) close(); };
   el.querySelectorAll('[data-dose]').forEach(b => b.onclick = () => {
     const a = b.dataset.dose;
-    if (a === 'adiar'){ close(); toast('Aviso de novo em 10 minutos.'); setTimeout(() => { if (!rotLog(id, t)){ doseAlarm(true); openDose(ref); } }, 10 * 60e3); return; }
     rotMark(id, t, a); close(); toast(a === 'feito' ? 'Dose confirmada' : 'Dose pulada');
+  });
+  bindSlide(el.querySelector('#dose-snooze'), () => {
+    snoozeSave('remedio', `${id}:${t.replace(':', '')}`, minAdiar);
+    close(); toast(`Tudo bem. Aviso de novo em ${minAdiar} min.`);
+    // reserva, caso o alerta do servidor não chegue e o app continue aberto
+    setTimeout(() => { if (!rotLog(id, t) && $('#sheet').hidden){ doseAlarm(true); openDose(ref); } }, minAdiar * 60e3);
   });
 }
 // cartão no Início quando passou da hora e a dose segue sem resposta
@@ -3862,6 +3895,10 @@ function travelSection(){
     ${addrRow('home', 'Casa')}${addrRow('work', 'Trabalho')}
     <label class="row" for="alarm-tone"><span class="main"><div class="t">Toque do alarme "Saia já"</div><div class="s">Ao trocar, toca uma amostra</div></span>
       <select class="field-in" id="alarm-tone">${Object.entries(ALARM_TONES).map(([k, l]) => `<option value="${k}" ${alarmTone() === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+    <label class="row" for="snooze-go"><span class="main"><div class="t">Adiar o "Saia já" por</div><div class="s">Ao deslizar "me dê uns minutos"; só enquanto dá tempo de chegar</div></span>
+      <select class="field-in" id="snooze-go">${SNOOZE_OPTS.map(m => `<option value="${m}" ${snoozeMin('Go') === m ? 'selected' : ''}>${m} min</option>`).join('')}</select></label>
+    <label class="row" for="snooze-med"><span class="main"><div class="t">Adiar o remédio por</div><div class="s">Ao deslizar "me dê uns minutos" na pergunta da dose</div></span>
+      <select class="field-in" id="snooze-med">${SNOOZE_OPTS.map(m => `<option value="${m}" ${snoozeMin('Med') === m ? 'selected' : ''}>${m} min</option>`).join('')}</select></label>
     <button class="row" id="alarm-test"><span class="main"><div class="t">Testar o alarme completo</div><div class="s">Tela cheia, som alto e deslize para parar</div></span>${ic('r','i chev')}</button>
   </div><div class="foot">Na hora exata de sair, o app dispara um alarme alto, com o toque que você escolher, até você deslizar para parar. Com o app aberto, ele toca mesmo com o celular no silencioso (iPhone). Com o app fechado, chega a notificação com o som do celular. Calculo o tempo de viagem com trânsito e aviso no celular 10 min antes da hora de sair, com o atalho para o Waze. Em dia útil das 10h às 18h considero a saída do Trabalho; nos outros horários, de Casa. Se você abriu o app nas últimas 2 horas, uso onde você está. Cada compromisso pode escolher "Sair de".</div></section>`;
 }
@@ -4482,7 +4519,7 @@ async function testPush(){
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => {
   const d = e.data || {};
   if (d.type === 'push') setTimeout(loadInbox, 1500);
-  if (d.type === 'push' && d.kind === 'sairja'){ const ev = S.events.find(x => x.id === d.ref); alarmFire(ev || null); return; }
+  if (d.type === 'push' && d.kind === 'sairja'){ const ev = S.events.find(x => x.id === String(d.ref || '').split(':')[0]); alarmFire(ev || null); return; }
   if (d.type === 'push' && d.kind === 'remedio'){ doseAlarm(true); openDose(String(d.ref || '').split(':').slice(0, 2).join(':')); return; }
   if (d.type === 'push' && document.visibilityState === 'visible' && TONES[d.kind] && !sysSound()) play(d.kind);
   if (d.type === 'open' && d.url){ const q = new URL(d.url, location.origin).searchParams, r = q.get('rota'), li = q.get('lista'), ds = q.get('dose'), rt = q.get('rotina');
