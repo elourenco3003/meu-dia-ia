@@ -1093,8 +1093,9 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 @media (max-width:1299px){ .q2{grid-template-columns:minmax(0,1fr)} .q-r{position:static} .q-add{width:260px} }
 /* duas colunas: painel com a altura da tela e gráfico elástico */
 @media (min-width:1300px){
-  .q2{grid-template-columns:minmax(0,1fr) 316px;gap:16px}
-  .q-r{height:calc(100vh - 82px);max-height:none;overflow:hidden}
+  .q2{grid-template-columns:minmax(0,1fr) 316px;gap:16px;align-items:stretch;height:var(--q2h,auto)}
+  .q-l{min-height:0;display:flex;flex-direction:column;overflow:hidden}
+  .q-r{position:static;height:100%;max-height:none;overflow:hidden}
   .q-r .inv-chart{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
   .q-r .inv-chart .lc-box{flex:1 1 auto;min-height:72px}
   .q-r .ip-stats{flex:none}
@@ -5167,6 +5168,14 @@ function bindFollow(root){
   root.querySelectorAll('[data-follow]').forEach(x => x.onclick = async e => { e.stopPropagation(); x.disabled = true; const ok = await addAsset(x.dataset.follow); if (ok || true) render(); });
   root.querySelectorAll('[data-unfollow]').forEach(x => x.onclick = e => { e.stopPropagation(); swipeDelete('ativo:' + x.dataset.unfollow); });
 }
+/* altura das colunas: o que sobra da janela a partir de onde elas começam (medido, não chutado) */
+function fitPanel(){
+  const q = $('#view') && $('#view').querySelector('.q2'); if (!q) return;
+  if (innerWidth < 1300){ q.style.removeProperty('--q2h'); return; }
+  q.style.removeProperty('--q2h');                       // mede sem a altura antiga atrapalhar
+  const topo = q.getBoundingClientRect().top;
+  q.style.setProperty('--q2h', Math.max(240, Math.floor(innerHeight - topo - 12)) + 'px');
+}
 /* quantas linhas cabem sem rolar: mede a tela de verdade e repagina uma vez (nada de número fixo) */
 function fitRows(chave){
   const V = $('#view'), tb = V && V.querySelector('table.qt'); if (!tb) return;
@@ -5195,7 +5204,7 @@ function bindInvestDesk(){
     r.onkeydown = e => { if (e.key === 'Enter') r.click(); }; });
   bindFollow(V.querySelector('.q-l'));
   paintAssetPanel();
-  requestAnimationFrame(() => fitRows('inv'));
+  requestAnimationFrame(() => { fitPanel(); fitRows('inv'); });
 }
 /* ----- Economia no computador: mesmo padrão de Investimentos (abas, filtros, tabela e painel com gráfico) ----- */
 function ecoRows(){
@@ -5291,7 +5300,7 @@ function bindMercadoDesk(){
   V.querySelectorAll('[data-ecotab]').forEach(x => x.onclick = () => { ui.ecoTab = x.dataset.ecotab; ui.ecoPage = 0; ui.fitLast = {}; render(); });
   const eb = V.querySelector('[data-ecobolsa]'); if (eb) eb.onclick = () => { ui.invMain = 'mercado'; ui.mkTab = 'negociadas'; ui.invPage = 0; ui.invSel = null; go('invest'); };
   V.querySelectorAll('[data-ecopg]').forEach(b => b.onclick = () => { ui.ecoPage = (ui.ecoPage || 0) + Number(b.dataset.ecopg); render(); });
-  requestAnimationFrame(() => fitRows('eco'));
+  requestAnimationFrame(() => { fitPanel(); fitRows('eco'); });
   V.querySelectorAll('[data-ecosel]').forEach(r => { r.onclick = () => { ui.ecoSel = r.dataset.ecosel; V.querySelectorAll('[data-ecosel]').forEach(x => x.classList.toggle('on', x === r)); paintEcoPanel(); };
     r.onkeydown = e => { if (e.key === 'Enter') r.click(); }; });
   paintEcoPanel();
@@ -5303,7 +5312,7 @@ function fitCols(){
   const n = wr.querySelectorAll(':scope > section').length, c = Math.max(1, Math.min(n, Math.floor(wr.clientWidth / 360)));
   wr.style.gridTemplateColumns = `repeat(${c},minmax(0,1fr))`;
 }
-let fitRz = 0; addEventListener('resize', () => { clearTimeout(fitRz); fitRz = setTimeout(() => { ui.per = {}; ui.fitLast = {}; fitCols(); if (view === 'invest' && desk() && ui.invPts && document.activeElement !== $('#inv-in')) render(); }, 150); });
+let fitRz = 0; addEventListener('resize', () => { clearTimeout(fitRz); fitRz = setTimeout(() => { ui.per = {}; ui.fitLast = {}; fitPanel(); fitCols(); if (view === 'invest' && desk() && ui.invPts && document.activeElement !== $('#inv-in')) render(); }, 150); });
 /* ----- Agenda no computador: semana em 7 colunas e mês com os compromissos nas células ----- */
 function agendaItems(d){
   return [
