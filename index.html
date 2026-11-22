@@ -349,6 +349,7 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 .sum .acc{min-width:0;width:100%}
 @media (max-width:420px){.sum .v{font-size:13.5px}.sum>div{padding:12px 10px}}
 .pay{font-size:12.5px;font-weight:700;color:var(--accent);padding:6px 11px;border-radius:999px;background:var(--accent-soft);flex:none}
+.pay.del{color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)}
 .switch{position:relative;width:51px;height:31px;flex:none}
 .switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
 .switch span{position:absolute;inset:0;border-radius:999px;background:var(--fill);transition:background .2s}
@@ -1112,7 +1113,10 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 .dh2{display:flex;gap:16px;align-items:stretch}
 .dh2 .askbox{flex:1;margin:0;max-width:none} .dh2 .leave-card{flex:none;width:min(480px,46%);margin:0} .dh2 .leave-card .lc-s{white-space:normal}
 .kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
-.kboard{display:flex;gap:14px;align-items:stretch;min-width:0}
+.kboard{display:flex;gap:14px;align-items:stretch;min-width:0;height:var(--kbh,auto)}
+.kcol{min-height:0}
+.kcards{overflow:hidden}
+.k-more{flex:none;font-size:11.5px;font-weight:600;color:var(--fg2);padding:4px 6px;text-align:center}
 .kcol{flex:1 1 0;min-width:0;background:color-mix(in srgb,var(--fg) 5%,var(--bg));border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;border:2px solid transparent}
 .kcol.over{border-color:var(--accent);background:var(--accent-soft)}
 .kcol header{display:flex;align-items:center;justify-content:space-between;padding:2px 4px}
@@ -1122,6 +1126,7 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 .kcards{display:flex;flex-direction:column;gap:8px;min-height:44px;flex:1}
 .kc{display:flex;gap:6px;align-items:flex-start;background:var(--card);border-radius:8px;box-shadow:0 1px 2px rgba(20,24,60,.12);border-left:4px solid var(--accent);padding:8px 8px 8px 10px;cursor:grab}
 .kc.k-rem{border-left-color:var(--fg2)} .kc.k-task{border-left-color:var(--mint)} .kc.k-fin{border-left-color:#E3A23B}
+.kc.k-med{border-left-color:#C77C2E} .kc.k-rot{border-left-color:var(--accent-2)}
 .kc.dragging{opacity:.45}
 body.mouse .kc:hover{box-shadow:0 3px 10px rgba(20,24,60,.18)}
 .kc-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;text-align:left;cursor:inherit}
@@ -1537,6 +1542,13 @@ function swipeDelete(key){
     restore = () => S.notes.push(n); commit = () => sb.from('notes').delete().eq('id', id); label = 'Nota excluída'; }
   else if (k === 'ativo'){ const a = (S.watch || []).find(x => x.id === id); if (!a) return; S.watch = S.watch.filter(x => x !== a);
     restore = () => { S.watch.push(a); S.watch.sort((x, y) => String(x.created_at).localeCompare(String(y.created_at))); }; commit = () => sb.from('watchlist').delete().eq('id', id); label = `${esc(a.symbol)} removido`; }
+  else if (k === 'arqev' || k === 'arqrem'){
+    const kk = k === 'arqev' ? 'ev' : 'rem', A = ARQ[kk];
+    const it = (S.arq || []).find(x => x.k === kk && x.id === id); if (!it) return;
+    S.arq = S.arq.filter(x => x !== it);
+    restore = () => { S.arq.push(it); S.arq.sort((a, b) => String(b.at).localeCompare(String(a.at))); };
+    commit = () => sb.from(A.table).delete().eq('id', id);
+    label = `${A.n} excluído de vez`; }
   else if (k === 'rem' || k === 'ev'){ return archiveItem(k, id); }
   else return;
   render();
@@ -1615,12 +1627,16 @@ async function loadArq(){
 function vArq(){
   if (!S.arq || Date.now() - (S.arqAt || 0) > 60e3) loadArq();
   const l = S.arq || [];
-  return `${back()}<div class="head"><div><h1 class="lt">Arquivados</h1><div class="sub">Compromissos e lembretes que saíram da agenda</div></div></div>
-  <div class="group">${l.length ? l.map(x => `<div class="row"><button class="main" data-reopen="${x.k}:${x.id}" style="text-align:left"><div class="t">${esc(x.title)}${x.done ? ' <span class="chip good">Concluído</span>' : ''}</div>
+  const t = today(), passados = l.filter(x => x.date < t).length;
+  return `${back()}<div class="head"><div><h1 class="lt">Arquivados</h1><div class="sub">Compromissos e lembretes que saíram da agenda</div></div>
+    ${passados ? `<button class="icon-btn" id="arq-limpa" aria-label="Excluir os que já passaram" title="Excluir os que já passaram">${ic('trash')}</button>` : ''}</div>
+  ${passados ? `<div class="group"><button class="row" id="arq-limpa2"><span class="set-ic">${ic('trash')}</span><span class="main"><div class="t">Excluir os que já passaram</div><div class="s">${passados} ${passados === 1 ? 'item com data anterior a hoje' : 'itens com data anterior a hoje'}</div></span>${ic('r','i chev')}</button></div>` : ''}
+  <div class="group">${l.length ? l.map(x => `<div class="row" data-swipe="arq${x.k}:${x.id}"><button class="main" data-reopen="${x.k}:${x.id}" style="text-align:left"><div class="t">${esc(x.title)}${x.done ? ' <span class="chip good">Concluído</span>' : ''}</div>
       <div class="s">${rel(x.date)}${x.time ? ' às ' + x.time : ''}${x.sub ? ' · ' + esc(x.sub) : ''} · arquivado ${agoTxt(x.at)}</div></button>
-      <button class="pay" data-unarq="${x.k}:${x.id}">Restaurar</button></div>`).join('')
+      <button class="pay" data-unarq="${x.k}:${x.id}">Restaurar</button>
+      <button class="pay del" data-delarq="${x.k}:${x.id}">Excluir</button></div>`).join('')
     : `<div class="empty">${S.arq ? 'Nada arquivado ainda. Arraste um compromisso para o lado na agenda, ou confirme em "Como foi?".' : 'Carregando…'}</div>`}</div>
-  <div class="foot">Restaurar devolve o item para a agenda na mesma data. Para apagar de vez, restaure e exclua pelo próprio item.</div>`;
+  <div class="foot">Restaurar devolve o item para a agenda na mesma data. Para apagar de vez, deslize o item para o lado ou use Excluir — dá tempo de desfazer.</div>`;
 }
 function bindArq(){
   $('#view').querySelectorAll('[data-unarq]').forEach(b => b.onclick = async () => {
@@ -1631,6 +1647,26 @@ function bindArq(){
     await loadAll(); render(); toast(`${A.n} de volta na agenda`);
   });
   $('#view').querySelectorAll('[data-reopen]').forEach(b => b.onclick = () => toast('Restaure o item para abrir e editar.'));
+  // excluir de vez: o primeiro toque pergunta, o segundo faz
+  $('#view').querySelectorAll('[data-delarq]').forEach(b => b.onclick = () => {
+    if (!b.dataset.sure){ b.dataset.sure = 1; b.textContent = 'Confirmar'; setTimeout(() => { if (b.dataset.sure){ delete b.dataset.sure; b.textContent = 'Excluir'; } }, 4000); return; }
+    swipeDelete('arq' + b.dataset.delarq);
+  });
+  const limpa = async b => {
+    if (!b.dataset.sure){ b.dataset.sure = 1; const q = b.querySelector('.t'); if (q) q.textContent = 'Toque de novo para excluir'; setTimeout(() => { if (b.dataset.sure){ delete b.dataset.sure; if (q) q.textContent = 'Excluir os que já passaram'; } }, 4000); return; }
+    const t = today(), velhos = (S.arq || []).filter(x => x.date < t);
+    if (!velhos.length) return;
+    S.arq = (S.arq || []).filter(x => x.date >= t); render();
+    const por = k => velhos.filter(x => x.k === k).map(x => x.id);
+    for (const k of ['ev', 'rem']){
+      const ids = por(k); if (!ids.length) continue;
+      const { error } = await sb.from(ARQ[k].table).delete().in('id', ids);
+      if (error){ toast('Não consegui excluir tudo agora.'); loadArq(); return; }
+    }
+    toast(`${velhos.length} ${velhos.length === 1 ? 'item excluído' : 'itens excluídos'}`);
+  };
+  const b1 = $('#arq-limpa2'); if (b1) b1.onclick = () => limpa(b1);
+  const b2 = $('#arq-limpa'); if (b2) b2.onclick = () => { const alvo = $('#arq-limpa2'); if (alvo) { alvo.scrollIntoView({ block:'nearest' }); limpa(alvo); } };
 }
 
 /* ---------- cálculos ---------- */
@@ -4936,6 +4972,8 @@ function vHomeDesk(P, hp, items, card){
   const all = [
     ...S.events.map(e => ({ k:'ev', id:e.id, d:e.date, tm:e.time || '', title:e.title, sub:e.place || '', done:!!e.done, lv:e.leave && hasLeave(e) ? e : null })),
     ...S.rems.map(r => ({ k:'rem', id:r.id, d:r.date, tm:r.time || '', title:r.title, sub:'', done:!!r.done })),
+    ...rotAgenda().map(x => ({ k: x.r.kind === 'remedio' ? 'med' : 'rot', id:`${x.r.id}:${x.t.replace(':', '')}`, d:t, tm:x.t, title:x.r.title,
+                               sub: x.r.dose || '', done: !!x.log && x.log.status !== 'pulado' })),
     ...S.tasks.filter(x => !x.parent).map(x => ({ k:'task', id:x.id, d:x.due || '', tm:'', title:x.title, sub:x.pri === 'alta' ? 'Prioridade alta' : '', done:!!x.done, hi:x.pri === 'alta' })),
     ...S.fin.filter(f => f.type === 'conta').map(f => ({ k:'fin', id:f.id, d:f.date, tm:'', title:f.title, sub:'', done:!!f.paid, cents:f.cents })),
   ];
@@ -4945,12 +4983,13 @@ function vHomeDesk(P, hp, items, card){
   const by = { late:[], hoje:[], amanha:[], prox:[], semdata:[], feito:[] };
   all.forEach(c => { const k = colOf(c); if (k) by[k].push(c); });
   Object.values(by).forEach(l => l.sort((x, y) => x.d.localeCompare(y.d) || (x.tm || '99').localeCompare(y.tm || '99')));
-  const TAG = { ev:'Compromisso', rem:'Lembrete', task:'Tarefa', fin:'Conta' };
+  const TAG = { ev:'Compromisso', rem:'Lembrete', task:'Tarefa', fin:'Conta', med:'Remédio', rot:'Rotina' };
   const kcard = c => { const x = c.d ? fromIso(c.d) : null;
-    return `<div class="kc k-${c.k} ${c.done ? 'done' : ''}" draggable="true" data-card="${c.k}:${c.id}">
-      <button class="kc-main" data-edit="${c.k}:${c.id}"><span class="kc-tag">${TAG[c.k]}${c.hi ? ' · alta' : ''}</span><b>${esc(c.title)}</b>
+    const fixo = c.k === 'med' || c.k === 'rot';          // dose tem hora marcada: não se arrasta de dia
+    return `<div class="kc k-${c.k} ${c.done ? 'done' : ''}" ${fixo ? '' : 'draggable="true"'} ${fixo ? '' : `data-card="${c.k}:${c.id}"`}>
+      <button class="kc-main" ${fixo ? `data-dosecard="${c.id}"` : `data-edit="${c.k}:${c.id}"`}><span class="kc-tag">${TAG[c.k]}${c.hi ? ' · alta' : ''}</span><b>${esc(c.title)}</b>
         <span class="kc-meta">${[c.d && c.d !== t && c.d !== tm ? `${DOW[x.getDay()]} ${pad(x.getDate())}/${pad(x.getMonth() + 1)}` : '', c.tm, c.k === 'fin' ? 'R$ ' + brl(c.cents) : '', c.sub ? esc(c.sub) : ''].filter(Boolean).join(' · ')}${c.lv ? ` <span class="lv">· sair ${fmtHM(c.lv.leave)}</span>` : ''}</span></button>
-      <button class="kc-ck ${c.done ? 'on' : ''}" ${c.k === 'fin' ? (c.done ? 'disabled' : `data-pay="${c.id}"`) : `data-toggle="${c.k}:${c.id}"`} title="${c.k === 'fin' ? 'Marcar como paga' : c.done ? 'Reabrir' : 'Concluir'}" aria-label="${c.k === 'fin' ? 'Marcar como paga' : c.done ? 'Reabrir' : 'Concluir'}: ${esc(c.title)}">${ic('ok')}</button></div>`; };
+      <button class="kc-ck ${c.done ? 'on' : ''}" ${c.k === 'fin' ? (c.done ? 'disabled' : `data-pay="${c.id}"`) : (c.k === 'med' || c.k === 'rot') ? `data-dosecard="${c.id}"` : `data-toggle="${c.k}:${c.id}"`} title="${c.k === 'fin' ? 'Marcar como paga' : c.done ? 'Reabrir' : 'Concluir'}" aria-label="${c.k === 'fin' ? 'Marcar como paga' : c.done ? 'Reabrir' : 'Concluir'}: ${esc(c.title)}">${ic('ok')}</button></div>`; };
   const col = (k, title, add) => `<section class="kcol kcol-${k}" data-col="${k}" aria-label="${title}"><header><b>${title}</b><span>${by[k].length}</span></header>
     <div class="kcards">${by[k].map(kcard).join('') || `<div class="k-empty">${k === 'feito' ? 'Arraste para cá o que terminar' : 'Nada aqui'}</div>`}</div>
     ${add ? `<button class="k-add" data-kadd="${add}">${ic('plus')}Adicionar</button>` : ''}</section>`;
@@ -4969,11 +5008,37 @@ function vHomeDesk(P, hp, items, card){
   ${hp.programacao ? `<div class="kboard" aria-label="Quadro do dia">
     ${by.late.length ? col('late', 'Atrasado') : ''}${col('hoje', 'Hoje', t)}${col('amanha', 'Amanhã', tm)}${col('prox', 'Próximos dias')}${by.semdata.length ? col('semdata', 'Tarefas sem data') : ''}${col('feito', 'Concluído hoje')}
   </div><div class="foot">Arraste um cartão para Hoje ou Amanhã para mudar a data, ou para Concluído hoje quando terminar. Clique no cartão para abrir.</div>` : ''}
-  ${hp.noticias && nlist.length ? `<section class="dnews"><div class="sh"><span class="live-h"><i></i>Notícias de economia · ${hm(nw.updated_at)}</span><button data-act="news-eco">Ver todas</button></div>${newsCards(nlist, 6)}</section>` : ''}`;
+  ${hp.noticias && nlist.length && !hp.programacao ? `<section class="dnews"><div class="sh"><span class="live-h"><i></i>Notícias de economia · ${hm(nw.updated_at)}</span><button data-act="news-eco">Ver todas</button></div>${newsCards(nlist, 6)}</section>` : ''}`;
 }
+/* o quadro ocupa o que sobra da janela; o que não couber vira "+N" no pé da coluna */
+function fitBoard(){
+  const V = $('#view'), b = V && V.querySelector('.kboard'); if (!b) return;
+  if (innerWidth < 900){ b.style.removeProperty('--kbh'); return; }
+  b.style.removeProperty('--kbh');
+  const topo = b.getBoundingClientRect().top;
+  b.style.setProperty('--kbh', Math.max(240, Math.floor(innerHeight - topo - 14)) + 'px');
+  b.querySelectorAll('.kcards').forEach(box => {
+    box.querySelectorAll('.k-more').forEach(x => x.remove());
+    const cards = [...box.children].filter(c => c.classList.contains('kc'));
+    cards.forEach(c => c.style.display = '');
+    const pe = box.getBoundingClientRect().bottom - 2;
+    let cabe = cards.length;
+    for (let i = 0; i < cards.length; i++) if (cards[i].getBoundingClientRect().bottom > pe){ cabe = i; break; }
+    if (cabe < cards.length){
+      const mostra = Math.max(1, cabe - 1), resto = cards.length - mostra;
+      cards.slice(mostra).forEach(c => c.style.display = 'none');
+      const d = document.createElement('div');
+      d.className = 'k-more'; d.textContent = `+${resto} ${resto === 1 ? 'cartão' : 'cartões'}`;
+      box.appendChild(d);
+    }
+  });
+}
+let kbRz = 0; addEventListener('resize', () => { clearTimeout(kbRz); kbRz = setTimeout(fitBoard, 140); });
 // arrastar cartões entre as colunas do quadro
 function bindBoard(){
   const V = $('#view'), board = V.querySelector('.kboard'); if (!board) return;
+  requestAnimationFrame(fitBoard);
+  V.querySelectorAll('[data-dosecard]').forEach(b => b.onclick = e => { e.stopPropagation(); openDose(b.dataset.dosecard); });
   V.querySelectorAll('[data-kadd]').forEach(b => b.onclick = () => { ui.agendaSel = b.dataset.kadd; ui.newEv = { date: b.dataset.kadd }; openNewMenu(); });
   let drag = null;
   board.querySelectorAll('[data-card]').forEach(c => {
