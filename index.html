@@ -1024,73 +1024,62 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 .q-mini{border:0;border-top:1px solid var(--sep);border-radius:0;font-size:13px} .q-mini td{height:34px;padding:0 6px}
 .q-mini .q-n{max-width:none}
 @media (min-width:1500px){ .q2{grid-template-columns:minmax(0,1fr) 460px} }
-/* ----- Densidade no computador: cabe mais linha em cada tela ----- */
+/* ----- Densidade do computador: UMA escala, aplicada a todas as telas -----
+   Compacto (escolhido na demonstração): linha 29px, texto 12,8px, respiro 9px.
+   Para mudar a densidade do sistema inteiro, mexa só nestas quatro variáveis. */
 @media (min-width:900px){
-  .topbar{margin-bottom:16px;padding-top:10px;padding-bottom:10px}
+  :root{--row:29px;--fs:12.8px;--fsh:11px;--cpad:9px;--gap:10px}
+  .topbar{margin-bottom:12px;padding-top:8px;padding-bottom:8px}
   .tb-in{gap:8px}
-  .topbar .round{width:38px;height:38px}
-  .tb-search{height:38px}
-  .inv-desk{gap:10px}
+  .topbar .round{width:36px;height:36px}
+  .tb-search{height:36px}
+  .inv-desk{gap:var(--gap)}
+  .inv-desk h1.lt{font-size:21px}
   .utabs{gap:20px}
-  .qt td{height:34px}
-  .qt th{padding:7px 10px}
-  .q-foot .icon-btn{width:28px;height:28px}
-  .q-r{padding:13px;gap:10px;top:64px}
-  .foot{padding-top:4px;font-size:12.5px}
-}
-/* janela baixa: aperta mais, para a tabela inteira caber sem rolar */
-@media (min-width:900px) and (max-height:880px){
-  .topbar{margin-bottom:10px;padding-top:7px;padding-bottom:7px}
-  .inv-desk{gap:7px}
-  .inv-desk h1.lt{font-size:22px}
-  .inv-desk .head .sub{font-size:12px}
-  .utabs button{padding-bottom:8px;font-size:14px}
+  .utabs button{padding-bottom:8px;font-size:13.5px}
   .pchips button{padding:4px 12px;font-size:12.5px}
-  .qt{font-size:12.8px}
-  .qt td{height:26px}
-  .qt th{padding:4px 9px;font-size:11.5px}
-  .qt td{padding:0 9px}
-  .inv-desk .foot{display:none}
-  .inv-desk .head .sub{display:none}
-  .q-r .eco-d{font-size:12.5px;line-height:1.42;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .qt{font-size:var(--fs)}
+  .qt th{padding:5px var(--cpad);font-size:var(--fsh)}
+  .qt td{height:var(--row);padding:0 var(--cpad)}
+  .q-foot{padding:3px 2px}
+  .q-foot .icon-btn{width:26px;height:26px}
+  .foot{padding-top:4px;font-size:12px}
+  /* painel lateral: enxuto, com o gráfico preenchendo o que sobrar */
+  .q-r{padding:11px;gap:8px;top:64px}
+  .q-r .ip-head .main b{font-size:15px}
+  .q-r .ip-head .main small{font-size:11.5px}
+  .q-r .ip-price b{font-size:17px}
+  .q-r .ip-stats{gap:5px 12px;font-size:12px}
+  .q-r .eco-d{font-size:12.3px;line-height:1.42;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .q-r .inv-chart{padding:3px 0}
   .q-r .lc-hint{display:none}
-  .q-r .lc-ax{margin-top:4px}
-  .q-r{padding:10px;gap:7px;max-height:calc(100vh - 74px);overflow:auto;scrollbar-width:none}
-  .q-r::-webkit-scrollbar{display:none}
-  .q-r .ip-head .main b{font-size:16px}
-  .q-r .ip-head .main small{font-size:12px}
-  .q-r .ip-price b{font-size:19px}
-  .q-r .ip-stats{gap:6px 12px;font-size:12.5px}
-  .q-r .inv-chart{padding:4px 0}
+  .q-r .lc-ax{margin-top:3px}
   .q-follow{padding:4px 11px;font-size:12.5px}
-  .rtabs button{padding:4px 0;font-size:12.5px}
-  .rtabs{gap:13px}
-  .lc-hint{font-size:11.5px}
-  .q-mini td{height:28px}
-  .q2{grid-template-columns:minmax(0,1fr) 360px;gap:18px}
+  .rtabs{gap:14px} .rtabs button{padding:4px 0;font-size:12.5px}
+  .q-mini td{height:27px}
+  /* a mesma escala na tabela do financeiro */
+  .ftab{font-size:var(--fs)}
+  .ftab th{padding:5px 12px;font-size:var(--fsh)}
+  .ftab td{height:calc(var(--row) + 6px);padding:3px 12px}
 }
-/* notebook de tela baixa: o mínimo para caber uma dúzia de linhas */
-@media (min-width:900px) and (max-height:700px){
-  .topbar{margin-bottom:8px}
+/* janela baixa: primeiro saem subtítulo e nota de rodapé; a letra só diminui depois */
+@media (min-width:900px) and (max-height:820px){
+  :root{--row:27px;--gap:8px}
   .inv-desk h1.lt{font-size:19px}
-  .inv-desk{gap:5px}
-  .qt{font-size:12.4px}
-  .qt td{height:23px}
-  .qt th{padding:3px 9px}
-  .pchips button{padding:3px 11px;font-size:12px}
-  .utabs button{padding-bottom:6px;font-size:13.5px}
-  .q-r .eco-d{-webkit-line-clamp:2}
+  .inv-desk .head .sub{display:none}
+  .inv-desk .foot{display:none}
+  .topbar{margin-bottom:9px}
 }
 @media (max-width:1299px){ .q2{grid-template-columns:minmax(0,1fr)} .q-r{position:static} .q-add{width:260px} }
-/* duas colunas: o painel ocupa a altura toda da tela e o gráfico preenche o que sobra */
+/* duas colunas: painel com a altura da tela e gráfico elástico */
 @media (min-width:1300px){
-  .q2{grid-template-columns:minmax(0,1fr) 330px;gap:18px}
-  .q-r{height:calc(100vh - 84px);max-height:none;overflow:hidden}
+  .q2{grid-template-columns:minmax(0,1fr) 316px;gap:16px}
+  .q-r{height:calc(100vh - 82px);max-height:none;overflow:hidden}
   .q-r .inv-chart{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
   .q-r .inv-chart .lc-box{flex:1 1 auto;min-height:70px}
   .q-r .inv-chart .lc-ax{flex:none}
 }
-@media (min-width:1500px){ .q2{grid-template-columns:minmax(0,1fr) 380px} }
+@media (min-width:1500px){ .q2{grid-template-columns:minmax(0,1fr) 360px} }
 
 /* início (computador): clima no topo e quadro de cartões */
 .dh{align-items:stretch}
