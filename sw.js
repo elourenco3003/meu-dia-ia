@@ -1,7 +1,7 @@
 // Meu Dia IA · service worker
 // 1) Guarda a "casca" do app para abrir rápido e aguentar internet instável (nunca guarda dados do usuário).
 // 2) Recebe os alertas do servidor (Web Push) e mostra a notificação, mesmo com o app fechado.
-const CACHE = 'meudia-v66';
+const CACHE = 'meudia-v67';
 const SHELL = ['/', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png', '/logo.svg', '/favicon-32.png'];
 
 self.addEventListener('install', e => {

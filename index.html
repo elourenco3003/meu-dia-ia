@@ -1125,6 +1125,15 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 .kcol{min-height:0}
 .kcards{overflow:hidden}
 .k-more{flex:none;font-size:11.5px;font-weight:600;color:var(--fg2);padding:4px 6px;text-align:center}
+/* notícias em faixa: convivem com o quadro sem empurrar nada para fora da tela */
+.nstrip{flex:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:stretch}
+.nstrip a{display:flex;flex-direction:column;gap:2px;background:var(--card);border:1px solid var(--sep);border-radius:8px;padding:6px 10px;text-decoration:none;color:var(--fg);box-shadow:var(--sh,0 1px 2px rgba(20,24,60,.06))}
+body.mouse .nstrip a:hover{border-color:var(--accent)}
+.nstrip b{font-size:12px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nstrip small{font-size:10.5px;color:var(--fg2)}
+.nstrip .mk-new{font-size:9px}
+.nshead{flex:none;display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--fg2);margin-top:2px}
+.nshead button{font-size:11.5px;font-weight:600;color:var(--accent);margin-left:auto}
 .kcol{flex:1 1 0;min-width:0;background:color-mix(in srgb,var(--fg) 5%,var(--bg));border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;border:2px solid transparent}
 .kcol.over{border-color:var(--accent);background:var(--accent-soft)}
 .kcol header{display:flex;align-items:center;justify-content:space-between;padding:2px 4px}
@@ -5016,6 +5025,8 @@ function vHomeDesk(P, hp, items, card){
   ${hp.programacao ? `<div class="kboard" aria-label="Quadro do dia">
     ${by.late.length ? col('late', 'Atrasado') : ''}${col('hoje', 'Hoje', t)}${col('amanha', 'Amanhã', tm)}${col('prox', 'Próximos dias')}${by.semdata.length ? col('semdata', 'Tarefas sem data') : ''}${col('feito', 'Concluído hoje')}
   </div><div class="foot">Arraste um cartão para Hoje ou Amanhã para mudar a data, ou para Concluído hoje quando terminar. Clique no cartão para abrir.</div>` : ''}
+  ${hp.noticias && nlist.length && hp.programacao ? `<div class="nshead"><span class="live-h"><i></i>Notícias de economia · ${hm(nw.updated_at)}</span><button data-act="news-eco">Ver todas</button></div>
+  <div class="nstrip">${withImg(nlist).slice(0, 4).map(n => `<a href="${esc(n.link)}" target="_blank" rel="noopener" data-newsopen="${esc(n.at || '')}"><b>${esc(n.title)}</b><small>${agoTxt(n.at)} · Agência Brasil</small></a>`).join('')}</div>` : ''}
   ${hp.noticias && nlist.length && !hp.programacao ? `<section class="dnews"><div class="sh"><span class="live-h"><i></i>Notícias de economia · ${hm(nw.updated_at)}</span><button data-act="news-eco">Ver todas</button></div>${newsCards(nlist, 6)}</section>` : ''}`;
 }
 /* o quadro ocupa o que sobra da janela; o que não couber vira "+N" no pé da coluna */
@@ -5024,7 +5035,9 @@ function fitBoard(){
   if (innerWidth < 900){ b.style.removeProperty('--kbh'); return; }
   b.style.removeProperty('--kbh');
   const topo = b.getBoundingClientRect().top;
-  b.style.setProperty('--kbh', Math.max(240, Math.floor(innerHeight - topo - 14)) + 'px');
+  let depois = 0;                                   // o que vier abaixo do quadro (faixa de notícias, nota)
+  for (let n = b.nextElementSibling; n; n = n.nextElementSibling) depois += n.getBoundingClientRect().height + 8;
+  b.style.setProperty('--kbh', Math.max(240, Math.floor(innerHeight - topo - 14 - depois)) + 'px');
   b.querySelectorAll('.kcards').forEach(box => {
     box.querySelectorAll('.k-more').forEach(x => x.remove());
     const cards = [...box.children].filter(c => c.classList.contains('kc'));
