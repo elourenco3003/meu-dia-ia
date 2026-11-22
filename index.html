@@ -1035,6 +1035,7 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
    Para mudar a densidade do sistema inteiro, mexa só nestas quatro variáveis. */
 @media (min-width:900px){
   :root{--row:29px;--fs:12.8px;--fsh:11px;--cpad:9px;--gap:10px}
+
   .topbar{margin-bottom:12px;padding-top:8px;padding-bottom:8px}
   .tb-in{gap:8px}
   .topbar .round{width:36px;height:36px}
@@ -1063,11 +1064,22 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
   .q-follow{padding:4px 11px;font-size:12.5px}
   .rtabs{gap:14px} .rtabs button{padding:4px 0;font-size:12.5px}
   .q-mini td{height:27px}
+  /* tabela e rodapé viram UM cartão só, como na proposta */
+  .q-l .qt{border-radius:8px 8px 0 0;border-bottom:0}
+  .q-l .q-foot{background:var(--card);border:1px solid var(--sep);border-top:0;border-radius:0 0 8px 8px;padding:5px 10px;margin:0}
+  .q-l .q-foot .icon-btn{box-shadow:none}
+  /* cabeçalho numa linha só: título, explicação e indicadores do dia */
+  .inv-desk .head{align-items:baseline;gap:10px}
+  .inv-desk .head > div:first-child{display:flex;align-items:baseline;gap:10px;min-width:0;flex-wrap:wrap}
+  .inv-desk .head .sub{margin:0}
   /* a mesma escala na tabela do financeiro */
   .ftab{font-size:var(--fs)}
   .ftab th{padding:5px 12px;font-size:var(--fsh)}
   .ftab td{height:calc(var(--row) + 6px);padding:3px 12px}
 }
+/* fundo um tom mais frio no computador: é o que faz os cartões brancos se destacarem */
+@media (min-width:900px) and (prefers-color-scheme: light){ :root:not([data-theme="dark"]){--bg:#EDEFF6} }
+@media (min-width:900px){ :root[data-theme="light"]{--bg:#EDEFF6} }
 /* janela baixa: primeiro saem subtítulo e nota de rodapé; a letra só diminui depois */
 @media (min-width:900px) and (max-height:820px){
   :root{--row:27px;--gap:8px}
