@@ -1032,14 +1032,14 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 .dh2{display:flex;gap:16px;align-items:stretch}
 .dh2 .askbox{flex:1;margin:0;max-width:none} .dh2 .leave-card{flex:none;width:min(480px,46%);margin:0} .dh2 .leave-card .lc-s{white-space:normal}
 .kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
-.kboard{display:flex;gap:14px;align-items:flex-start;min-width:0}
+.kboard{display:flex;gap:14px;align-items:stretch;min-width:0}
 .kcol{flex:1 1 0;min-width:0;background:color-mix(in srgb,var(--fg) 5%,var(--bg));border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px;border:2px solid transparent}
 .kcol.over{border-color:var(--accent);background:var(--accent-soft)}
 .kcol header{display:flex;align-items:center;justify-content:space-between;padding:2px 4px}
 .kcol header b{font-size:14px;font-weight:700}
 .kcol header span{font-size:12px;font-weight:700;color:var(--fg2);background:var(--card);border-radius:999px;min-width:22px;text-align:center;padding:1px 6px}
 .kcol-late header b{color:var(--bad)} .kcol-hoje header b{color:var(--accent)}
-.kcards{display:flex;flex-direction:column;gap:8px;min-height:44px}
+.kcards{display:flex;flex-direction:column;gap:8px;min-height:44px;flex:1}
 .kc{display:flex;gap:6px;align-items:flex-start;background:var(--card);border-radius:8px;box-shadow:0 1px 2px rgba(20,24,60,.12);border-left:4px solid var(--accent);padding:8px 8px 8px 10px;cursor:grab}
 .kc.k-rem{border-left-color:var(--fg2)} .kc.k-task{border-left-color:var(--mint)} .kc.k-fin{border-left-color:#E3A23B}
 .kc.dragging{opacity:.45}
@@ -1052,7 +1052,7 @@ body.mouse .kc:hover{box-shadow:0 3px 10px rgba(20,24,60,.18)}
 .kc-ck{flex:none;width:22px;height:22px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--fg2);display:grid;place-items:center;color:transparent;margin-top:2px}
 .kc-ck .i{width:13px;height:13px;stroke-width:2.6}
 .kc-ck:hover{color:var(--accent);box-shadow:inset 0 0 0 1.5px var(--accent)} .kc-ck.on{background:var(--mint);color:#fff;box-shadow:none}
-.k-empty{font-size:12.5px;color:var(--fg2);text-align:center;padding:12px 6px;border:1px dashed var(--sep);border-radius:8px}
+.k-empty{font-size:12.5px;color:var(--fg2);text-align:center;padding:12px 6px;border:1px dashed var(--sep);border-radius:8px;flex:1;display:flex;align-items:center;justify-content:center;min-height:44px}
 .k-add{display:flex;gap:6px;align-items:center;font-size:13px;font-weight:600;color:var(--fg2);padding:6px 4px;border-radius:8px}
 .k-add .i{width:15px;height:15px} .k-add:hover{background:var(--card);color:var(--accent)}
 
@@ -4993,7 +4993,7 @@ function vInvestDesk(){
   const so = ui.invSort;
   if (so && !(main === 'mercado' && mt === 'principais')) rows = [...rows].sort((a, c) => { const x = a[so.k], y = c[so.k]; return (x == null) - (y == null) || (typeof x === 'string' ? x.localeCompare(y) : x - y) * so.d; });
   if (!rows.some(r => r.sym === ui.invSel && r.chart)) ui.invSel = (rows.find(r => r.chart) || {}).sym || null;
-  const per = Math.max(8, Math.floor((innerHeight - 372) / 41)), pages = Math.max(1, Math.ceil(rows.length / per));
+  const per = (ui.per && ui.per.inv) || Math.max(3, Math.floor((innerHeight - 372) / 41)), pages = Math.max(1, Math.ceil(rows.length / per));
   ui.invPage = Math.min(Math.max(0, ui.invPage || 0), pages - 1);
   const pg = rows.slice(ui.invPage * per, ui.invPage * per + per);
   const wide = innerWidth >= 1500;
@@ -5090,9 +5090,24 @@ function bindFollow(root){
   root.querySelectorAll('[data-follow]').forEach(x => x.onclick = async e => { e.stopPropagation(); x.disabled = true; const ok = await addAsset(x.dataset.follow); if (ok || true) render(); });
   root.querySelectorAll('[data-unfollow]').forEach(x => x.onclick = e => { e.stopPropagation(); swipeDelete('ativo:' + x.dataset.unfollow); });
 }
+/* quantas linhas cabem sem rolar: mede a tela de verdade e repagina uma vez (nada de número fixo) */
+function fitRows(chave){
+  const V = $('#view'), tb = V && V.querySelector('table.qt'); if (!tb) return;
+  const linhas = tb.querySelectorAll('tbody tr'), tr = linhas[0];
+  if (!tr) return;
+  const alt = tr.getBoundingClientRect().height || 41;
+  const sobra = V.scrollHeight - V.clientHeight;        // quanto está passando da tela
+  const atual = linhas.length;
+  let cabe = atual;
+  if (sobra > 2) cabe = Math.max(3, atual - Math.ceil(sobra / alt));
+  else if (sobra < -alt) cabe = atual + Math.floor(-sobra / alt);
+  ui.per = ui.per || {}; ui.fitLast = ui.fitLast || {};
+  // só tenta cada valor uma vez por tela: evita ficar indo e voltando
+  if (cabe !== atual && ui.fitLast[chave] !== cabe){ ui.fitLast[chave] = cabe; ui.per[chave] = cabe; render(); }
+}
 function bindInvestDesk(){
   const V = $('#view');
-  V.querySelectorAll('[data-invmain]').forEach(x => x.onclick = () => { if ((ui.invMain || 'meus') === x.dataset.invmain) return; ui.invMain = x.dataset.invmain; ui.invPage = 0; ui.invSort = null; ui.invSel = null; render(); });
+  V.querySelectorAll('[data-invmain]').forEach(x => x.onclick = () => { if ((ui.invMain || 'meus') === x.dataset.invmain) return; ui.invMain = x.dataset.invmain; ui.invPage = 0; ui.invSort = null; ui.invSel = null; ui.fitLast = {}; render(); });
   V.querySelectorAll('[data-mktab]').forEach(x => x.onclick = () => { ui.mkTab = x.dataset.mktab; ui.invPage = 0; ui.invSort = null; render(); });
   V.querySelectorAll('[data-invtab]').forEach(x => { const f = x.onclick; x.onclick = e => { ui.invPage = 0; f && f(e); }; });
   V.querySelectorAll('[data-qpg]').forEach(x => x.onclick = () => { ui.invPage = (ui.invPage || 0) + Number(x.dataset.qpg); render(); });
@@ -5102,6 +5117,7 @@ function bindInvestDesk(){
     r.onkeydown = e => { if (e.key === 'Enter') r.click(); }; });
   bindFollow(V.querySelector('.q-l'));
   paintAssetPanel();
+  requestAnimationFrame(() => fitRows('inv'));
 }
 /* ----- Economia no computador: mesmo padrão de Investimentos (abas, filtros, tabela e painel com gráfico) ----- */
 function ecoRows(){
@@ -5190,7 +5206,7 @@ function fitCols(){
   const n = wr.querySelectorAll(':scope > section').length, c = Math.max(1, Math.min(n, Math.floor(wr.clientWidth / 360)));
   wr.style.gridTemplateColumns = `repeat(${c},minmax(0,1fr))`;
 }
-let fitRz = 0; addEventListener('resize', () => { clearTimeout(fitRz); fitRz = setTimeout(() => { fitCols(); if (view === 'invest' && desk() && ui.invPts && document.activeElement !== $('#inv-in')) render(); }, 150); });
+let fitRz = 0; addEventListener('resize', () => { clearTimeout(fitRz); fitRz = setTimeout(() => { ui.per = {}; ui.fitLast = {}; fitCols(); if (view === 'invest' && desk() && ui.invPts && document.activeElement !== $('#inv-in')) render(); }, 150); });
 /* ----- Agenda no computador: semana em 7 colunas e mês com os compromissos nas células ----- */
 function agendaItems(d){
   return [
@@ -5275,7 +5291,7 @@ function vFinDesk(){
   const filt = ui.finFilter || 'todos';
   const list = rows.filter(f => filt === 'todos' || (filt === 'pagar' ? f.type === 'conta' && !f.paid : filt === 'receita' ? f.type === 'receita' : f.type !== 'receita'))
     .sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title));
-  const per = Math.max(6, Math.floor((innerHeight - 420) / 49)), pages = Math.max(1, Math.ceil(list.length / per));
+  const per = (ui.per && ui.per.fin) || Math.max(3, Math.floor((innerHeight - 420) / 49)), pages = Math.max(1, Math.ceil(list.length / per));
   ui.finPage = Math.min(Math.max(0, ui.finPage || 0), pages - 1);
   const pg = list.slice(ui.finPage * per, ui.finPage * per + per);
   const status = f => f.type === 'receita' ? (f.paid === false ? '<span class="chip">A receber</span>' : '<span class="chip good">Recebida</span>') : f.type === 'despesa' ? '<span class="chip good">Paga</span>'
@@ -5309,10 +5325,11 @@ function vFinDesk(){
 }
 function bindFinDesk(){
   const V = $('#view');
-  V.querySelectorAll('[data-finf]').forEach(b => b.onclick = () => { ui.finFilter = b.dataset.finf; ui.finPage = 0; render(); });
+  V.querySelectorAll('[data-finf]').forEach(b => b.onclick = () => { ui.finFilter = b.dataset.finf; ui.finPage = 0; ui.fitLast = {}; render(); });
   V.querySelectorAll('[data-fpg]').forEach(b => b.onclick = () => { ui.finPage = (ui.finPage || 0) + Number(b.dataset.fpg); render(); });
   V.querySelectorAll('tr[data-edit]').forEach(r => r.onkeydown = e => { if (e.key === 'Enter') r.click(); });
   V.querySelectorAll('.ftab [data-pay]').forEach(b => { const f = b.onclick; b.onclick = e => { e.stopPropagation(); f && f(e); }; });
+  requestAnimationFrame(() => fitRows('fin'));
 }
 
 /* ----- Listas no computador: listas à esquerda, a lista aberta à direita ----- */
