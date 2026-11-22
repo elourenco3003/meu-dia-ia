@@ -447,7 +447,9 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 #sheet .row .lab{flex:none;font-size:16px}
 #sheet input,#sheet select{flex:1;min-width:0;text-align:right;background:none;border:0;outline:0;font-size:16px;color:var(--fg2)}
 #sheet input.full{text-align:left;color:var(--fg)}
-#sheet select{direction:rtl}
+/* seta própria à direita: o indicador nativo do iPhone ia parar junto do rótulo */
+#sheet select,.field-in{direction:ltr;appearance:none;-webkit-appearance:none;padding-right:17px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 14' fill='none' stroke='%238A8FA3' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5.4 6 2.4 9 5.4'/%3E%3Cpath d='M3 8.6 6 11.6 9 8.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right center;background-size:11px 13px}
+#sheet select::-ms-expand,.field-in::-ms-expand{display:none}
 #sheet .err{color:var(--bad);font-size:13px;padding:0 16px}
 #sheet .del{width:100%;text-align:center;justify-content:center;color:var(--bad)}
 #sheet .mi{width:34px;height:34px;border-radius:10px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}
@@ -581,7 +583,8 @@ button.quota{width:100%;background:none;border:0;padding:0;cursor:pointer;font:i
 .next-card .lc-go{background:var(--pill);color:var(--accent)}
 .place-wrap{display:block}
 .place-in{display:flex;flex-direction:column;gap:6px;width:100%}
-.phint{font-size:12.5px;color:var(--accent)}
+.phint{font-size:12.5px;line-height:1.35;color:var(--accent);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.place-line .icon-btn{flex:none}
 .psugs{display:flex;flex-direction:column;border-top:1px solid var(--sep);margin:2px -4px 0;padding-top:4px}
 .psugs[hidden]{display:none}
 .sug-it{display:flex;align-items:flex-start;gap:10px;padding:9px 4px;text-align:left;font:inherit;color:var(--fg);border-radius:10px;width:100%}
@@ -2080,6 +2083,8 @@ function bindView(){
     const c = themeCfg(); c[{ 'th-mode':'mode', 'th-dark':'dark', 'th-light':'light' }[id]] = el.value;
     try { localStorage.setItem('meudia.theme', JSON.stringify(c)); } catch(e) {} applyTheme(); render(); }; });
   const at = $('#alarm-test'); if (at) at.onclick = () => alarmFire(null, true);
+  const gau = $('#set-geoauto'); if (gau) gau.onchange = () => { try { localStorage.setItem('meudia.geoAuto', gau.checked ? '1' : '0'); } catch(e) {} toast(gau.checked ? 'Vou atualizar sua localização sozinho' : 'Só vou usar o GPS quando você pedir'); };
+  const gnw = $('#geo-now'); if (gnw) gnw.onclick = () => { wxState = 'idle'; loadWeather(true); toast('Pedindo sua localização…'); };
   const atn = $('#alarm-tone'); if (atn) atn.onchange = () => { try { localStorage.setItem('meudia.alarmTone', atn.value); } catch(e) {} previewTone(atn.value); };
   [['snooze-go','Go'],['snooze-med','Med']].forEach(([id, k]) => { const sel = $('#' + id); if (sel) sel.onchange = () => { try { localStorage.setItem('meudia.snooze' + k, sel.value); } catch(e) {} toast(`Adiamento de ${sel.value} min`); }; });
   const st = $('#set-travel'); if (st) st.onchange = () => { S.travel_on = st.checked; saveProfile(); };
@@ -3289,20 +3294,30 @@ function wxCard(){
     <div class="wx-side"><span>máx ${wx.max}° · mín ${wx.min}°</span><span>chuva ${wx.rain}%</span></div>
   </button><div class="wx-src">${wx.city ? `<span class="wx-city">${ic('pin')}${esc(wx.city)}</span>` : '<span></span>'}<span>Dados: ${esc(wx.source)}</span></div>`;
 }
+// o GPS só liga quando a pessoa pede, como a câmera: ao abrir, o app usa o último lugar conhecido
+const geoAuto = () => { try { return localStorage.getItem('meudia.geoAuto') === '1'; } catch(e) { return false; } };
+async function wxFetch(q){
+  const { data, error } = await sb.functions.invoke('clima', { body:{ lat:q.lat, lon:q.lon } });
+  if (error || !data || data.error){ wxState = 'err'; if (view === 'inicio') render(); return; }
+  wx = data; wxState = 'ok';
+  try { localStorage.setItem('meudia.wx', JSON.stringify({ at: Date.now(), data })); } catch(e) {}
+  if (view === 'inicio') render();
+}
 function loadWeather(ask){
-  if (wxState === 'loading' || !navigator.geolocation || (wxState === 'err' && !ask)) return;
+  if (wxState === 'loading' || (wxState === 'err' && !ask)) return;
   if (wx && wxState === 'ok' && !ask) return;
-  let asked = false; try { asked = localStorage.getItem('meudia.wxok') === '1'; } catch(e) {}
-  if (!asked && !ask){ wxState = 'off'; return; }
+  const p = wxPos();
+  if (!ask){                                  // abrindo o app: nada de pedir localização
+    if (!p){ wxState = 'off'; return; }
+    wxState = 'loading'; wxFetch(p); return;
+  }
+  if (!navigator.geolocation){ wxState = 'err'; return; }
   wxState = 'loading';
-  navigator.geolocation.getCurrentPosition(async pos => {
-    try { localStorage.setItem('meudia.wxok', '1'); localStorage.setItem('meudia.wxpos', JSON.stringify({ lat: pos.coords.latitude, lon: pos.coords.longitude })); } catch(e) {}
-    sb.rpc('save_location', { p_lat: pos.coords.latitude, p_lon: pos.coords.longitude }); try { localStorage.setItem('meudia.locat', String(Date.now())); } catch(e) {}
-    const { data, error } = await sb.functions.invoke('clima', { body:{ lat: pos.coords.latitude, lon: pos.coords.longitude } });
-    if (error || !data || data.error){ wxState = 'err'; return; }
-    wx = data; wxState = 'ok';
-    try { localStorage.setItem('meudia.wx', JSON.stringify({ at: Date.now(), data })); } catch(e) {}
-    if (view === 'inicio') render();
+  navigator.geolocation.getCurrentPosition(pos => {
+    const q = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+    try { localStorage.setItem('meudia.wxok', '1'); localStorage.setItem('meudia.wxpos', JSON.stringify(q)); localStorage.setItem('meudia.locat', String(Date.now())); } catch(e) {}
+    sb.rpc('save_location', { p_lat: q.lat, p_lon: q.lon });
+    wxFetch(q);
   }, () => { wxState = 'off'; try { localStorage.removeItem('meudia.wxok'); } catch(e) {} if (ask) toast('Sem permissão de localização, a previsão não aparece.'); if (view === 'inicio') render(); },
   { enableHighAccuracy:false, timeout:10000, maximumAge:30 * 60e3 });
 }
@@ -3914,6 +3929,8 @@ function travelSection(){
     <label class="row" for="pref-arr"><span class="main t">Chegar antes</span>
       <select class="field-in" id="pref-arr">${[10,15,30,45,60].map(v => `<option value="${v}" ${Number(S.travel_arrive) === v ? 'selected' : ''}>${v} min</option>`).join('')}</select></label>
     ${addrRow('home', 'Casa')}${addrRow('work', 'Trabalho')}
+    <div class="row"><span class="main"><div class="t">Atualizar minha localização sozinho</div><div class="s">Desligado, o app só liga o GPS quando você pede, como a câmera</div></span><label class="switch"><input type="checkbox" id="set-geoauto" ${geoAuto() ? 'checked' : ''} aria-label="Atualizar minha localização sozinho"><span></span></label></div>
+    <button class="row" id="geo-now"><span class="main"><div class="t">Usar minha localização agora</div><div class="s">${wxPos() ? 'Atualiza o lugar guardado e a previsão' : 'Nenhum lugar guardado ainda'}</div></span>${ic('pin','i chev')}</button>
     <label class="row" for="alarm-tone"><span class="main"><div class="t">Toque do alarme "Saia já"</div><div class="s">Ao trocar, toca uma amostra</div></span>
       <select class="field-in" id="alarm-tone">${Object.entries(ALARM_TONES).map(([k, l]) => `<option value="${k}" ${alarmTone() === k ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
     <label class="row" for="snooze-go"><span class="main"><div class="t">Adiar o "Saia já" por</div><div class="s">Ao deslizar "me dê uns minutos"; só enquanto dá tempo de chegar</div></span>
@@ -3921,7 +3938,7 @@ function travelSection(){
     <label class="row" for="snooze-med"><span class="main"><div class="t">Adiar o remédio por</div><div class="s">Ao deslizar "me dê uns minutos" na pergunta da dose</div></span>
       <select class="field-in" id="snooze-med">${SNOOZE_OPTS.map(m => `<option value="${m}" ${snoozeMin('Med') === m ? 'selected' : ''}>${m} min</option>`).join('')}</select></label>
     <button class="row" id="alarm-test"><span class="main"><div class="t">Testar o alarme completo</div><div class="s">Tela cheia, som alto e deslize para parar</div></span>${ic('r','i chev')}</button>
-  </div><div class="foot">Na hora exata de sair, o app dispara um alarme alto, com o toque que você escolher, até você deslizar para parar. Com o app aberto, ele toca mesmo com o celular no silencioso (iPhone). Com o app fechado, chega a notificação com o som do celular. Calculo o tempo de viagem com trânsito e aviso no celular 10 min antes da hora de sair, com o atalho para o Waze. Em dia útil das 10h às 18h considero a saída do Trabalho; nos outros horários, de Casa. Se você abriu o app nas últimas 2 horas, uso onde você está. Cada compromisso pode escolher "Sair de".</div></section>`;
+  </div><div class="foot">Na hora exata de sair, o app dispara um alarme alto, com o toque que você escolher, até você deslizar para parar. Com o app aberto, ele toca mesmo com o celular no silencioso (iPhone). Com o app fechado, chega a notificação com o som do celular. Calculo o tempo de viagem com trânsito e aviso no celular 10 min antes da hora de sair, com o atalho para o Waze. Em dia útil das 10h às 18h considero a saída do Trabalho; nos outros horários, de Casa. Com a atualização automática ligada, uso onde você está; desligada, uso o último lugar guardado ou o endereço de Casa e Trabalho. Cada compromisso pode escolher "Sair de".</div></section>`;
 }
 function openAddr(k){
   const label = k === 'home' ? 'Casa' : 'Trabalho';
@@ -3947,6 +3964,7 @@ function openAddr(k){
 }
 // guarda onde o aparelho está (arredondado), no máximo a cada 15 min, para calcular a saída "de onde você está"
 function saveLocationSoon(){
+  if (!geoAuto()) return;                      // desligado: o app não liga o GPS sozinho
   let ok = false, last = 0; try { ok = localStorage.getItem('meudia.wxok') === '1'; last = Number(localStorage.getItem('meudia.locat') || 0); } catch(e) {}
   if (!ok || !navigator.geolocation || Date.now() - last < 15 * 60e3) return;
   navigator.geolocation.getCurrentPosition(pos => {
@@ -4066,7 +4084,7 @@ function bindMed(inp){
     cx.hidden = true; cx.innerHTML = '';
     const { data, error } = await sb.rpc('doses_medicamento', { p_produto: produto });
     if (error || !data) return;
-    const lista = [...new Set(data.map(d => d.dosagem).filter(Boolean))].slice(0, 12);
+    const lista = [...new Set(data.map(d => d.dosagem).filter(Boolean))].slice(0, 8);
     if (!lista.length) return;
     cx.innerHTML = lista.map(d => `<button type="button" data-dc="${esc(d)}">${esc(d.toLowerCase())}</button>`).join('');
     cx.hidden = false;
