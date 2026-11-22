@@ -1125,6 +1125,20 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 .kcol{min-height:0}
 .kcards{overflow:hidden}
 .k-more{flex:none;font-size:11.5px;font-weight:600;color:var(--fg2);padding:4px 6px;text-align:center}
+/* banner de manchetes: uma de cada caderno, trocando sozinha */
+.nbanner{position:relative;display:block;height:74px;border-radius:12px;overflow:hidden;background:var(--card);box-shadow:var(--shadow);flex:none}
+.nb-s{position:absolute;inset:0;display:flex;align-items:center;gap:12px;padding:0 14px 0 0;text-decoration:none;color:var(--fg);opacity:0;transform:translateY(6px);transition:opacity .45s ease,transform .45s ease;pointer-events:none}
+.nb-s.on{opacity:1;transform:none;pointer-events:auto}
+.nb-s .ph{width:104px;height:100%;flex:none;background:var(--fill);overflow:hidden}
+.nb-s .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.nb-s .tx{min-width:0;flex:1;display:flex;flex-direction:column;gap:2px;padding:8px 0}
+.nb-s em{font-style:normal;font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.nb-s b{font-size:14px;font-weight:650;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nb-s small{font-size:11px;color:var(--fg2)}
+.nb-dots{position:absolute;right:12px;bottom:8px;display:flex;gap:5px;z-index:2}
+.nb-dots i{width:5px;height:5px;border-radius:999px;background:var(--fg3);opacity:.4;cursor:pointer;transition:width .2s,opacity .2s}
+.nb-dots i.on{width:14px;opacity:1;background:var(--accent)}
+@media (min-width:900px){ .nbanner{height:62px} .nb-s .ph{width:96px} .nb-s b{font-size:13.5px;-webkit-line-clamp:2} }
 /* notícias em faixa: convivem com o quadro sem empurrar nada para fora da tela */
 .nstrip{flex:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-items:stretch}
 .nstrip a{display:flex;flex-direction:column;gap:2px;background:var(--card);border:1px solid var(--sep);border-radius:8px;padding:6px 10px;text-decoration:none;color:var(--fg);box-shadow:var(--sh,0 1px 2px rgba(20,24,60,.06))}
@@ -1732,6 +1746,7 @@ function render(){
   if (D && view==='invest') bindInvestDesk();
   if (D && view==='mercado') bindMercadoDesk();
   if (view==='arquivados') bindArq();
+  if (view==='inicio') bindNewsBanner();
   bindConfirm();
   if (D && view==='inicio') bindBoard();
   fitCols();
@@ -1838,7 +1853,7 @@ function vHome(){
   };
   // computador (tela larga): painel com coluna principal e coluna lateral
   if (desk()) return vHomeDesk(P, hp, items, card);
-  return `${P.hero}${P.wx}${hp.sair ? nextLeave() : ''}${hp.indicadores ? tickerBand() : ''}${doseCard()}${confirmCard()}${P.ask}${P.sug}${exBanner()}${pushBanner()}${hp.contas ? billsCard() : ''}${hp.orcamento ? budgetCard(true) : ''}${P.resumo}${P.tiles}${P.prog}${hp.noticias ? newsBlock() : ''}`;
+  return `${hp.noticias ? newsBanner() : ''}${P.hero}${P.wx}${hp.sair ? nextLeave() : ''}${hp.indicadores ? tickerBand() : ''}${doseCard()}${confirmCard()}${P.ask}${P.sug}${exBanner()}${pushBanner()}${hp.contas ? billsCard() : ''}${hp.orcamento ? budgetCard(true) : ''}${P.resumo}${P.tiles}${P.prog}`;
 }
 
 /* ---------- Agenda ---------- */
@@ -4494,6 +4509,32 @@ function newsBlock(){
       ${n.img ? `<img class="nthumb" src="${esc(n.img)}" alt="" loading="lazy" onerror="this.remove()">` : ''}<span class="main"><div class="t">${badge(n)}${esc(n.title)}</div><div class="s">${agoTxt(n.at)} · Agência Brasil</div></span></a>`).join('')}</div>
   </section>`;
 }
+// banner do topo: a manchete mais nova de cada caderno, alternando sozinha
+const NB_CAD = [['brasil','Brasil'],['economia','Economia'],['internacional','Internacional']];
+function newsBanner(){
+  const nw = mkt && mkt.noticias; if (!nw) return '';
+  const seen = newsSeen();
+  const slides = NB_CAD.map(([k, l]) => { const n = (nw[k] || [])[0]; return n ? { ...n, cad:l } : null; }).filter(Boolean);
+  if (!slides.length) return '';
+  return `<div class="nbanner" data-nb aria-label="Manchetes">
+    ${slides.map((n, i) => `<a class="nb-s ${i ? '' : 'on'}" data-i="${i}" href="${esc(n.link)}" target="_blank" rel="noopener" data-newsopen="${esc(n.at || '')}">
+      <span class="ph">${n.img ? `<img src="${esc(n.img)}" alt="" loading="lazy" onerror="this.remove()">` : ''}</span>
+      <span class="tx"><em>${esc(n.cad)}${n.at && n.at > seen ? ' · nova' : ''}</em><b>${esc(n.title)}</b><small>${agoTxt(n.at)} · Agência Brasil</small></span></a>`).join('')}
+    <span class="nb-dots">${slides.map((_, i) => `<i class="${i ? '' : 'on'}" data-nbd="${i}"></i>`).join('')}</span>
+  </div>`;
+}
+let nbTimer = 0;
+function bindNewsBanner(){
+  clearInterval(nbTimer);
+  const b = $('#view') && $('#view').querySelector('[data-nb]'); if (!b) return;
+  const slides = [...b.querySelectorAll('.nb-s')], dots = [...b.querySelectorAll('[data-nbd]')];
+  if (slides.length < 2) return;
+  let i = 0, parado = false;
+  const vai = n => { i = (n + slides.length) % slides.length; slides.forEach((s, k) => s.classList.toggle('on', k === i)); dots.forEach((d, k) => d.classList.toggle('on', k === i)); };
+  dots.forEach((d, k) => d.onclick = e => { e.preventDefault(); vai(k); });
+  b.onmouseenter = () => parado = true; b.onmouseleave = () => parado = false;
+  nbTimer = setInterval(() => { if (!parado && !document.hidden && view === 'inicio') vai(i + 1); }, 7000);
+}
 // destaques com foto grande que deslizam para o lado com o dedo; as bolinhas mostram em qual está
 function newsCarousel(list, cls){
   const seen = newsSeen();
@@ -5012,7 +5053,8 @@ function vHomeDesk(P, hp, items, card){
     ${add ? `<button class="k-add" data-kadd="${add}">${ic('plus')}Adicionar</button>` : ''}</section>`;
   const kpi = (go, icn, lab, val, sub, cls = '') => `<button class="kpi ${cls}" ${go}><span class="ic">${ic(icn)}</span><span class="kx"><small>${lab}</small><b>${val}</b><em>${sub}</em></span></button>`;
   const nw = mkt && mkt.noticias, nlist = (nw && nw.economia) || [];
-  return `<div class="dh">${P.hero}${hp.clima || (hp.familia && fam && fam.group) ? `<div class="dh-wx">${P.wx}</div>` : ''}</div>
+  return `${hp.noticias ? newsBanner() : ''}
+  <div class="dh">${P.hero}${hp.clima || (hp.familia && fam && fam.group) ? `<div class="dh-wx">${P.wx}</div>` : ''}</div>
   ${hp.assistente || hp.sair ? `<div class="dh2">${hp.assistente ? P.ask : ''}${hp.sair ? nextLeave() : ''}</div>` : ''}
   ${hp.indicadores ? tickerBand() : ''}
   ${confirmCard()}${exBanner()}${pushBanner()}
@@ -5025,7 +5067,7 @@ function vHomeDesk(P, hp, items, card){
   ${hp.programacao ? `<div class="kboard" aria-label="Quadro do dia">
     ${by.late.length ? col('late', 'Atrasado') : ''}${col('hoje', 'Hoje', t)}${col('amanha', 'Amanhã', tm)}${col('prox', 'Próximos dias')}${by.semdata.length ? col('semdata', 'Tarefas sem data') : ''}${col('feito', 'Concluído hoje')}
   </div><div class="foot">Arraste um cartão para Hoje ou Amanhã para mudar a data, ou para Concluído hoje quando terminar. Clique no cartão para abrir.</div>` : ''}
-  ${hp.noticias && nlist.length && hp.programacao ? `<div class="nshead"><span class="live-h"><i></i>Notícias de economia · ${hm(nw.updated_at)}</span><button data-act="news-eco">Ver todas</button></div>
+  ${false && hp.noticias && nlist.length && hp.programacao ? `<div class="nshead"><span class="live-h"><i></i>Notícias de economia · ${hm(nw.updated_at)}</span><button data-act="news-eco">Ver todas</button></div>
   <div class="nstrip">${withImg(nlist).slice(0, 4).map(n => `<a href="${esc(n.link)}" target="_blank" rel="noopener" data-newsopen="${esc(n.at || '')}"><b>${esc(n.title)}</b><small>${agoTxt(n.at)} · Agência Brasil</small></a>`).join('')}</div>` : ''}
   ${hp.noticias && nlist.length && !hp.programacao ? `<section class="dnews"><div class="sh"><span class="live-h"><i></i>Notícias de economia · ${hm(nw.updated_at)}</span><button data-act="news-eco">Ver todas</button></div>${newsCards(nlist, 6)}</section>` : ''}`;
 }
