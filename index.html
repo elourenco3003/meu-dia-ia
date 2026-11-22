@@ -972,6 +972,14 @@ body.mouse .ncard:hover img{transform:scale(1.04)} body.mouse .ncard:hover{box-s
 .ip-head .inv-logo{width:44px;height:44px;flex:none}
 .ip-head .main{display:flex;flex-direction:column;min-width:0;flex:1} .ip-head .main b{font-size:20px} .ip-head .main small{color:var(--fg2);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ip-price{display:flex;flex-direction:column;align-items:flex-end;gap:4px} .ip-price b{font-size:24px;font-variant-numeric:tabular-nums}
+/* detalhes escondidos atrás de um "i": o gráfico fica com o espaço */
+.ip-i{position:relative;display:inline-grid;place-items:center;width:16px;height:16px;border-radius:50%;border:1px solid var(--sep);color:var(--fg2);font:700 10px/1 var(--font);flex:none;margin-left:6px;vertical-align:middle}
+.ip-i:hover,.ip-i:focus-visible{border-color:var(--accent);color:var(--accent);outline:0}
+.ip-pop{display:none;position:fixed;width:264px;background:var(--card);border:1px solid var(--sep);border-radius:10px;box-shadow:0 12px 30px rgba(20,24,60,.2);padding:11px 13px;z-index:60;text-align:left;font-weight:400;font-size:12.2px;line-height:1.45;color:var(--fg)}
+.ip-i:hover .ip-pop,.ip-i:focus-visible .ip-pop,.ip-i.on .ip-pop{display:block}
+.ip-pop .ip-stats{border-top:0;padding-top:0;grid-template-columns:1fr 1fr;gap:7px 12px}
+.ip-pop .ip-stats b{font-size:13.5px}
+.ip-pop p{margin:0 0 7px}
 .ip-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;border-top:1px solid var(--sep);padding-top:12px}
 .ip-stats small{display:block;font-size:11.5px;color:var(--fg2);margin-bottom:3px} .ip-stats b{font-size:15px;font-variant-numeric:tabular-nums}
 @media (max-width:1299px){ .inv-2{grid-template-columns:minmax(0,1fr)} .inv-r{position:static} }
@@ -1094,16 +1102,16 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 @media (max-width:1299px){ .q2{grid-template-columns:minmax(0,1fr)} .q-r{position:static} .q-add{width:260px} }
 /* duas colunas: painel com a altura da tela e gráfico elástico */
 @media (min-width:1300px){
-  .q2{grid-template-columns:minmax(0,1fr) 316px;gap:16px;align-items:stretch;height:var(--q2h,auto)}
+  .q2{grid-template-columns:minmax(0,1fr) 400px;gap:16px;align-items:stretch;height:var(--q2h,auto)}
   .q-l{min-height:0;display:flex;flex-direction:column;overflow:hidden}
   .q-r{position:static;height:100%;max-height:none;overflow:hidden}
   .q-r .inv-chart{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
-  .q-r .inv-chart .lc-box{flex:1 1 auto;min-height:72px}
+  .q-r .inv-chart .lc-box{flex:1 1 auto;min-height:120px}
   .q-r .ip-stats{flex:none}
   .q-r .q-mini{flex:none}
   .q-r .inv-chart .lc-ax{flex:none}
 }
-@media (min-width:1500px){ .q2{grid-template-columns:minmax(0,1fr) 360px} }
+@media (min-width:1500px){ .q2{grid-template-columns:minmax(0,1fr) 440px} }
 
 /* início (computador): clima no topo e quadro de cartões */
 .dh{align-items:stretch}
@@ -2948,7 +2956,7 @@ function drawChart(box, pts, opt = CHART_DAY){
   // no painel lateral o quadro do gráfico é elástico: usa a altura que ele tem agora
   const elast = box.classList.contains('lc-fill') ? Math.round(box.getBoundingClientRect().height) : 0;
   const padrao = W > 560 ? (baixa ? 210 : 300) : (curta ? 130 : baixa ? 150 : 220);
-  const H = opt.h ? opt.h(W) : elast > 80 ? Math.max(110, Math.min(elast, 340)) : padrao, PL = 6, PR = 56, PT = 12, PB = 24;
+  const H = opt.h ? opt.h(W) : elast > 80 ? Math.max(120, Math.min(elast, 460)) : padrao, PL = 6, PR = 56, PT = 12, PB = 24;
   const vs = pts.map(p => p[1]); let mn = Math.min(...vs), mx = Math.max(...vs);
   if (mx === mn){ mn -= 0.5; mx += 0.5; }
   const step = niceStep((mx - mn) / 4), lo = Math.floor(mn / step) * step, hi = Math.ceil(mx / step) * step;
@@ -5217,7 +5225,11 @@ async function paintAssetPanel(){
     ${sym !== 'IBOV' ? `<button class="q-follow ${head.wid ? 'on' : ''}" ${head.wid ? `data-unfollow="${head.wid.id}"` : `data-follow="${esc(sym)}"`}>${head.wid ? '★ Acompanhando' : '☆ Acompanhar em Meus ativos'}</button>` : ''}
     ${ranges}
     <div class="inv-chart">${pts.length > 1 ? lineChart(pts, sym === 'IBOV' ? 'pts' : '', 'lc-fill') : `<div class="q-empty">${hist.length ? 'Ainda não há dados para esse período.' : sym === 'IBOV' ? 'O gráfico do Ibovespa aparece na próxima atualização do mercado.' : 'Sem histórico disponível para este ativo agora.'}</div>`}</div>
-    ${stats}<div class="foot">${note}</div>${mini}`;
+    ${mini}`;
+  // no computador, os números do período e a nota ficam no "i" do título
+  const det = `${stats}${note ? `<p style="margin-top:8px;color:var(--fg2);font-size:11.5px">${note}</p>` : ''}`;
+  const alvo = el.querySelector('.ip-head .main b');
+  if (alvo && det.trim()) alvo.insertAdjacentHTML('afterend', infoPop(det));
   el.querySelectorAll('[data-rng]').forEach(x => x.onclick = () => { ui.invRange = x.dataset.rng; paintAssetPanel(); });
   if (pts.length > 1){
     ui.invPts = pts;
@@ -5233,6 +5245,15 @@ function bindFollow(root){
   root.querySelectorAll('[data-follow]').forEach(x => x.onclick = async e => { e.stopPropagation(); x.disabled = true; const ok = await addAsset(x.dataset.follow); if (ok || true) render(); });
   root.querySelectorAll('[data-unfollow]').forEach(x => x.onclick = e => { e.stopPropagation(); swipeDelete('ativo:' + x.dataset.unfollow); });
 }
+/* "i" ao lado do título: a cartela abre por cima de tudo, presa à tela */
+const infoPop = html => `<button class="ip-i" type="button" aria-label="Ver detalhes">i<span class="ip-pop">${html}</span></button>`;
+document.addEventListener('pointerover', e => {
+  const b = e.target.closest && e.target.closest('.ip-i'); if (!b) return;
+  const pop = b.querySelector('.ip-pop'); if (!pop) return;
+  const r = b.getBoundingClientRect();
+  pop.style.left = Math.max(8, Math.min(innerWidth - 272, r.left - 130)) + 'px';
+  pop.style.top = Math.min(innerHeight - 180, r.bottom + 7) + 'px';
+}, true);
 /* altura das colunas: o que sobra da janela a partir de onde elas começam (medido, não chutado) */
 function fitPanel(){
   const q = $('#view') && $('#view').querySelector('.q2'); if (!q) return;
@@ -5348,10 +5369,17 @@ function paintEcoPanel(){
   const fmt = v => k === 'IBOV' ? `${n2(v, 0)} pts` : k === 'USD' || k === 'EUR' ? `R$ ${n2(v, 2)}` : `${n2(v)}%`;
   el.innerHTML = `<div class="ip-head"><div class="main"><b>${esc(info ? info.t : r.name)}</b><small>${esc(r.ref || '')}</small></div>
       <div class="ip-price"><b>${r.val}</b><span class="${udCls(r.day)}">${r.day != null ? sgn(Number(r.day)) + '% hoje' : esc(r.tag)}</span></div></div>
-    ${info ? `<p class="eco-d">${esc(info.d)}</p><p class="eco-d eco-r">${esc(info.r)}</p>` : ''}
+
     ${kinds.length > 1 ? `<div class="rtabs" role="group" aria-label="Série">${kinds.map(([s, l]) => `<button data-ecoser="${s}" aria-pressed="${ui.ecoSer === s}">${l}</button>`).join('')}</div>` : kinds.length ? `<div class="rtabs"><button aria-pressed="true">${kinds[0][1]}</button></div>` : ''}
     <div class="inv-chart">${pts.length > 1 ? '<div class="lc-box lc-fill" data-lc role="img" aria-label="Histórico do indicador"></div><div class="lc-ax"><span></span><span class="lc-hint">Passe o mouse no gráfico para ver cada ponto</span><span></span></div>' : '<div class="q-empty">Sem histórico para este indicador.</div>'}</div>
-    ${pts.length > 1 ? (() => { const vs = pts.map(p => p[1]); return `<div class="ip-stats"><div><small>Mais recente</small><b>${fmt(vs[vs.length - 1])}</b></div><div><small>Início do período</small><b>${fmt(vs[0])}</b></div><div><small>Mínimo</small><b>${fmt(Math.min(...vs))}</b></div><div><small>Máximo</small><b>${fmt(Math.max(...vs))}</b></div></div>`; })() : ''}`;
+`;
+  {
+    const vs = pts.map(p => p[1]);
+    const nums = pts.length > 1 ? `<div class="ip-stats"><div><small>Mais recente</small><b>${fmt(vs[vs.length - 1])}</b></div><div><small>Início do período</small><b>${fmt(vs[0])}</b></div><div><small>Mínimo</small><b>${fmt(Math.min(...vs))}</b></div><div><small>Máximo</small><b>${fmt(Math.max(...vs))}</b></div></div>` : '';
+    const txt = info ? `<p>${esc(info.d)}</p><p style="color:var(--fg2)">${esc(info.r)}</p>` : '';
+    const alvo = el.querySelector('.ip-head .main b');
+    if (alvo && (txt || nums)) alvo.insertAdjacentHTML('afterend', infoPop(txt + nums));
+  }
   el.querySelectorAll('[data-ecoser]').forEach(x => x.onclick = () => { ui.ecoSer = x.dataset.ecoser; paintEcoPanel(); });
   if (pts.length > 1){
     const bx = el.querySelector('[data-lc]'), o = { axis: lbl, title: lbl, val: fmt, step: null, noRel: k !== 'IBOV' && k !== 'USD' && k !== 'EUR', color: k === 'IBOV' ? '' : 'var(--accent)' };
