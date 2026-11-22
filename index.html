@@ -1139,7 +1139,24 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 .dh-wx{margin-left:auto;width:min(480px,46%);display:flex;flex-direction:column;gap:6px;justify-content:center}
 .dh-wx .wx-wrap{margin:0}
 .dh2{display:flex;gap:16px;align-items:stretch}
-.dh2 .askbox{flex:1;margin:0;max-width:none} .dh2 .leave-card{flex:none;width:min(480px,46%);margin:0} .dh2 .leave-card .lc-s{white-space:normal}
+.dh2 .leave-card{flex:none;width:min(420px,38%);margin:0} .dh2 .leave-card .lc-s{white-space:normal}
+/* pedir e buscar dividem a linha: cores e rótulos diferentes para não confundir */
+.ab-tag{display:none}
+.ab2{display:flex;gap:10px;flex:1;min-width:0}
+.ab2 .askbox{flex:1 1 0;min-width:0;max-width:none;margin:0;height:44px;padding:4px 4px 4px 8px;position:relative}
+.ab2 .askbox>svg{display:none}
+.ab2 .askbox input{font-size:13.2px;padding:8px 2px}
+.ab2 .ab-tag{display:inline-flex;align-items:center;gap:5px;flex:none;font-size:11px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;padding:6px 10px;border-radius:999px;color:#fff;white-space:nowrap}
+.ab2 .ab-tag svg{width:14px;height:14px;color:#fff}
+.ab2 .ab-ask{background:var(--accent-soft);box-shadow:inset 0 0 0 1px rgba(123,139,227,.38),var(--shadow)}
+.ab2 .ab-ask .ab-tag{background:var(--accent)}
+.ab2 .ab-find{background:rgba(47,158,106,.12);box-shadow:inset 0 0 0 1px rgba(47,158,106,.32),var(--shadow)}
+.ab2 .ab-find .ab-tag{background:var(--good)}
+.ab2 .ab-find:focus-within{box-shadow:inset 0 0 0 2px var(--good),var(--shadow)}
+.ab2 .ab-ask:focus-within{box-shadow:inset 0 0 0 2px var(--accent),var(--shadow)}
+.ab2 .ab-find .kbd{flex:none;background:rgba(255,255,255,.6)}
+.ab2 .ab-find .tb-res{top:50px}
+.ab2 .ab-find input::-webkit-search-cancel-button{display:none}
 .kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
 .kboard{display:flex;gap:14px;align-items:stretch;min-width:0;height:var(--kbh,auto)}
 .kcol{min-height:0}
@@ -1156,7 +1173,12 @@ body.mouse .n-abas button:hover{border-color:var(--accent)}
 .n-cad.c-economia{background:#0E8A5F} .n-cad.c-internacional{background:#2A6BC4}
 .n-novo{display:inline-block;margin-left:5px;font-size:9.5px;font-weight:800;padding:2px 6px;border-radius:4px;background:#E3A23B;color:#15161B}
 /* capa */
-.n-capa{position:relative;display:block;height:360px;border-radius:16px;overflow:hidden;background:#171922;text-decoration:none;box-shadow:var(--shadow)}
+.n-capas{position:relative;height:360px;border-radius:16px;overflow:hidden;background:#171922;box-shadow:var(--shadow)}
+.n-capa{position:absolute;inset:0;display:block;text-decoration:none;opacity:0;transition:opacity .7s ease;pointer-events:none}
+.n-capa.on{opacity:1;pointer-events:auto}
+.n-dots{position:absolute;right:18px;bottom:18px;display:flex;gap:7px;z-index:3}
+.n-dots i{width:7px;height:7px;border-radius:999px;background:#fff;opacity:.45;cursor:pointer;transition:width .25s,opacity .25s}
+.n-dots i.on{width:22px;opacity:1}
 .n-capa img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .5s}
 .n-capa .ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,12,22,.95) 0%,rgba(10,12,22,.55) 42%,rgba(10,12,22,.08) 78%,transparent 100%)}
 .n-capa.noimg .ov{background:linear-gradient(130deg,var(--accent) 0%,#2B2F5E 100%)}
@@ -1183,10 +1205,10 @@ body.mouse .n-capa:hover img{transform:scale(1.035)}
 .n-card small{font-size:11px;color:var(--fg2);margin-top:auto}
 body.mouse .n-card:hover{border-color:var(--accent);transform:translateY(-2px)}
 body.mouse .n-card:hover .ph img{transform:scale(1.05)}
-@media (min-width:1500px){ .n-grade{grid-template-columns:repeat(5,minmax(0,1fr))} .n-capa{height:400px} }
+@media (min-width:1500px){ .n-grade{grid-template-columns:repeat(5,minmax(0,1fr))} .n-capas{height:400px} }
 @media (max-width:1100px){ .n-grade{grid-template-columns:repeat(3,minmax(0,1fr))} }
 @media (max-width:899px){
-  .n-capa{height:230px;border-radius:16px}
+  .n-capas{height:230px;border-radius:16px}
   .n-capa .tx{left:16px;right:16px;bottom:15px}
   .n-capa b{font-size:20px;margin:8px 0 4px}
   .n-sec{margin-top:20px}
@@ -1830,6 +1852,7 @@ function render(){
   if (D && view==='mercado') bindMercadoDesk();
   if (view==='arquivados') bindArq();
   if (view==='inicio') bindNewsBanner();
+  if (view==='noticias') bindNewsCapa();
   bindConfirm();
   if (D && view==='inicio') bindBoard();
   fitCols();
@@ -1842,6 +1865,14 @@ function render(){
   if (view==='invest') bindInvest();
 }
 const back = () => `<button class="back" data-go="inicio">${ic('l')}Início</button>`;
+// a busca mora aqui embaixo, ao lado da caixa de pedir — cada uma com a sua cor e o seu rótulo
+const findBox = () => `<div class="askbox ab-find" role="search">
+    <span class="ab-tag">${ic('search')}Buscar</span>
+    <input id="topq" type="search" placeholder="Achar compromisso, tarefa, conta, nota ou lista" autocomplete="off" aria-label="Buscar" aria-controls="tb-res" value="${esc(ui.topq || '')}">
+    <span class="kbd">/</span>
+    <div class="tb-res" id="tb-res" role="listbox" hidden></div>
+  </div>`;
+const askFind = (hp, P) => `<div class="ab2">${hp.assistente ? P.ask : ''}${findBox()}</div>`;
 const exBanner = () => S.example ? `<div class="banner"><span style="flex:1">Os itens já preenchidos são exemplos para você testar.</span><button data-act="clear-ex">Remover</button></div>` : '';
 const catOf = x => x.cat || 'pessoal';
 const passF = x => ui.filter==='todas' || catOf(x)===ui.filter;
@@ -1902,9 +1933,10 @@ function vHome(){
   </div>`,
     wx: `  <div class="wx-wrap">${hp.clima ? wxCard() : ''}
   ${hp.familia && fam && fam.group && fam.members.length > 1 ? `<button class="famline" data-go="ajustes" aria-label="Minha família"><span class="fam-dots">${fam.members.slice(0,5).map(m => `<span class="fam-av sm">${esc(m.name[0] || '?')}</span>`).join('')}</span><span>${esc(fam.group.name)} · ${fam.members.map(m => esc(nameCase(m.name.split(' ')[0]))).join(', ')}</span></button>` : ''}</div>`,
-    ask: `  ${hp.assistente ? `<form class="askbox" id="ask" aria-label="Assistente">
+    ask: `  ${hp.assistente ? `<form class="askbox ab-ask" id="ask" aria-label="Assistente">
     ${ic('spark')}
-    <input id="ask-in" placeholder="Fale ou escreva o que precisa" autocomplete="off" aria-label="Pedir ao assistente" maxlength="2000" value="${esc(ui.askDraft || '')}">
+    <span class="ab-tag">${ic('spark')}Pedir</span>
+    <input id="ask-in" placeholder="Fale ou escreva o que precisa — eu marco, anoto e organizo" autocomplete="off" aria-label="Pedir ao assistente" maxlength="2000" value="${esc(ui.askDraft || '')}">
     <button type="button" class="mic" data-mic aria-label="Falar">${ic('mic')}</button>
     <button class="go" aria-label="Enviar">${ic('up')}</button>
   </form>` : ''}`, sug: `  ${hp.sugestoes ? `<div class="sugs3" aria-label="Sugestões">
@@ -4608,6 +4640,18 @@ function newsBanner(){
     <span class="nb-dots">${slides.map((_, i) => `<i class="${i ? '' : 'on'}" data-nbd="${i}"></i>`).join('')}</span>
   </div>`;
 }
+let ncTimer = 0;
+function bindNewsCapa(){
+  clearInterval(ncTimer);
+  const b = $('#view') && $('#view').querySelector('[data-ncapa]'); if (!b) return;
+  const slides = [...b.querySelectorAll('.n-capa')], dots = [...b.querySelectorAll('[data-ncd]')];
+  if (slides.length < 2) return;
+  let i = 0, parado = false;
+  const vai = n => { i = (n + slides.length) % slides.length; slides.forEach((s, k) => s.classList.toggle('on', k === i)); dots.forEach((d, k) => d.classList.toggle('on', k === i)); };
+  dots.forEach((d, k) => d.onclick = e => { e.preventDefault(); vai(k); });
+  b.onmouseenter = () => parado = true; b.onmouseleave = () => parado = false;
+  ncTimer = setInterval(() => { if (!parado && !document.hidden && view === 'noticias') vai(i + 1); }, 8000);
+}
 let nbTimer = 0;
 function bindNewsBanner(){
   clearInterval(nbTimer);
@@ -4681,19 +4725,25 @@ function vNoticias(){
     .sort((a, b) => String(b.at).localeCompare(String(a.at)));
   const tab = ui.newsTab;
 
-  // a capa sorteia entre as manchetes recentes com foto (muda a cada atualização da página)
+  // cada caderno tem o seu rodízio de destaque, começando numa manchete sorteada
   const fonte = tab === 'todas' ? todas : porCad[tab] || [];
-  const candidatas = fonte.filter(x => x.img).slice(0, 6);
-  if (ui.newsCapa == null || ui.newsCapaTab !== tab) { ui.newsCapa = Math.floor(Math.random() * Math.max(1, candidatas.length)); ui.newsCapaTab = tab; }
-  const capaN = candidatas[Math.min(ui.newsCapa, candidatas.length - 1)] || fonte[0];
-  if (!capaN) return `${head}${abasHTML(CAD, tab)}<div class="card empty">Sem notícias agora.</div>`;
+  const destaques = fonte.filter(x => x.img).slice(0, 5);
+  if (!destaques.length && !fonte.length) return `${head}${abasHTML(CAD, tab)}<div class="card empty">Sem notícias agora.</div>`;
+  const giro = destaques.length ? destaques : [fonte[0]];
+  ui.capaIni = ui.capaIni || {};
+  if (ui.capaIni[tab] == null) ui.capaIni[tab] = Math.floor(Math.random() * giro.length);
+  const ordem = giro.slice(ui.capaIni[tab]).concat(giro.slice(0, ui.capaIni[tab]));
+  const capaN = ordem[0];
 
   const seen = newsSeen();
   const selo = n => n.at && n.at > seen ? '<span class="n-novo">NOVA</span>' : '';
   const sel = n => `<em class="n-cad c-${esc(n.cad)}">${esc(nome[n.cad] || '')}</em>`;
-  const capa = n => `<a class="n-capa ${n.img ? '' : 'noimg'}" href="${esc(n.link)}" target="_blank" rel="noopener" data-newsopen="${esc(n.at || '')}">
+  const umaCapa = (n, i) => `<a class="n-capa ${n.img ? '' : 'noimg'} ${i ? '' : 'on'}" href="${esc(n.link)}" target="_blank" rel="noopener" data-newsopen="${esc(n.at || '')}">
       ${n.img ? `<img src="${esc(n.img)}" alt="" loading="lazy" onerror="this.closest('.n-capa').classList.add('noimg');this.remove()">` : ''}
       <span class="ov"></span><span class="tx">${sel(n)}${selo(n)}<b>${esc(n.title)}</b><small>${agoTxt(n.at)} · Agência Brasil</small></span></a>`;
+  // rodízio: as manchetes do caderno trocam sozinhas, com as bolinhas para escolher
+  const capa = () => `<div class="n-capas" data-ncapa>${ordem.map(umaCapa).join('')}
+    ${ordem.length > 1 ? `<span class="n-dots">${ordem.map((_, i) => `<i class="${i ? '' : 'on'}" data-ncd="${i}"></i>`).join('')}</span>` : ''}</div>`;
   const cartao = n => `<a class="n-card ${n.img ? '' : 'noimg'}" href="${esc(n.link)}" target="_blank" rel="noopener" data-newsopen="${esc(n.at || '')}">
       <span class="ph">${n.img ? `<img src="${esc(n.img)}" alt="" loading="lazy" onerror="this.closest('.ph').classList.add('vazia');this.remove()">` : ''}</span>
       <span class="tx">${sel(n)}${selo(n)}<b>${esc(n.title)}</b><small>${agoTxt(n.at)} · Agência Brasil</small></span></a>`;
@@ -4708,7 +4758,7 @@ function vNoticias(){
 
   if (tab === 'todas'){
     return `${head}${abasHTML(CAD, tab)}
-    ${capa(capaN)}
+    ${capa()}
     ${secao('brasil', porCad.brasil, 4)}
     ${secao('economia', porCad.economia, 4)}
     ${secao('internacional', porCad.internacional, 4)}
@@ -4716,7 +4766,7 @@ function vNoticias(){
   }
   const resto = fonte.filter(x => x.link !== capaN.link);
   return `${head}${abasHTML(CAD, tab)}
-  ${capa(capaN)}
+  ${capa()}
   <section class="n-sec"><div class="n-sh"><h2><i class="c-${tab}"></i>${nome[tab]}</h2><span class="n-cnt">${resto.length} notícias</span></div>
     <div class="n-grade">${resto.slice(0, 16).map(cartao).join('')}</div></section>
   <div class="foot">Manchetes e fotos da Agência Brasil (EBC). Clicando, a matéria abre no site original.</div>`;
@@ -5055,7 +5105,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && t && t.id === 'topq'){ t.value = ''; tbResults(''); t.blur(); return; }
   if (typing || !$('#sheet').hidden || document.querySelector('.onb-card')) return;
   const k = e.key;
-  if (k === '/'){ e.preventDefault(); const q = $('#topq'); if (q){ if (!ui.topOpen){ ui.topOpen = 1; render(); setTimeout(() => { const i = $('#topq'); if (i) i.focus(); }, 30); } else q.focus(); } else go('assistente'); }
+  if (k === '/'){ e.preventDefault(); const q = $('#topq'); if (q) q.focus(); else { go('inicio'); setTimeout(() => { const i = $('#topq'); if (i) i.focus(); }, 60); } }
   else if (k === 'n' || k === 'N'){ e.preventDefault(); openNewMenu(); }
   else if (/^[1-6]$/.test(k)){ go(['inicio','agenda','assistente','tarefas','financas','listas'][Number(k) - 1]); }
   else if ((k === 'ArrowLeft' || k === 'ArrowRight') && (view === 'agenda' || view === 'financas')){
@@ -5066,11 +5116,8 @@ document.addEventListener('keydown', e => {
 // barra fixa no alto (computador): busca em tudo, avisos e conta
 function topbar(){
   const ini = (S.name || 'Eu').trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
-  const buscando = !!(ui.topOpen || (ui.topq || '').trim());
   return `<div class="topbar"><div class="tb-in">
-    <div class="tb-live ${buscando ? 'off' : ''}">${tickerBand() || '<span class="tb-void"></span>'}</div>
-    <div class="tb-search ${buscando ? '' : 'mini'}" role="search">${ic('search')}<input id="topq" type="search" placeholder="Buscar compromissos, tarefas, notas, listas e contas" autocomplete="off" aria-label="Buscar" aria-controls="tb-res" value="${esc(ui.topq || '')}"><span class="kbd">/</span>
-      <div class="tb-res" id="tb-res" role="listbox" hidden></div></div>
+    <div class="tb-live">${tickerBand() || '<span class="tb-void"></span>'}</div>
     <button class="round bellbtn" data-inbox aria-label="Notificações${inbox.length ? ': ' + inbox.length + ' não lidas' : ''}" title="Notificações">${ic('bell')}${inbox.length ? `<span class="nbadge">${inbox.length > 9 ? '9+' : inbox.length}</span>` : ''}</button>
     <button class="round avatar" data-go="ajustes" aria-label="Ajustes" title="Ajustes">${esc(ini)}</button>
   </div></div>`;
@@ -5108,11 +5155,6 @@ function tbOpen(r){
 }
 function bindTopbar(){
   const q = $('#topq'); if (!q) return;
-  // a lupa abre a busca; fechando, os indicadores voltam a ocupar a barra
-  const cx = q.closest('.tb-search');
-  if (cx) cx.onclick = () => { if (!cx.classList.contains('mini')) return; ui.topOpen = 1; render(); setTimeout(() => { const i = $('#topq'); if (i) i.focus(); }, 30); };
-  q.addEventListener('blur', () => setTimeout(() => { if (!(ui.topq || '').trim() && ui.topOpen){ ui.topOpen = 0; render(); } }, 160));
-  q.addEventListener('keydown', e => { if (e.key === 'Escape'){ ui.topq = ''; ui.topOpen = 0; render(); } });
   q.oninput = () => tbResults(q.value);
   q.onfocus = () => { if (q.value) tbResults(q.value); };
   q.onblur = () => setTimeout(() => { const b = $('#tb-res'); if (b) b.hidden = true; }, 120);
@@ -5186,7 +5228,7 @@ function vHomeDesk(P, hp, items, card){
     ${hp.familia && fam && fam.group && fam.members.length > 1 ? `<button class="fam" data-go="ajustes"><span class="fam-dots">${fam.members.slice(0, 5).map(m => `<span class="fam-av sm">${esc(m.name[0] || '?')}</span>`).join('')}</span>${esc(fam.group.name)}</button>` : ''}
     ${wxl}
   </div>
-  ${hp.assistente || hp.sair ? `<div class="dh2">${hp.assistente ? P.ask : ''}${hp.sair ? nextLeave() : ''}</div>` : ''}
+  <div class="dh2">${askFind(hp, P)}${hp.sair ? nextLeave() : ''}</div>
   ${confirmCard()}${exBanner()}${pushBanner()}
   ${true ? `<div class="kpis">
     ${kpi('data-go="tarefas"', 'task', 'Tarefas pendentes', pend.length, lateT ? `${lateT} atrasada${lateT > 1 ? 's' : ''}` : 'Nenhuma atrasada', lateT ? 'bad' : '')}
