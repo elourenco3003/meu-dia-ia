@@ -1140,6 +1140,49 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 .kcol{min-height:0}
 .kcards{overflow:hidden}
 .k-more{flex:none;font-size:11.5px;font-weight:600;color:var(--fg2);padding:4px 6px;text-align:center}
+/* ---------- página de Notícias: capa, destaques e chamadas ---------- */
+.n-abas{display:flex;gap:4px;margin:0 0 12px;overflow:auto;scrollbar-width:none}
+.n-abas::-webkit-scrollbar{display:none}
+.n-abas button{flex:none;padding:6px 14px;border-radius:999px;font-size:13.5px;font-weight:600;color:var(--fg2);background:var(--card);border:1px solid var(--sep)}
+.n-abas button[aria-selected=true]{background:var(--accent);border-color:var(--accent);color:#fff}
+.n-cad{font-style:normal;display:inline-block;font-size:9.5px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:2px 7px;border-radius:4px;background:var(--accent);color:#fff}
+.n-cad.c-economia{background:#0E8A5F} .n-cad.c-internacional{background:#2A6BC4}
+.n-novo{display:inline-block;margin-left:5px;font-size:9.5px;font-weight:800;padding:2px 6px;border-radius:4px;background:#E3A23B;color:#15161B}
+.n-capa{position:relative;display:block;height:300px;border-radius:14px;overflow:hidden;background:#171922;text-decoration:none;box-shadow:var(--shadow)}
+.n-capa img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.n-capa .ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,12,22,.95) 0%,rgba(10,12,22,.6) 40%,rgba(10,12,22,.1) 75%,transparent 100%)}
+.n-capa.noimg .ov{background:linear-gradient(130deg,var(--accent) 0%,#2B2F5E 100%)}
+.n-capa .tx{position:absolute;left:20px;right:20px;bottom:17px;color:#fff}
+.n-capa b{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:23px;font-weight:700;line-height:1.26;margin:9px 0 5px;text-shadow:0 2px 14px rgba(0,0,0,.45)}
+.n-capa small{font-size:11.5px;color:rgba(255,255,255,.82)}
+body.mouse .n-capa:hover img{transform:scale(1.03);transition:transform .4s}
+.n-topo{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:14px;align-items:stretch}
+.n-lado{display:flex;flex-direction:column;gap:14px;min-height:0}
+.n-meia{display:flex;flex-direction:column;gap:0;background:var(--card);border:1px solid var(--sep);border-radius:12px;overflow:hidden;text-decoration:none;color:var(--fg);box-shadow:var(--shadow);flex:1 1 0;min-height:0}
+.n-meia .ph{flex:1 1 auto;min-height:0;background:var(--fill);overflow:hidden}
+.n-meia .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.n-meia .tx{flex:none;padding:9px 12px 11px;display:flex;flex-direction:column;gap:4px}
+.n-meia b{font-size:14px;font-weight:650;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.n-meia small{font-size:11px;color:var(--fg2)}
+body.mouse .n-meia:hover{border-color:var(--accent)}
+.n-grade{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
+.n-linha{display:flex;gap:10px;align-items:flex-start;background:var(--card);border:1px solid var(--sep);border-radius:10px;padding:10px 11px;text-decoration:none;color:var(--fg);box-shadow:var(--shadow)}
+.n-linha .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.n-linha b{font-size:13px;font-weight:600;line-height:1.32;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.n-linha small{font-size:10.5px;color:var(--fg2)}
+.n-linha .ph{width:58px;height:58px;border-radius:8px;overflow:hidden;flex:none;background:var(--fill)}
+.n-linha .ph img{width:100%;height:100%;object-fit:cover;display:block}
+body.mouse .n-linha:hover{border-color:var(--accent)}
+.n-lista{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+@media (max-width:899px){
+  .n-capa{height:210px;border-radius:16px}
+  .n-capa b{font-size:19px;-webkit-line-clamp:3}
+  .n-topo{grid-template-columns:minmax(0,1fr)}
+  .n-grade{grid-template-columns:minmax(0,1fr)}
+  .n-lista .n-meia{flex-direction:row;align-items:stretch}
+  .n-lista .n-meia .ph{flex:none;width:104px}
+  .n-lista .n-meia .tx{flex:1;justify-content:center;padding:10px 12px}
+}
 /* banner de manchetes: foto grande com o título por cima, como capa de portal */
 .nbanner{position:relative;display:block;height:244px;border-radius:14px;overflow:hidden;background:#171922;box-shadow:var(--shadow);flex:none;margin-bottom:2px}
 .nb-s{position:absolute;inset:0;opacity:0;transition:opacity .7s ease;pointer-events:none}
@@ -2205,7 +2248,7 @@ function bindView(){
     if (a==='push-on'){ enablePush(); }
     if (a==='wx-on'){ loadWeather(true); }
     if (a==='frete-edit'){ openFreteEdit(); }
-    if (a==='news-eco'){ ui.newsTab = 'economia'; ui.newsPage = 0; go('noticias'); }
+    if (a==='news-eco'){ ui.newsTab = 'economia'; go('noticias'); }
     if (a==='mkt-refresh'){ loadMarket(true); }
     if (a==='wx-pick'){ openWxPicker(); }
     if (a==='wx-refresh'){ wxFull = null; wxFullState = 'idle'; try { localStorage.removeItem('meudia.wxfull'); } catch(e) {} loadWeatherFull(true); render(); }
@@ -4545,7 +4588,7 @@ function newsBanner(){
   const slides = NB_CAD.map(([k, l]) => { const lista = nw[k] || []; const n = lista.find(x => x.img) || lista[0]; return n ? { ...n, cad:l, k } : null; }).filter(Boolean);
   if (!slides.length) return '';
   return `<div class="nbanner" data-nb aria-label="Manchetes">
-    ${slides.map((n, i) => `<a class="nb-s c-${esc(n.k)} ${n.img ? '' : 'noimg'} ${i ? '' : 'on'}" data-i="${i}" href="${esc(n.link)}" target="_blank" rel="noopener" data-newsopen="${esc(n.at || '')}">
+    ${slides.map((n, i) => `<a class="nb-s c-${esc(n.k)} ${n.img ? '' : 'noimg'} ${i ? '' : 'on'}" data-i="${i}" href="#" data-nbgo="${esc(n.k)}">
       ${n.img ? `<img src="${esc(n.img)}" alt="" loading="lazy" onerror="this.closest('.nb-s').classList.add('noimg');this.remove()">` : ''}
       <span class="ov"></span>
       <span class="tx"><em>${esc(n.cad)}</em>${n.at && n.at > seen ? '<span class="nova">NOVA</span>' : ''}<b>${esc(n.title)}</b><small>${agoTxt(n.at)} · Agência Brasil</small></span></a>`).join('')}
@@ -4561,6 +4604,8 @@ function bindNewsBanner(){
   let i = 0, parado = false;
   const vai = n => { i = (n + slides.length) % slides.length; slides.forEach((s, k) => s.classList.toggle('on', k === i)); dots.forEach((d, k) => d.classList.toggle('on', k === i)); };
   dots.forEach((d, k) => d.onclick = e => { e.preventDefault(); vai(k); });
+  // clicar na manchete abre a página de Notícias no caderno dela
+  slides.forEach(a => a.onclick = e => { e.preventDefault(); ui.newsTab = a.dataset.nbgo || 'todas'; go('noticias'); });
   b.onmouseenter = () => parado = true; b.onmouseleave = () => parado = false;
   nbTimer = setInterval(() => { if (!parado && !document.hidden && view === 'inicio') vai(i + 1); }, 7000);
 }
@@ -4606,32 +4651,60 @@ function vMercado(){
   <button class="mk-more" data-go="noticias">Ver notícias de economia${ic('r','i')}</button>`;
 }
 function vNoticias(){
-  if (!ui.newsTab) ui.newsTab = 'economia';
+  if (!ui.newsTab) ui.newsTab = 'todas';
   { const t = latestNews(); if (t) markNewsSeen(t.at); }
   loadMarket();
   const nw = mkt && mkt.noticias;
-  const head = `${back()}<div class="head"><div><h1 class="lt">Notícias</h1><div class="sub">${nw ? 'Atualizado às ' + hm(nw.updated_at) : 'Agência Brasil'}</div></div>
+  const head = `${back()}<div class="head"><div><h1 class="lt">Notícias</h1><div class="sub">${nw ? 'Agência Brasil · atualizado às ' + hm(nw.updated_at) : 'Agência Brasil'}</div></div>
     <button class="icon-btn" data-act="mkt-refresh" aria-label="Atualizar">${ic('refresh')}</button></div>`;
   if (!nw) return head + '<div class="card empty">Carregando…</div>';
-  const tab = ui.newsTab, full = desk() ? withImg(nw[tab]) : (nw[tab] || []);
-  // no celular as manchetes com foto viram cartões que deslizam para o lado; as demais ficam na lista
-  const feat = desk() ? [] : full.filter(x => x.img).slice(0, 5), car = feat.length > 1;
-  const fset = new Set(feat.map(x => x.link));
-  const list = car ? full.filter(x => !fset.has(x.link)) : full, per = 6, pages = Math.max(1, Math.ceil(list.length / per));
-  ui.newsPage = Math.min(Math.max(ui.newsPage || 0, 0), pages - 1);
-  // no computador a página é sempre cheia: na última, a janela recua para fechar as 6 notícias
-  const ini = desk() ? Math.min(ui.newsPage * per, Math.max(0, list.length - per)) : ui.newsPage * per;
-  const items = list.slice(ini, ini + per);
-  return `${head}
-  <section>
-    <div class="seg" role="group" aria-label="Notícias">${[['brasil','Brasil'],['economia','Economia'],['internacional','Internacional']].map(([k,l]) => `<button data-newstab="${k}" aria-pressed="${tab === k}">${l}</button>`).join('')}</div>
-    ${car ? newsCarousel(feat) : ''}
-    ${desk() ? `<div style="margin-top:12px">${items.length ? newsCards(items, 6) : '<div class="card empty">Sem notícias agora.</div>'}</div>` : ''}
-    ${car && items.length ? '<div class="sh" style="margin-top:16px">Mais notícias</div>' : ''}
-    <div class="group" style="margin-top:10px${desk() ? ';display:none' : ''}">${items.map(n => `<a class="row news" href="${esc(n.link)}" target="_blank" rel="noopener" data-newsopen="${esc(n.at || '')}">${n.img ? `<img class="nthumb" src="${esc(n.img)}" alt="" loading="lazy" onerror="this.remove()">` : ''}<span class="main"><div class="t">${esc(n.title)}</div><div class="s">${agoTxt(n.at)} · Agência Brasil</div></span>${ic('r','i chev')}</a>`).join('') || '<div class="empty">Sem notícias agora.</div>'}</div>
-    ${pages > 1 ? `<div class="pager" style="margin-top:10px"><button class="icon-btn" data-newspage="-1" aria-label="Notícias anteriores" ${ui.newsPage === 0 ? 'disabled' : ''}>${ic('l')}</button><span class="lbl" style="text-transform:none">Página ${ui.newsPage + 1} de ${pages}</span><button class="icon-btn" data-newspage="1" aria-label="Próximas notícias" ${ui.newsPage >= pages - 1 ? 'disabled' : ''}>${ic('r')}</button></div>` : ''}
-    <div class="foot">Manchetes e fotos da Agência Brasil (EBC). Tocando, abre a matéria no site.</div>
-  </section>`;
+
+  const CAD = [['todas','Todas'],['brasil','Brasil'],['economia','Economia'],['internacional','Internacional']];
+  const nome = { brasil:'Brasil', economia:'Economia', internacional:'Internacional' };
+  const marca = (l, k) => (l || []).map(x => ({ ...x, cad:k }));
+  const todas = [...marca(nw.brasil, 'brasil'), ...marca(nw.economia, 'economia'), ...marca(nw.internacional, 'internacional')]
+    .filter((x, i, a) => a.findIndex(y => y.link === x.link) === i)
+    .sort((a, b) => String(b.at).localeCompare(String(a.at)));
+  const tab = ui.newsTab;
+  const lista = tab === 'todas' ? todas : marca(nw[tab], tab);
+  const comFoto = [...lista.filter(x => x.img), ...lista.filter(x => !x.img)];
+
+  const seen = newsSeen();
+  const selo = n => n.at && n.at > seen ? '<span class="n-novo">NOVA</span>' : '';
+  const sel = n => `<em class="n-cad c-${esc(n.cad)}">${esc(nome[n.cad] || '')}</em>`;
+  const quando = n => `${agoTxt(n.at)}`;
+  const capa = n => `<a class="n-capa ${n.img ? '' : 'noimg'}" href="${esc(n.link)}" target="_blank" rel="noopener" data-newsopen="${esc(n.at || '')}">
+      ${n.img ? `<img src="${esc(n.img)}" alt="" loading="lazy" onerror="this.closest('.n-capa').classList.add('noimg');this.remove()">` : ''}
+      <span class="ov"></span><span class="tx">${sel(n)}${selo(n)}<b>${esc(n.title)}</b><small>${quando(n)} · Agência Brasil</small></span></a>`;
+  const meia = n => `<a class="n-meia ${n.img ? '' : 'noimg'}" href="${esc(n.link)}" target="_blank" rel="noopener" data-newsopen="${esc(n.at || '')}">
+      <span class="ph">${n.img ? `<img src="${esc(n.img)}" alt="" loading="lazy" onerror="this.remove()">` : ''}</span>
+      <span class="tx">${sel(n)}<b>${esc(n.title)}</b><small>${quando(n)}</small></span></a>`;
+  const linha = n => `<a class="n-linha" href="${esc(n.link)}" target="_blank" rel="noopener" data-newsopen="${esc(n.at || '')}">
+      <span class="tx">${sel(n)}<b>${esc(n.title)}</b><small>${quando(n)} · Agência Brasil</small></span>
+      ${n.img ? `<span class="ph"><img src="${esc(n.img)}" alt="" loading="lazy" onerror="this.closest('.ph').remove()"></span>` : ''}</a>`;
+
+  const abas = `<div class="n-abas" role="tablist">${CAD.map(([k, l]) => `<button role="tab" data-newstab="${k}" aria-selected="${tab === k}">${l}</button>`).join('')}</div>`;
+
+  if (!comFoto.length) return `${head}${abas}<div class="card empty">Sem notícias agora.</div>`;
+
+  if (desk()){
+    const [p1, p2, p3, ...resto] = comFoto;
+    const grade = resto.slice(0, 8);
+    return `${head}${abas}
+    <div class="n-topo">
+      ${capa(p1)}
+      <div class="n-lado">${[p2, p3].filter(Boolean).map(meia).join('')}</div>
+    </div>
+    ${grade.length ? `<div class="n-grade">${grade.map(linha).join('')}</div>` : ''}
+    <div class="foot">Manchetes e fotos da Agência Brasil (EBC). Clicando, a matéria abre no site original.</div>`;
+  }
+
+  const [p1, ...resto] = comFoto;
+  const lote = resto.slice(0, 14);
+  return `${head}${abas}
+  ${capa(p1)}
+  <div class="n-lista">${lote.map(meia).join('')}</div>
+  <div class="foot">Manchetes e fotos da Agência Brasil (EBC). Tocando, a matéria abre no site original.</div>`;
 }
 const ymLbl = s => { const [y, m] = String(s || '').split('-'); return m ? `${MON[Number(m) - 1]}/${y}` : esc(s); };
 const mesRef = d => { const [, mm, yy] = String(d).split('/'); return mm ? `${MON[Number(mm) - 1]}/${yy}` : esc(d); };
@@ -5108,9 +5181,7 @@ function vHomeDesk(P, hp, items, card){
   ${hp.programacao ? `<div class="kboard" aria-label="Quadro do dia">
     ${by.late.length ? col('late', 'Atrasado') : ''}${col('hoje', 'Hoje', t)}${col('amanha', 'Amanhã', tm)}${col('prox', 'Próximos dias')}${by.semdata.length ? col('semdata', 'Tarefas sem data') : ''}${col('feito', 'Concluído hoje')}
   </div><div class="foot">Arraste um cartão para Hoje ou Amanhã para mudar a data, ou para Concluído hoje quando terminar. Clique no cartão para abrir.</div>` : ''}
-  ${false && hp.noticias && nlist.length && hp.programacao ? `<div class="nshead"><span class="live-h"><i></i>Notícias de economia · ${hm(nw.updated_at)}</span><button data-act="news-eco">Ver todas</button></div>
-  <div class="nstrip">${withImg(nlist).slice(0, 4).map(n => `<a href="${esc(n.link)}" target="_blank" rel="noopener" data-newsopen="${esc(n.at || '')}"><b>${esc(n.title)}</b><small>${agoTxt(n.at)} · Agência Brasil</small></a>`).join('')}</div>` : ''}
-  ${hp.noticias && nlist.length && !hp.programacao ? `<section class="dnews"><div class="sh"><span class="live-h"><i></i>Notícias de economia · ${hm(nw.updated_at)}</span><button data-act="news-eco">Ver todas</button></div>${newsCards(nlist, 6)}</section>` : ''}`;
+`;
 }
 /* o quadro ocupa o que sobra da janela; o que não couber vira "+N" no pé da coluna */
 function fitBoard(){
