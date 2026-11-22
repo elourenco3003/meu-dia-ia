@@ -1046,10 +1046,15 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
   .inv-desk .head .sub{font-size:12px}
   .utabs button{padding-bottom:8px;font-size:14px}
   .pchips button{padding:4px 12px;font-size:12.5px}
-  .qt{font-size:13.5px}
-  .qt td{height:28px}
-  .qt th{padding:5px 10px;font-size:12px}
+  .qt{font-size:12.8px}
+  .qt td{height:26px}
+  .qt th{padding:4px 9px;font-size:11.5px}
+  .qt td{padding:0 9px}
   .inv-desk .foot{display:none}
+  .inv-desk .head .sub{display:none}
+  .q-r .eco-d{font-size:12.5px;line-height:1.42;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .q-r .lc-hint{display:none}
+  .q-r .lc-ax{margin-top:4px}
   .q-r{padding:10px;gap:7px;max-height:calc(100vh - 74px);overflow:auto;scrollbar-width:none}
   .q-r::-webkit-scrollbar{display:none}
   .q-r .ip-head .main b{font-size:16px}
@@ -1067,10 +1072,14 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 /* notebook de tela baixa: o mínimo para caber uma dúzia de linhas */
 @media (min-width:900px) and (max-height:700px){
   .topbar{margin-bottom:8px}
-  .inv-desk h1.lt{font-size:20px}
-  .inv-desk{gap:6px}
-  .qt td{height:26px}
-  .pchips button{padding:3px 11px}
+  .inv-desk h1.lt{font-size:19px}
+  .inv-desk{gap:5px}
+  .qt{font-size:12.4px}
+  .qt td{height:23px}
+  .qt th{padding:3px 9px}
+  .pchips button{padding:3px 11px;font-size:12px}
+  .utabs button{padding-bottom:6px;font-size:13.5px}
+  .q-r .eco-d{-webkit-line-clamp:2}
 }
 @media (max-width:1299px){ .q2{grid-template-columns:minmax(0,1fr)} .q-r{position:static} .q-add{width:260px} }
 
@@ -2878,7 +2887,8 @@ const CHART_DAY = { axis: brD, title: dt => { const [yy, mm, dd] = dt.split('-')
 function drawChart(box, pts, opt = CHART_DAY){
   if (!box) return;
   const baixa = innerHeight < 880;
-  const W = Math.max(260, box.clientWidth), H = opt.h ? opt.h(W) : W > 560 ? (baixa ? 220 : 300) : (baixa ? 140 : 220), PL = 6, PR = 56, PT = 12, PB = 24;
+  const curta = innerHeight < 720;
+  const W = Math.max(260, box.clientWidth), H = opt.h ? opt.h(W) : W > 560 ? (baixa ? 210 : 300) : (curta ? 112 : baixa ? 132 : 220), PL = 6, PR = 56, PT = 12, PB = 24;
   const vs = pts.map(p => p[1]); let mn = Math.min(...vs), mx = Math.max(...vs);
   if (mx === mn){ mn -= 0.5; mx += 0.5; }
   const step = niceStep((mx - mn) / 4), lo = Math.floor(mn / step) * step, hi = Math.ceil(mx / step) * step;
@@ -4265,7 +4275,7 @@ function tickItems(){
   if (!mkt) return [];
   const m = mkt.moedas, j = mkt.juros, b = mkt.bolsa, out = [];
   if (b && b.ibov) out.push({ k:'IBOV', l:'Ibovespa', v:`${n2(b.ibov.price, 0)} pts`, p:b.ibov.pct, raw:b.ibov.price });
-  if (m){ out.push({ k:'USD', l:'Dólar', v:`R$ ${n2(m.usd.value, 4)}`, p:m.usd.pct, raw:m.usd.value }); out.push({ k:'EUR', l:'Euro', v:`R$ ${n2(m.eur.value, 4)}`, p:m.eur.pct, raw:m.eur.value });
+  if (m){ out.push({ k:'USD', l:'Dólar', v:`R$ ${n2(m.usd.value, 2)}`, p:m.usd.pct, raw:m.usd.value }); out.push({ k:'EUR', l:'Euro', v:`R$ ${n2(m.eur.value, 2)}`, p:m.eur.pct, raw:m.eur.value });
     if (m.btc) out.push({ k:'BTC', l:'Bitcoin', v:`R$ ${n2(m.btc.value, 0)}`, p:m.btc.pct, raw:m.btc.value }); }
   if (j){ out.push({ k:'SELIC', l:'Selic', v:`${n2(j.selic.value)}% a.a.` }); out.push({ k:'CDI', l:'CDI', v:`${n2(j.cdi.value)}% a.a.` }); out.push({ k:'IPCA', l:'IPCA 12m', v:`${n2(j.ipca12.value)}%` }); }
   const mc = mkt.macro;
@@ -4313,7 +4323,7 @@ function indValue(k){
   const m = mkt && mkt.moedas, j = mkt && mkt.juros, mc = (mkt && mkt.macro) || {}, b = mkt && mkt.bolsa;
   const f = (v, unit, ref) => ({ v, unit, ref });
   switch (k){
-    case 'USD': return m && f(`R$ ${n2(m.usd.value, 4)}`, `variação do dia ${pctTxt(m.usd.pct)}`, m.usd.at);
+    case 'USD': return m && f(`R$ ${n2(m.usd.value, 2)}`, `variação do dia ${pctTxt(m.usd.pct)}`, m.usd.at);
     case 'EUR': return m && f(`R$ ${n2(m.eur.value, 4)}`, `variação do dia ${pctTxt(m.eur.pct)}`, m.eur.at);
     case 'BTC': return m && m.btc && f(`R$ ${n2(m.btc.value, 0)}`, `variação do dia ${pctTxt(m.btc.pct)}`, m.btc.at);
     case 'IBOV': return b && b.ibov && f(`${n2(b.ibov.price, 0)} pts`, `variação do dia ${pctTxt(b.ibov.pct)}`, '');
@@ -4436,7 +4446,7 @@ function vMercado(){
   ${invLink}
   ${bo ? bolsaSection(bo) : ''}
   <section><div class="sh">Moedas</div><div class="group">
-    ${m ? cur('Dólar comercial', m.usd, 4, 'USD') + cur('Euro', m.eur, 4, 'EUR') + (m.btc ? cur('Bitcoin', m.btc, 2, 'BTC') : '') : '<div class="empty">Sem dados agora.</div>'}
+    ${m ? cur('Dólar comercial', m.usd, 2, 'USD') + cur('Euro', m.eur, 2, 'EUR') + (m.btc ? cur('Bitcoin', m.btc, 2, 'BTC') : '') : '<div class="empty">Sem dados agora.</div>'}
   </div><div class="foot">Valores em R$ por unidade da moeda. Variação do dia em %. Dados: ${esc((m && m.source) || '')}</div></section>
   <section><div class="sh">Juros e inflação</div><div class="group">
     ${j ? row('Selic (meta)', 'Definida pelo Copom', pctR(j.selic.value, 'ao ano'), 'SELIC') + row('CDI', esc(j.cdi.date), pctR(j.cdi.value, 'ao ano'), 'CDI')
@@ -5176,8 +5186,8 @@ function ecoRows(){
   const m = mkt && mkt.moedas, j = mkt && mkt.juros, mc = (mkt && mkt.macro) || {}, b = (mkt && mkt.bolsa) || {}, out = [];
   const pc = (v, d = 2) => `${n2(v, d)}%`, sg = (v, d = 2) => `${v > 0 ? '+' : ''}${n2(v, d)}%`;
   if (b.ibov && b.ibov.price != null) out.push({ k:'IBOV', g:'bolsa', name:'Ibovespa', tag:'pontos', val:n2(b.ibov.price, 0), day:b.ibov.pct, ref:qHora(b.updated_at) });
-  if (m){ out.push({ k:'USD', g:'moedas', name:'Dólar comercial', tag:'R$', val:n2(m.usd.value, 4), day:m.usd.pct, ref:m.usd.at });
-    out.push({ k:'EUR', g:'moedas', name:'Euro', tag:'R$', val:n2(m.eur.value, 4), day:m.eur.pct, ref:m.eur.at });
+  if (m){ out.push({ k:'USD', g:'moedas', name:'Dólar comercial', tag:'R$', val:n2(m.usd.value, 2), day:m.usd.pct, ref:m.usd.at });
+    out.push({ k:'EUR', g:'moedas', name:'Euro', tag:'R$', val:n2(m.eur.value, 2), day:m.eur.pct, ref:m.eur.at });
     if (m.btc) out.push({ k:'BTC', g:'moedas', name:'Bitcoin', tag:'R$', val:n2(m.btc.value, 0), day:m.btc.pct, ref:m.btc.at }); }
   if (j){ out.push({ k:'SELIC', g:'juros', name:'Selic (meta)', tag:'ao ano', val:pc(j.selic.value), ref:'Definida pelo Copom' });
     out.push({ k:'CDI', g:'juros', name:'CDI', tag:'ao ano', val:pc(j.cdi.value), ref:j.cdi.date });
@@ -5185,6 +5195,14 @@ function ecoRows(){
   [['IPP','IPP (indústria)','ipp','no mês',2],['COMERCIO','Comércio varejista','comercio','vendas no mês',1],['IGPM','IGP-M','igpm','no mês',2],['INCC','INCC (construção)','incc','no mês',2],['DESEMP','Desemprego','desemprego','da força de trabalho',1],['IBCBR','IBC-Br (prévia do PIB)','ibcbr','sobre o mês anterior',2]]
     .forEach(([k, name, f, tag, d]) => { const x = mc[f]; if (x) out.push({ k, g:'atividade', name, tag, val: k === 'DESEMP' ? pc(x.value, d) : k === 'COMERCIO' || k === 'IBCBR' ? sg(x.value, d) : pc(x.value, d), mv: k === 'COMERCIO' || k === 'IBCBR' ? x.value : null, y12:x.y12, ref:(k === 'DESEMP' ? 'trimestre até ' : '') + ymLbl(x.ref) }); });
   return out;
+}
+// "2026-11-20 15:18:54" vira "20/11 15:18"; "19/11/2026" vira "19/11"
+function refCurto(v){
+  const t = String(v || '');
+  let m = t.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}:\d{2})/);
+  if (m) return `${m[3]}/${m[2]} ${m[4]}`;
+  m = t.match(/^(\d{2})\/(\d{2})\/\d{4}$/);
+  return m ? `${m[1]}/${m[2]}` : t;
 }
 function vMercadoDesk(){
   loadMarket();
@@ -5209,11 +5227,10 @@ function vMercadoDesk(){
     const pagesE = Math.max(1, Math.ceil(rows.length / perE));
     ui.ecoPage = Math.min(Math.max(0, ui.ecoPage || 0), pagesE - 1);
     const pgE = rows.slice(ui.ecoPage * perE, ui.ecoPage * perE + perE);
-    const G = { bolsa:'Bolsa', moedas:'Moeda', juros:'Juros e inflação', atividade:'Atividade e preços' };
     left = `<div class="pchips" role="group" aria-label="Filtrar">${[['todos','Todos'],['moedas','Moedas'],['juros','Juros e inflação'],['atividade','Atividade e preços']].map(([k, l]) => `<button data-ecotab="${k}" aria-pressed="${chip === k}">${l}</button>`).join('')}</div>
-    ${rows.length ? `<table class="qt"><thead><tr><th class="q-n">Indicador</th><th>Último</th><th>Variação do dia</th><th>Em 12 meses</th><th>Grupo</th><th>Referência</th></tr></thead>
+    ${rows.length ? `<table class="qt"><thead><tr><th class="q-n">Indicador</th><th>Último</th><th>Variação do dia</th><th>Em 12 meses</th><th>Referência</th></tr></thead>
       <tbody>${pgE.map(r => `<tr class="sel ${r.k === ui.ecoSel ? 'on' : ''}" data-ecosel="${r.k}" tabindex="0"><td class="q-n"><div class="qn"><b>${r.name}</b><small>${r.tag}</small></div></td>
-        <td class="${r.mv != null ? udCls(r.mv) : ''}"><b>${r.val}</b></td><td class="${udCls(r.day)}"><b>${r.day != null ? sgn(Number(r.day)) + '%' : '—'}</b></td><td>${r.y12 != null ? n2(r.y12) + '%' : '—'}</td><td class="q-h">${G[r.g]}</td><td class="q-h">${esc(r.ref || '—')}</td></tr>`).join('')}</tbody></table>
+        <td class="${r.mv != null ? udCls(r.mv) : ''}"><b>${r.val}</b></td><td class="${udCls(r.day)}"><b>${r.day != null ? sgn(Number(r.day)) + '%' : '—'}</b></td><td>${r.y12 != null ? n2(r.y12) + '%' : '—'}</td><td class="q-h">${esc(refCurto(r.ref) || '—')}</td></tr>`).join('')}</tbody></table>
       <div class="q-foot"><span>${rows.length} ${rows.length === 1 ? 'indicador' : 'indicadores'}</span>
         ${pagesE > 1 ? `<button class="icon-btn" data-ecopg="-1" ${ui.ecoPage ? '' : 'disabled'} aria-label="Página anterior">${ic('l')}</button><span>Página ${ui.ecoPage + 1} de ${pagesE}</span><button class="icon-btn" data-ecopg="1" ${ui.ecoPage < pagesE - 1 ? '' : 'disabled'} aria-label="Próxima página">${ic('r')}</button>` : ''}</div>` : '<div class="q-empty">Sem dados agora.</div>'}
     <div class="foot">Moedas em R$ por unidade. Juros ao ano. Inflação e atividade: variação no mês e acumulado em 12 meses. Clique num indicador para ver o que ele mede e o histórico. Dados: ${esc((mkt.moedas && mkt.moedas.source) || 'Banco Central')}, IBGE e brapi.</div>`;
