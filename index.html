@@ -1609,13 +1609,17 @@ function sirenUrl(kind){
   for (let i = 0; i < n; i++) v.setInt16(44 + i * 2, smp[i] * 32767, true);
   return toneCache[kind] = URL.createObjectURL(new Blob([buf], { type:'audio/wav' }));
 }
-// o celular só libera o som depois de um toque na tela: preparo no primeiro toque
+// o celular só libera o som depois de um toque na tela: preparo no primeiro toque.
+// O destravamento usa um áudio de silêncio puro — com a sirene, o iPhone deixava escapar um bipe ao abrir o app.
+const SILENCE = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
 function unlockAlarm(){
   if (alarmReady) return;
   try {
-    alarmEl = alarmEl || Object.assign(new Audio(sirenUrl()), { loop:true, preload:'auto' });
-    alarmEl.muted = true;
-    alarmEl.play().then(() => { if (!alarmEl.dataset.on){ alarmEl.pause(); alarmEl.currentTime = 0; } alarmEl.muted = false; alarmReady = true; }).catch(() => { alarmEl.muted = false; });
+    if (alarmEl && alarmEl.dataset.on) return;            // alarme tocando agora: não mexe
+    alarmEl = alarmEl || Object.assign(new Audio(SILENCE), { loop:true, preload:'auto' });
+    const pronto = () => { try { alarmEl.pause(); alarmEl.currentTime = 0; alarmEl.muted = false; alarmEl.volume = 1; alarmEl.src = sirenUrl(); } catch(e) {} };
+    alarmEl.src = SILENCE; alarmEl.muted = true; alarmEl.volume = 0;
+    alarmEl.play().then(() => { pronto(); alarmReady = true; }).catch(() => pronto());
   } catch(e) {}
 }
 document.addEventListener('pointerdown', unlockAlarm, true);
