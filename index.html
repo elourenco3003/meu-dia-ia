@@ -1162,6 +1162,62 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 .kcol{min-height:0}
 .kcards{overflow:hidden}
 .k-more{flex:none;font-size:11.5px;font-weight:600;color:var(--fg2);padding:4px 6px;text-align:center}
+
+/* ---------- Início: hub de áreas ---------- */
+.hb{display:flex;flex-direction:column;gap:12px}
+.hb-hello small{display:block;font-size:13px;color:var(--fg2);font-weight:600}
+.hb-hello b{font-size:22px;font-weight:800;letter-spacing:-.4px;text-transform:uppercase}
+.hb-wx{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:12.4px;color:var(--fg2);font-weight:600;width:100%;text-align:left}
+.hb-wx svg{width:17px;height:17px;color:var(--warn);flex:none}
+.hb-wx b{font-size:13.4px;font-weight:800;color:var(--fg);text-transform:none;letter-spacing:0;white-space:nowrap}
+.hb-wx .wd{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hb-wx .dt{margin-left:auto;font-size:11.6px;white-space:nowrap}
+.hb-top{display:flex;align-items:flex-start;gap:10px}
+.hb-top .hb-hello{flex:1;min-width:0}
+.hb-top .round{margin-top:2px}
+.hb-hero{border-radius:18px;padding:16px 16px 14px;color:#fff;background:linear-gradient(130deg,#4F5BC4,#7B8BE3 55%,#9B7AD1);box-shadow:0 10px 26px rgba(79,91,196,.3);position:relative;overflow:hidden;text-align:left;width:100%}
+.hb-hero::after{content:"";position:absolute;right:-50px;top:-60px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.08)}
+.hb-hero > *{position:relative;z-index:1}
+.hb-hero .hd{display:block;font-size:12.5px;opacity:.85;font-weight:600;position:relative}
+.hb-hero .big{display:block;font-size:27px;font-weight:800;letter-spacing:-.8px;line-height:1.12;margin-top:2px;position:relative}
+.hb-hero .hd,.hb-hero .big,.hb-hero .sub{color:#fff}
+.hb-hero .sub{display:block;font-size:12.4px;opacity:.9;margin-top:3px;position:relative}
+.hb-mini{display:flex;gap:8px;margin-top:13px;position:relative}
+.hb-mini span{flex:1;background:rgba(255,255,255,.16);border-radius:12px;padding:8px 10px}
+.hb-mini span.alert{background:rgba(255,255,255,.28)}
+.hb-mini b{display:block;font-size:17px;font-weight:800;letter-spacing:-.3px}
+.hb-mini i{display:block}
+.hb-mini i{font-style:normal;font-size:11px;opacity:.88}
+.hb-h{font-size:14.5px;font-weight:800;letter-spacing:-.2px;margin:2px 2px -2px}
+.hb-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hb-q{background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:13px;display:flex;flex-direction:column;gap:9px;align-items:flex-start;text-align:left}
+.hb-q .qi{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--as);color:var(--at)}
+.hb-q .qi svg{width:21px;height:21px}
+.hb-q b{font-size:14.5px;font-weight:800;letter-spacing:-.2px}
+.hb-q small{font-size:12px;color:var(--fg2);font-weight:600}
+.hb-q em{font-style:normal;font-size:12px;color:var(--bad);font-weight:700}
+.hb-next{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.hb-next .nh{font-size:12.6px;font-weight:800;display:flex;align-items:center;gap:8px}
+.hb-next .nh-go{margin-left:auto;font-size:11.6px;font-weight:700;color:var(--accent);background:none;border:0;padding:0}
+.hb-next ul{list-style:none;display:flex;flex-direction:column;gap:7px;margin:0;padding:0}
+.hb-next li{display:flex;align-items:center;gap:9px;font-size:12.8px}
+.hb-next li i{width:7px;height:7px;border-radius:50%;flex:none}
+.hb-next li span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb-next li em{font-style:normal;font-size:11.4px;color:var(--fg2);font-variant-numeric:tabular-nums}
+.hb .nbanner{margin:0}
+@media (min-width:1024px){
+  .hb{gap:12px}
+  .hb-acts{display:flex;gap:12px;align-items:stretch}
+  .hb-acts:empty{display:none}
+  .hb-acts > *{flex:1;min-width:0;margin:0}
+  .hb-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .hb-row{display:grid;grid-template-columns:1.1fr 1fr;gap:12px;align-items:stretch}
+  .hb-hero .big{font-size:30px}
+  .hb-hello b{font-size:20px}
+  .hb-top{align-items:baseline}
+}
+@media (max-width:1023px){ .hb-wx .dt,.hb-wx .wr{display:none} }
+
 /* ---------- página de Notícias: capa sorteada e seções por tema ---------- */
 .wrap.v-noticias{max-width:none}
 .n-abas{display:flex;gap:6px;margin:0 0 14px;overflow:auto;scrollbar-width:none}
@@ -1344,6 +1400,7 @@ body.mouse .cc-b button:hover{filter:brightness(.97)}
   <nav id="tabs" aria-label="Seções">
     <div class="brand"><span class="lockup"><svg width="30" height="30" viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="lg-side" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9CA8EF"/><stop offset="1" stop-color="#5E6DD8"/></linearGradient></defs><rect width="100" height="100" rx="23" fill="url(#lg-side)"/><path d="M30 64 A20 20 0 0 1 70 64 Z" fill="#FFFFFF"/><path d="M18 64 H82" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round"/><path d="M34 76 H66" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" stroke-opacity="0.7"/><g stroke="#FFFFFF" stroke-width="4.5" stroke-linecap="round"><path d="M50 38 V31"/><path d="M37 41.5 L33.5 35.4"/><path d="M27.5 51 L21.4 47.5"/><path d="M72.5 51 L78.6 47.5"/></g><path d="M68 18 Q68 28 78 28 Q68 28 68 38 Q68 28 58 28 Q68 28 68 18 Z" fill="#FFFFFF"/></svg><span class="wm">Meu Dia</span><span class="ia">IA</span></span></div>
     <button data-v="inicio"><svg class="i"><use href="#i-home"/></svg>Início</button>
+    <button data-v="dia" class="side-only"><svg class="i"><use href="#i-ok"/></svg>Meu dia</button>
     <button data-v="agenda"><svg class="i"><use href="#i-cal"/></svg>Agenda</button>
     <div class="fab-cell"><button id="fab" aria-label="Adicionar"><svg class="i"><use href="#i-plus"/></svg><span>Adicionar</span></button></div>
     <button data-v="assistente"><svg class="i"><use href="#i-spark"/></svg>Assistente</button>
@@ -1836,13 +1893,13 @@ document.querySelectorAll('#tabs [data-v]').forEach(b => b.onclick = () => go(b.
 $('#fab').onclick = () => openNewMenu();
 
 function render(){
-  const MAIS = ['mais','tarefas','lembretes','rotinas','financas','listas','lista','invest','mercado','noticias','clima','ajustes','admin','arquivados'];
+  const MAIS = ['mais','dia','tarefas','lembretes','rotinas','financas','listas','lista','invest','mercado','noticias','clima','ajustes','admin','arquivados'];
   document.querySelectorAll('#tabs [data-v]').forEach(b => { if (b.dataset.v===view || (b.dataset.v==='listas' && view==='lista') || (b.dataset.v==='mais' && MAIS.includes(view))) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
   // computador: as listas abrem ao lado (a primeira já aberta); notas continuam na tela própria
   if (desk() && view==='listas' && (ui.lnTab||'listas')==='listas' && S.lists.length){ if (!S.lists.some(l => l.id===ui.listId)) ui.listId = S.lists[0].id; view = 'lista'; }
   if (desk() && view==='lista'){ if (ui.lnTab==='notas' || !S.lists.length) view = 'listas'; else if (!S.lists.some(l => l.id===ui.listId)) ui.listId = S.lists[0].id; }
   const D = desk();
-  const V = {inicio:vHome, agenda:D?vAgendaDesk:vAgenda, assistente:vAssist, tarefas:vTasks, financas:D?vFinDesk:vFin, lembretes:vTasks, ajustes:vSettings, mais:vMais, admin:vAdmin, clima:vClima, mercado:D?vMercadoDesk:vMercado, noticias:vNoticias, listas:vListas, lista:D?vListaDesk:vLista, invest:D?vInvestDesk:vInvest, rotinas:vRotinas, arquivados:vArq}[view] || vHome;
+  const V = {inicio:vHub, dia:vHome, agenda:D?vAgendaDesk:vAgenda, assistente:vAssist, tarefas:vTasks, financas:D?vFinDesk:vFin, lembretes:vTasks, ajustes:vSettings, mais:vMais, admin:vAdmin, clima:vClima, mercado:D?vMercadoDesk:vMercado, noticias:vNoticias, listas:vListas, lista:D?vListaDesk:vLista, invest:D?vInvestDesk:vInvest, rotinas:vRotinas, arquivados:vArq}[view] || vHome;
   const m = $('#view'); m.classList.toggle('chat', view==='assistente');
   const hadQ = document.activeElement && document.activeElement.id === 'topq'; hvHide();
   m.innerHTML = `${side() ? topbar() : ''}<div class="wrap v-${view}${D ? ' desk' : ''}">${V()}</div>`;
@@ -1856,7 +1913,7 @@ function render(){
   if (view==='inicio') bindNewsBanner();
   if (view==='noticias') bindNewsCapa();
   bindConfirm();
-  if (D && view==='inicio') bindBoard();
+  if (D && view==='dia') bindBoard();
   fitCols();
   mouseText(m);
   drawSparks(m);
@@ -1867,6 +1924,13 @@ function render(){
   if (view==='invest') bindInvest();
 }
 const back = () => `<button class="back" data-go="inicio">${ic('l')}Início</button>`;
+const askBox = () => `<form class="askbox ab-ask" id="ask" aria-label="Assistente">
+    ${ic('spark')}
+    <span class="ab-tag">${ic('spark')}Pedir</span>
+    <input id="ask-in" placeholder="Fale ou escreva o que precisa — eu marco, anoto e organizo" autocomplete="off" aria-label="Pedir ao assistente" maxlength="2000" value="${esc(ui.askDraft || '')}">
+    <button type="button" class="mic" data-mic aria-label="Falar">${ic('mic')}</button>
+    <button class="go" aria-label="Enviar">${ic('up')}</button>
+  </form>`;
 // a busca mora aqui embaixo, ao lado da caixa de pedir — cada uma com a sua cor e o seu rótulo
 const findBox = () => `<div class="askbox ab-find" role="search">
     <span class="ab-tag">${ic('search')}Buscar</span>
@@ -1899,6 +1963,97 @@ function donut(parts){
   const segs = tot ? parts.filter(p=>p.v).map(p => { const len = C*p.v/tot, gap = parts.filter(q=>q.v).length>1 ? 3 : 0;
     const s = `<circle cx="36" cy="36" r="${r}" fill="none" stroke="${p.c}" stroke-width="11" stroke-dasharray="${Math.max(len-gap,.1)} ${C}" stroke-dashoffset="${-off}" transform="rotate(-90 36 36)"/>`; off += len; return s; }).join('') : '';
   return `<svg viewBox="0 0 72 72" width="72" height="72" aria-hidden="true" style="flex:none"><circle cx="36" cy="36" r="${r}" fill="none" stroke="var(--fill)" stroke-width="11"/>${segs}</svg>`;
+}
+
+
+/* ---------- Início: hub de áreas (boas-vindas, tarja, notícia, cartão do dia e acesso rápido) ---------- */
+function vHub(){
+  const n = new Date(), t = today(), hp = homePrefs(), ph = dayPhase(n.getHours()), D = desk();
+  if (hp.clima) loadWeather();
+  const items = progItems(t);
+  const evs = S.events.filter(e => e.date === t);
+  const abertos = items.filter(i => !i.done);
+  const prox = abertos.find(i => i.time && i.time >= nowHM()) || abertos.find(i => i.time) || abertos[0];
+  const pend = pendingTasks(), lateT = pend.filter(x => x.due && x.due < t).length;
+  const mk = monthKey(t), bills = openBills();
+  const owed = bills.filter(b => monthKey(b.date) <= mk).reduce((a, b) => a + b.cents, 0);
+  const venc = bills.filter(b => b.date < t), vencV = venc.reduce((a, b) => a + b.cents, 0);
+  const rot = rotAgenda(), doses = rot.filter(x => x.r.kind === 'remedio');
+  const dOk = doses.filter(x => x.log && x.log.status !== 'pulado').length;
+  const proxDose = doses.find(x => !x.log && x.t >= nowHM());
+  const atrasados = items.filter(i => i.late).length + venc.length;
+  const left = S.items.filter(i => !i.done).length;
+  const w = S.watch || [], Q = S.quotes || {};
+  const altas = w.filter(x => Q[x.symbol] && Number(Q[x.symbol].pct) > 0).length;
+  const tk = tickItems(), usd = tk.find(i => i.k === 'USD'), selic = tk.find(i => i.k === 'SELIC');
+  const ini = (S.name || 'Eu').trim().split(/\s+/).map(x => x[0]).slice(0, 2).join('').toUpperCase();
+
+  // boas-vindas com a previsão do tempo
+  const clima = hp.clima && wx && wxState === 'ok'
+    ? `<button class="hb-wx" data-go="clima" aria-label="Previsão do tempo">${wxIcon(wx.cond, !wx.is_day)}<b>${wx.temp} °C</b><span class="wd">${esc(wx.desc)} · máx ${wx.max}° mín ${wx.min}°</span><span class="wr"> · chuva ${wx.rain}%</span><span class="dt">${DOWL[n.getDay()].replace(/^./, c => c.toUpperCase())}, ${n.getDate()} de ${MONL[n.getMonth()]} · <span data-clock>${nowHM()}</span></span></button>`
+    : hp.clima && wxState === 'off' ? `<button class="hb-wx" data-act="wx-on"><span>Ver a previsão do tempo</span></button>` : '';
+  const hello = `<div class="hb-top"><div class="hb-hello">
+      <small>${ph.hi}${D ? '' : ' · ' + DOWL[n.getDay()] + ', ' + n.getDate() + ' de ' + MONL[n.getMonth()]}</small>
+      <b>${esc(firstName())}</b>${clima}</div>
+    <button class="round bellbtn" data-inbox aria-label="Notificações${inbox.length ? ': ' + inbox.length + ' não lidas' : ''}">${ic('bell')}${inbox.length ? `<span class="nbadge">${inbox.length > 9 ? '9+' : inbox.length}</span>` : ''}</button>
+    <button class="round avatar" data-go="ajustes" aria-label="Ajustes">${esc(ini)}</button></div>`;
+
+  // cartão do dia
+  const quantos = evs.filter(e => !e.done).length;
+  const titulo = quantos ? `${quantos} compromisso${quantos > 1 ? 's' : ''} hoje` : (abertos.length ? `${abertos.length} ${abertos.length > 1 ? 'itens' : 'item'} para hoje` : 'Dia livre');
+  const sair = prox && prox.k === 'ev' && prox.ref.leave && hasLeave(prox.ref) ? ` · saia ${fmtHM(prox.ref.leave)}` : '';
+  const sub = prox ? `Próximo: ${esc(prox.ref.title)}${prox.time ? ' às ' + prox.time : ''}${sair}` : 'Nada marcado — aproveite';
+  const hero = `<button class="hb-hero" data-go="dia">
+    <span class="hd">${DOWL[n.getDay()].replace(/^./, c => c.toUpperCase())}, ${n.getDate()} de ${MONL[n.getMonth()]}</span>
+    <span class="big">${titulo}</span>
+    <span class="sub">${sub}</span>
+    <span class="hb-mini">
+      <span><b>${pend.length}</b><i>tarefa${pend.length === 1 ? '' : 's'}</i></span>
+      <span><b>${doses.length}</b><i>dose${doses.length === 1 ? '' : 's'} hoje</i></span>
+      <span class="${atrasados ? 'alert' : ''}"><b>${atrasados}</b><i>em atraso</i></span>
+    </span></button>`;
+
+  // acesso rápido: uma porta por área
+  const q = (go, icn, nome, linha, cor, soft, alerta) => `<button class="hb-q" ${go} style="--at:${cor};--as:${soft}">
+    <span class="qi">${ic(icn)}</span><b>${nome}</b>${alerta ? `<em>${linha}</em>` : `<small>${linha}</small>`}</button>`;
+  const grid = `<div class="hb-grid">
+    ${q('data-go="dia"', 'cal', 'Meu dia', `${quantos} hoje · ${pend.length} tarefa${pend.length === 1 ? '' : 's'}`, '#7B8BE3', 'rgba(123,139,227,.14)')}
+    ${q('data-go="rotinas"', 'pill', 'Saúde', doses.length ? `${dOk} de ${doses.length} doses${proxDose ? ' · próxima ' + proxDose.t : ''}` : 'Remédios e rotinas', '#E5674B', 'rgba(229,103,75,.13)')}
+    ${q('data-go="financas"', 'fin', 'Dinheiro', venc.length ? `R$ ${brl(vencV)} vencido${venc.length > 1 ? 's' : ''}` : `R$ ${brl(owed)} a pagar`, '#2F9E6A', 'rgba(47,158,106,.13)', venc.length)}
+    ${q('data-go="invest"', 'chart', 'Investimentos', w.length ? `${w.length} ativo${w.length === 1 ? '' : 's'} · ${altas} em alta` : 'Acompanhe seus ativos', '#5E6DD8', 'rgba(94,109,216,.13)')}
+    ${q('data-go="mercado"', 'globe', 'Economia', usd ? `Dólar ${usd.v}${selic ? ' · Selic ' + selic.v : ''}` : 'Indicadores e notícias', '#C27417', 'rgba(194,116,23,.13)')}
+    ${q('data-golistas', 'cart', 'Casa e listas', left ? `${left} ${left === 1 ? 'item faltando' : 'itens faltando'}` : 'Listas e notas', '#4FA98A', 'rgba(79,169,138,.15)')}
+  </div>`;
+
+  // o que vem a seguir: hoje primeiro e, se sobrar espaço, os próximos dias
+  const diaTxt = d => { const f = fromIso(d), on = new Date(fromIso(t).getTime() + 864e5); return d === t ? 'hoje' : d === iso(on) ? 'amanhã' : `${DOW[f.getDay()]} ${f.getDate()}/${f.getMonth() + 1}`; };
+  const seguir = [
+    ...venc.slice(0, 2).map(b => ({ c:'var(--bad)', t:`${b.title} vencida`, q:`R$ ${brl(b.cents)}` })),
+    ...doses.filter(x => !x.log && x.t >= nowHM()).slice(0, 2).map(x => ({ c:'var(--now)', t:x.r.title, q:x.t })),
+    ...abertos.filter(i => i.time).slice(0, 3).map(i => ({ c:'var(--accent)', t:i.ref.title, q:i.time })),
+    ...pend.filter(x => x.due === t).slice(0, 2).map(x => ({ c:'var(--mint)', t:x.title, q:'hoje' }))
+  ];
+  if (seguir.length < 6) seguir.push(...S.events.filter(e => e.date > t && !e.done).sort((a, b) => (a.date + (a.time || '')).localeCompare(b.date + (b.time || '')))
+    .slice(0, 6 - seguir.length).map(e => ({ c:'var(--accent-2)', t:e.title, q:`${diaTxt(e.date)}${e.time ? ' ' + e.time : ''}` })));
+  if (seguir.length < 6) seguir.push(...bills.filter(b => b.date >= t).slice(0, 6 - seguir.length).map(b => ({ c:'var(--good)', t:`${b.title} vence`, q:diaTxt(b.date) })));
+  seguir.splice(6);
+  const lista = `<div class="hb-next"><div class="nh">Agora e a seguir${D ? '' : ' <button class="nh-go" data-go="agenda">ver agenda</button>'}</div>
+    <ul>${seguir.length ? seguir.map(x => `<li><i style="background:${x.c}"></i><span>${esc(x.t)}</span><em>${esc(x.q)}</em></li>`).join('')
+      : '<li><span style="color:var(--fg2)">Nada pendente agora.</span></li>'}</ul></div>`;
+
+  const P = { ask: hp.assistente ? askBox() : '' };
+  return `<div class="hb">
+    ${hello}
+    ${!D && hp.indicadores ? tickerBand() : ''}
+    ${hp.noticias ? newsBanner() : ''}
+    ${D && hp.assistente ? askFind(hp, P) : ''}
+    ${D ? `<div class="hb-acts">${doseCard()}${confirmCard()}${hp.sair ? nextLeave() : ''}</div>` : `${doseCard()}${confirmCard()}${hp.sair ? nextLeave() : ''}`}
+    ${D ? `<div class="hb-row">${hero}${lista}</div>` : `${hero}${lista}`}
+    ${!D && hp.assistente ? P.ask : ''}
+    <div class="hb-h">Acesso rápido</div>
+    ${grid}
+    ${exBanner()}${pushBanner()}
+  </div>`;
 }
 
 /* ---------- Início ---------- */
@@ -1935,13 +2090,7 @@ function vHome(){
   </div>`,
     wx: `  <div class="wx-wrap">${hp.clima ? wxCard() : ''}
   ${hp.familia && fam && fam.group && fam.members.length > 1 ? `<button class="famline" data-go="ajustes" aria-label="Minha família"><span class="fam-dots">${fam.members.slice(0,5).map(m => `<span class="fam-av sm">${esc(m.name[0] || '?')}</span>`).join('')}</span><span>${esc(fam.group.name)} · ${fam.members.map(m => esc(nameCase(m.name.split(' ')[0]))).join(', ')}</span></button>` : ''}</div>`,
-    ask: `  ${hp.assistente ? `<form class="askbox ab-ask" id="ask" aria-label="Assistente">
-    ${ic('spark')}
-    <span class="ab-tag">${ic('spark')}Pedir</span>
-    <input id="ask-in" placeholder="Fale ou escreva o que precisa — eu marco, anoto e organizo" autocomplete="off" aria-label="Pedir ao assistente" maxlength="2000" value="${esc(ui.askDraft || '')}">
-    <button type="button" class="mic" data-mic aria-label="Falar">${ic('mic')}</button>
-    <button class="go" aria-label="Enviar">${ic('up')}</button>
-  </form>` : ''}`, sug: `  ${hp.sugestoes ? `<div class="sugs3" aria-label="Sugestões">
+    ask: hp.assistente ? askBox() : '', sug: `  ${hp.sugestoes ? `<div class="sugs3" aria-label="Sugestões">
     ${[['cal','Compromissos de amanhã','Quais são meus compromissos amanhã?'],['fin','Quanto gastei no mês?','Quanto gastei este mês?'],['spark','Organize meu dia','Organize meu dia']].map(([i,l,q])=>`<button class="sug3" data-say="${esc(q)}">${ic(i)}<span>${esc(l)}</span>${ic('r','i chev')}</button>`).join('')}
   </div>` : ''}`, resumo: `  ${hp.resumo ? `<div class="pills" role="group" aria-label="Filtro">
     ${[['todas','Todos'],['pessoal','Pessoal'],['trabalho','Trabalho']].map(([k,l])=>`<button data-filter="${k}" aria-pressed="${ui.filter===k}">${l}</button>`).join('')}
@@ -1970,7 +2119,8 @@ function vHome(){
   };
   // computador (tela larga): painel com coluna principal e coluna lateral
   if (desk()) return vHomeDesk(P, hp, items, card);
-  return `${hp.noticias ? newsBanner() : ''}${P.hero}${P.wx}${hp.sair ? nextLeave() : ''}${hp.indicadores ? tickerBand() : ''}${doseCard()}${confirmCard()}${P.ask}${P.sug}${exBanner()}${pushBanner()}${hp.contas ? billsCard() : ''}${hp.orcamento ? budgetCard(true) : ''}${P.resumo}${P.tiles}${P.prog}`;
+  return `${back()}<div class="head"><div><h1 class="lt">Meu dia</h1><div class="sub">${DOWL[n.getDay()].replace(/^./, c => c.toUpperCase())}, ${n.getDate()} de ${MONL[n.getMonth()]}</div></div></div>
+    ${hp.sair ? nextLeave() : ''}${doseCard()}${confirmCard()}${P.sug}${hp.contas ? billsCard() : ''}${hp.orcamento ? budgetCard(true) : ''}${P.resumo}${P.prog}`;
 }
 
 /* ---------- Agenda ---------- */
@@ -3183,6 +3333,7 @@ function vMais(){
     ${tile('data-go="mercado"', 'globe', 'Economia', mkt && mkt.moedas ? 'US$ ' + n2(mkt.moedas.usd.value) : '—')}
     ${tile('data-go="noticias"', 'news', 'Notícias', '')}
     ${tile('data-go="clima"', 'spark', 'Clima', wx ? wx.temp + '°C' : '—')}
+    ${tile('data-go="dia"', 'cal', 'Meu dia', '')}
     ${tile('data-go="arquivados"', 'ok', 'Arquivados', (S.arq || []).length || '')}
     ${tile('data-go="agenda"', 'cal', 'Agenda', S.events.filter(e => e.date === t).length + ' hoje')}
     ${tile('data-go="ajustes"', 'gear', 'Ajustes', '')}
@@ -5223,14 +5374,14 @@ function vHomeDesk(P, hp, items, card){
   const wxl = hp.clima && wx && wxState === 'ok'
     ? `<button class="wxl" data-go="clima" aria-label="Previsão do tempo">${wxIcon(wx.cond, !wx.is_day)}<b>${wx.temp}°C</b><span>${esc(wx.desc)} · máx ${wx.max}° mín ${wx.min}° · chuva ${wx.rain}%</span></button>`
     : hp.clima && wxState === 'off' ? `<button class="wxl" data-act="wx-on"><span>Ver a previsão do tempo</span></button>` : '';
-  return `${hp.noticias ? newsBanner() : ''}
+  return `
   <div class="dayline">
-    <h1 class="hello">${hi}, ${esc(firstName())}</h1>
+    <h1 class="hello">Meu dia</h1>
     <span class="date">${DOWL[n.getDay()].replace(/^./, c => c.toUpperCase())}, ${n.getDate()} de ${MONL[n.getMonth()]} · <span data-clock>${nowHM()}</span></span>
     ${hp.familia && fam && fam.group && fam.members.length > 1 ? `<button class="fam" data-go="ajustes"><span class="fam-dots">${fam.members.slice(0, 5).map(m => `<span class="fam-av sm">${esc(m.name[0] || '?')}</span>`).join('')}</span>${esc(fam.group.name)}</button>` : ''}
     ${wxl}
   </div>
-  <div class="dh2">${askFind(hp, P)}${hp.sair ? nextLeave() : ''}</div>
+  ${hp.sair ? `<div class="dh2">${nextLeave()}</div>` : ''}
   ${confirmCard()}${exBanner()}${pushBanner()}
   ${true ? `<div class="kpis">
     ${kpi('data-go="tarefas"', 'task', 'Tarefas pendentes', pend.length, lateT ? `${lateT} atrasada${lateT > 1 ? 's' : ''}` : 'Nenhuma atrasada', lateT ? 'bad' : '')}
