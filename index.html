@@ -1163,6 +1163,55 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 .kcards{overflow:hidden}
 .k-more{flex:none;font-size:11.5px;font-weight:600;color:var(--fg2);padding:4px 6px;text-align:center}
 
+/* ---------- Alimentação ---------- */
+.fd-top{display:flex;gap:18px;align-items:center;padding:14px 16px;flex-wrap:wrap}
+.kc-ring{position:relative;width:130px;height:130px;flex:none}
+.kc-ring svg{width:130px;height:130px;transform:rotate(-90deg)}
+.kc-bg{fill:none;stroke:var(--fill);stroke-width:11}
+.kc-fg{fill:none;stroke:var(--accent);stroke-width:11;stroke-linecap:round;animation:kcFill 1s cubic-bezier(.22,1,.36,1) both}
+@keyframes kcFill{from{stroke-dashoffset:var(--c)}}
+.kc-mid{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.kc-mid b{display:block;font-size:27px;font-weight:800;letter-spacing:-.8px;font-variant-numeric:tabular-nums}
+.kc-mid small{font-size:11px;color:var(--fg2);font-weight:700}
+.fd-mac{flex:1;min-width:220px;display:flex;flex-direction:column;gap:9px}
+.mc-h{display:flex;justify-content:space-between;font-size:11.8px;color:var(--fg2);font-weight:700}
+.mc-h b{color:var(--fg);font-variant-numeric:tabular-nums}
+.mc-bar{height:8px;border-radius:999px;background:var(--fill);overflow:hidden}
+.mc-bar i{display:block;height:100%;border-radius:999px;animation:fdBar .8s cubic-bezier(.22,1,.36,1) both}
+.mc-bar .c1{background:var(--accent)} .mc-bar .c2{background:var(--good)} .mc-bar .c3{background:var(--warn)}
+@keyframes fdBar{from{width:0}}
+.fd-meta{align-self:flex-start;font-size:11.8px;font-weight:700;color:var(--accent);background:none;border:0;padding:4px 0 0}
+.fd-acts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.fd-btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 8px;background:var(--card);border-radius:14px;box-shadow:var(--shadow);font-size:12.4px;font-weight:700;transition:transform .12s}
+.fd-btn:active{transform:scale(.97)}
+.fd-btn svg{width:22px;height:22px;color:var(--accent)}
+.fd-btn.p{background:var(--accent);color:#fff} .fd-btn.p svg{color:#fff}
+.fd-meal .empty{padding:14px 13px;font-size:12.6px}
+.fd-row,.fd-it{display:flex;align-items:center;gap:11px;padding:9px 13px;border-bottom:1px solid var(--sep);width:100%;text-align:left}
+.fd-row:last-child,.fd-it:last-child{border-bottom:0}
+.fd-row img,.fd-it img,.fd-noimg{width:46px;height:46px;border-radius:10px;object-fit:cover;flex:none;background:var(--fill)}
+.fd-tx{flex:1;min-width:0}
+.fd-tx b{display:block;font-size:13.6px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fd-tx small{display:block;font-size:11.6px;color:var(--fg2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fd-kc{flex:none;text-align:right;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.fd-kc i{display:block;font-style:normal;font-size:10px;color:var(--fg2);font-weight:700}
+.fd-row.novo{animation:fdIn .5s cubic-bezier(.22,1,.36,1) both}
+@keyframes fdIn{from{opacity:0;transform:translateY(10px)}}
+.fd-it{animation:fdUp .32s ease both}
+@keyframes fdUp{from{opacity:0;transform:translateY(8px)}}
+.fd-busca{display:flex;gap:8px;margin-bottom:12px}
+.fd-busca input{flex:1;min-width:0;border:0;background:var(--fill);border-radius:12px;padding:12px 14px;font-size:14.5px;color:var(--fg)}
+.fd-res{display:flex;flex-direction:column;background:var(--card);border-radius:14px;overflow:hidden}
+.fd-res:empty{display:none}
+.fd-dica{padding:16px;font-size:12.8px;color:var(--fg2);text-align:center}
+.fd-load{display:flex;gap:7px;justify-content:center;padding:26px}
+.fd-load span{width:9px;height:9px;border-radius:50%;background:var(--accent);opacity:.3;animation:fdPulse 1s infinite}
+.fd-load span:nth-child(2){animation-delay:.15s} .fd-load span:nth-child(3){animation-delay:.3s}
+@keyframes fdPulse{0%,100%{opacity:.3;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+.fd-nav{display:flex;gap:6px}
+.fd-sum{display:flex;align-items:center;gap:12px;padding:12px 13px}
+.fd-sum .fd-kc{font-size:20px}
+
 /* ---------- Saúde: peso e IMC ---------- */
 .pz-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .pz-tile{background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:12px 13px;text-align:left;width:100%}
@@ -1448,6 +1497,7 @@ body.mouse .cc-b button:hover{filter:brightness(.97)}
     <button data-v="invest" class="side-only"><svg class="i"><use href="#i-chart"/></svg>Investimentos</button>
     <button data-v="mercado" class="side-only"><svg class="i"><use href="#i-globe"/></svg>Economia</button>
     <button data-v="saude" class="side-only"><svg class="i"><use href="#i-pill"/></svg>Saúde</button>
+    <button data-v="comer" class="side-only"><svg class="i"><use href="#i-cart"/></svg>Alimentação</button>
     <button data-v="arquivados" class="side-only"><svg class="i"><use href="#i-box"/></svg>Arquivados</button>
     <button data-v="ajustes" class="side-only"><svg class="i"><use href="#i-gear"/></svg>Ajustes</button>
   </nav>
@@ -1527,6 +1577,13 @@ const MAP = {
   fin:  { table:'finance_entries',
           to: r => ({id:r.id, type:r.kind, title:r.title, cents:Number(r.amount_cents), date:r.date, paid:r.paid}),
           from: o => ({kind:o.type, title:o.title, amount_cents:o.cents, date:o.date, paid:!!o.paid}) },
+  food: { table:'food_log',
+          to: r => ({id:r.id, day:r.day, meal:r.meal, name:r.name, brand:r.brand || '', qty:Number(r.qty), unit:r.unit,
+                kcal:r.kcal == null ? null : Number(r.kcal), carb:r.carb_g == null ? null : Number(r.carb_g),
+                prot:r.prot_g == null ? null : Number(r.prot_g), fat:r.fat_g == null ? null : Number(r.fat_g),
+                code:r.barcode || '', img:r.image_url || '', src:r.source || 'manual', at:r.at}),
+          from: o => ({day:o.day, meal:o.meal, name:o.name, brand:o.brand || null, qty:o.qty, unit:o.unit,
+                kcal:o.kcal, carb_g:o.carb, prot_g:o.prot, fat_g:o.fat, barcode:o.code || null, image_url:o.img || null, source:o.src || 'manual'}) },
   peso: { table:'weights',
           to: r => ({id:r.id, day:r.day, kg:Number(r.kg), cintura:r.waist_cm == null ? '' : Number(r.waist_cm), nota:r.note || ''}),
           from: o => ({day:o.day, kg:o.kg, waist_cm:o.cintura === '' || o.cintura == null ? null : Number(o.cintura), note:o.nota || null}) },
@@ -1536,7 +1593,7 @@ const MAP = {
 };
 async function loadAll(){
   const [p, ev, tk, fn, rm] = await Promise.all([
-    sb.from('profiles').select('height_cm,weight_goal_kg,name,sounds,sound_cats,quiet_start,quiet_end,event_advance_min,summary_time,home_addr,home_lat,home_lon,work_addr,work_lat,work_lon,travel_on,travel_arrive_min,reserve_pct,plan').maybeSingle(),
+    sb.from('profiles').select('height_cm,weight_goal_kg,kcal_goal,name,sounds,sound_cats,quiet_start,quiet_end,event_advance_min,summary_time,home_addr,home_lat,home_lon,work_addr,work_lat,work_lon,travel_on,travel_arrive_min,reserve_pct,plan').maybeSingle(),
     sb.from('events').select('*').is('archived_at', null).order('date'),
     sb.from('tasks').select('*'),
     sb.from('finance_entries').select('*').order('date'),
@@ -1550,19 +1607,22 @@ async function loadAll(){
     S.travel_on = p.data.travel_on !== false; S.travel_arrive = p.data.travel_arrive_min || 30; S.plan = p.data.plan || 'free';
     S.reserve = Number(p.data.reserve_pct) || 0;
     S.altura = p.data.height_cm || 0; S.metaPeso = p.data.weight_goal_kg == null ? '' : Number(p.data.weight_goal_kg);
+    S.metaKcal = p.data.kcal_goal || 0;
   }
   S.events = ev.data.map(MAP.ev.to); S.tasks = tk.data.map(MAP.task.to); S.fin = fn.data.map(MAP.fin.to); S.rems = rm.data.map(MAP.rem.to);
-  const [ls, li, nt, rb, bd, rt, rl, pw] = await Promise.all([
+  const [ls, li, nt, rb, bd, rt, rl, pw, fd] = await Promise.all([
     sb.from('lists').select('*').order('updated_at', { ascending:false }), sb.from('list_items').select('*').order('created_at'),
     sb.from('notes').select('*').order('updated_at', { ascending:false }), sb.from('recurring_bills').select('*').order('day'),
     sb.from('birthdays').select('*').order('month').order('day'),
     sb.from('routines').select('*').order('created_at'),
     sb.from('routine_logs').select('*').gte('due_on', today()),
     sb.from('weights').select('*').order('day', { ascending:false }).limit(400),
+    sb.from('food_log').select('*').gte('day', iso(new Date(Date.now() - 8 * 864e5))).order('at'),
   ]);
   S.lists = ls.data || []; S.items = li.data || []; S.notes = nt.data || []; S.recurring = rb.data || []; S.birthdays = bd.data || [];
   S.rots = (rt.data || []).map(MAP.rot.to); S.rlogs = rl.data || [];
   S.pesos = (pw.data || []).map(MAP.peso.to);
+  S.comer = (fd.data || []).map(MAP.food.to);
 }
 async function dbSave(k, o, isNew){
   const m = MAP[k];
@@ -1575,7 +1635,7 @@ const persist = p => Promise.resolve(p).catch(fail);
 let profT;
 function saveProfile(){
   clearTimeout(profT);
-  profT = setTimeout(() => persist(sb.from('profiles').update({ height_cm:S.altura || null, weight_goal_kg:S.metaPeso === '' || S.metaPeso == null ? null : Number(S.metaPeso), name:S.name, sounds:S.sounds, sound_cats:S.cats, quiet_start:S.quiet_start || null, quiet_end:S.quiet_end || null, event_advance_min:Number(S.event_adv) || 0, summary_time:S.summary_time || '07:30', travel_on:!!S.travel_on, travel_arrive_min:Number(S.travel_arrive) || 30, reserve_pct:Number(S.reserve) || 0 }).eq('id', session.user.id).then(r => { if (r.error) throw r.error; })), 500);
+  profT = setTimeout(() => persist(sb.from('profiles').update({ kcal_goal:S.metaKcal || null, height_cm:S.altura || null, weight_goal_kg:S.metaPeso === '' || S.metaPeso == null ? null : Number(S.metaPeso), name:S.name, sounds:S.sounds, sound_cats:S.cats, quiet_start:S.quiet_start || null, quiet_end:S.quiet_end || null, event_advance_min:Number(S.event_adv) || 0, summary_time:S.summary_time || '07:30', travel_on:!!S.travel_on, travel_arrive_min:Number(S.travel_arrive) || 30, reserve_pct:Number(S.reserve) || 0 }).eq('id', session.user.id).then(r => { if (r.error) throw r.error; })), 500);
 }
 
 /* ---------- sons (originais, gerados no aparelho) ---------- */
@@ -1792,6 +1852,8 @@ function swipeDelete(key){
     restore = () => { S.arq.push(it); S.arq.sort((a, b) => String(b.at).localeCompare(String(a.at))); };
     commit = () => sb.from(A.table).delete().eq('id', id);
     label = `${A.n} excluído de vez`; }
+  else if (k === 'food'){ const f = (S.comer || []).find(x => x.id === id); if (!f) return; S.comer = S.comer.filter(x => x !== f);
+    restore = () => S.comer.push(f); commit = () => sb.from('food_log').delete().eq('id', id); label = 'Item tirado do diário'; }
   else if (k === 'peso'){ const w = (S.pesos || []).find(x => x.id === id); if (!w) return; S.pesos = S.pesos.filter(x => x !== w);
     restore = () => { S.pesos.push(w); S.pesos.sort((a, b) => b.day.localeCompare(a.day)); }; commit = () => sb.from('weights').delete().eq('id', id); label = 'Registro de peso excluído'; }
   else if (k === 'rem' || k === 'ev'){ return archiveItem(k, id); }
@@ -1943,13 +2005,13 @@ document.querySelectorAll('#tabs [data-v]').forEach(b => b.onclick = () => go(b.
 $('#fab').onclick = () => openNewMenu();
 
 function render(){
-  const MAIS = ['mais','dia','saude','tarefas','lembretes','rotinas','financas','listas','lista','invest','mercado','noticias','clima','ajustes','admin','arquivados'];
+  const MAIS = ['mais','dia','saude','comer','tarefas','lembretes','rotinas','financas','listas','lista','invest','mercado','noticias','clima','ajustes','admin','arquivados'];
   document.querySelectorAll('#tabs [data-v]').forEach(b => { if (b.dataset.v===view || (b.dataset.v==='listas' && view==='lista') || (b.dataset.v==='mais' && MAIS.includes(view))) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
   // computador: as listas abrem ao lado (a primeira já aberta); notas continuam na tela própria
   if (desk() && view==='listas' && (ui.lnTab||'listas')==='listas' && S.lists.length){ if (!S.lists.some(l => l.id===ui.listId)) ui.listId = S.lists[0].id; view = 'lista'; }
   if (desk() && view==='lista'){ if (ui.lnTab==='notas' || !S.lists.length) view = 'listas'; else if (!S.lists.some(l => l.id===ui.listId)) ui.listId = S.lists[0].id; }
   const D = desk();
-  const V = {inicio:vHub, dia:vHome, saude:vSaude, agenda:D?vAgendaDesk:vAgenda, assistente:vAssist, tarefas:vTasks, financas:D?vFinDesk:vFin, lembretes:vTasks, ajustes:vSettings, mais:vMais, admin:vAdmin, clima:vClima, mercado:D?vMercadoDesk:vMercado, noticias:vNoticias, listas:vListas, lista:D?vListaDesk:vLista, invest:D?vInvestDesk:vInvest, rotinas:vRotinas, arquivados:vArq}[view] || vHome;
+  const V = {inicio:vHub, dia:vHome, saude:vSaude, comer:vComer, agenda:D?vAgendaDesk:vAgenda, assistente:vAssist, tarefas:vTasks, financas:D?vFinDesk:vFin, lembretes:vTasks, ajustes:vSettings, mais:vMais, admin:vAdmin, clima:vClima, mercado:D?vMercadoDesk:vMercado, noticias:vNoticias, listas:vListas, lista:D?vListaDesk:vLista, invest:D?vInvestDesk:vInvest, rotinas:vRotinas, arquivados:vArq}[view] || vHome;
   const m = $('#view'); m.classList.toggle('chat', view==='assistente');
   const hadQ = document.activeElement && document.activeElement.id === 'topq'; hvHide();
   m.innerHTML = `${side() ? topbar() : ''}<div class="wrap v-${view}${D ? ' desk' : ''}">${V()}</div>`;
@@ -2441,6 +2503,14 @@ function bindView(){
   V.querySelectorAll('[data-reserva]').forEach(b => b.onclick = e => { e.stopPropagation(); openReserva(); });
   V.querySelectorAll('[data-dosecard]').forEach(b => b.onclick = () => { const [st, id, t] = b.dataset.dosecard.split('|'); rotMark(id, t, st); });
   V.querySelectorAll('[data-peso]').forEach(b => b.onclick = () => openPeso((S.pesos || []).find(x => x.id === b.dataset.peso)));
+  V.querySelectorAll('[data-addmeal]').forEach(b => b.onclick = () => openBuscaAlimento(b.dataset.addmeal));
+  V.querySelectorAll('[data-comerdia]').forEach(b => b.onclick = () => {
+    const d = fromIso(ui.comerDia || today()); d.setDate(d.getDate() + Number(b.dataset.comerdia));
+    const novo = iso(d); if (novo > today()) return; ui.comerDia = novo === today() ? null : novo; render(); });
+  { const r = V.querySelector('[data-ring]'); if (r){ const alvo = Number(r.dataset.kcal) || 0, num = r.querySelector('[data-kcount]');
+      if (alvo && !matchMedia('(prefers-reduced-motion: reduce)').matches){ const t0 = performance.now(), dur = 900;
+        const passo = t => { const k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3); num.textContent = Math.round(alvo * e); if (k < 1) requestAnimationFrame(passo); };
+        requestAnimationFrame(passo); } } }
   V.querySelectorAll('[data-dose]').forEach(b => b.onclick = () => openDose(b.dataset.dose));
   { const f = V.querySelector('[data-altura]'); if (f) f.onsubmit = e => { e.preventDefault();
       const v = Math.round(Number(String($('#alt-in').value).replace(',', '.')));
@@ -2501,6 +2571,10 @@ function bindView(){
     if (a==='push-on'){ enablePush(); }
     if (a==='wx-on'){ loadWeather(true); }
     if (a==='peso-novo'){ openPeso(null); }
+    if (a==='food-scan'){ escanearAlimento(); }
+    if (a==='food-busca'){ openBuscaAlimento(); }
+    if (a==='food-manual'){ openAlimentoManual(); }
+    if (a==='kcal-meta'){ openMetaKcal(); }
     if (a==='peso-meta'){ openAlturaMeta(); }
     if (a==='peso-lembrete'){ togglePesagem(); }
     if (a==='frete-edit'){ openFreteEdit(); }
@@ -3423,6 +3497,7 @@ function vMais(){
     ${tile('data-go="clima"', 'spark', 'Clima', wx ? wx.temp + '°C' : '—')}
     ${tile('data-go="dia"', 'cal', 'Meu dia', '')}
     ${tile('data-go="saude"', 'pill', 'Saúde', '')}
+    ${tile('data-go="comer"', 'cart', 'Alimentação', '')}
     ${tile('data-go="arquivados"', 'ok', 'Arquivados', (S.arq || []).length || '')}
     ${tile('data-go="agenda"', 'cal', 'Agenda', S.events.filter(e => e.date === t).length + ' hoje')}
     ${tile('data-go="ajustes"', 'gear', 'Ajustes', '')}
@@ -4685,6 +4760,178 @@ function bindPlace(inp){
   });
 }
 
+/* ---------- Alimentação: diário do que foi comido (Open Food Facts) ---------- */
+const MEALS = [['cafe', 'Café da manhã', '☕'], ['almoco', 'Almoço', '🍽️'], ['jantar', 'Jantar', '🌙'], ['lanche', 'Lanches', '🍎']];
+const comerDia = d => (S.comer || []).filter(x => x.day === (d || ui.comerDia || today()));
+const somaKcal = l => Math.round(l.reduce((a, x) => a + (Number(x.kcal) || 0), 0));
+const somaMac = (l, k) => Math.round(l.reduce((a, x) => a + (Number(x[k]) || 0), 0));
+// a quantidade registrada vira os valores do item (a base dá por 100 g)
+function calcPor(item, qty, unit){
+  const base = unit === 'porcao' && item.porcao ? item.porcao * qty : (unit === 'un' ? (item.porcao || 100) * qty : qty);
+  const f = base / 100;
+  const m = v => v == null ? null : Math.round(v * f * 10) / 10;
+  return { g: Math.round(base), kcal: m(item.kcal), carb: m(item.carb), prot: m(item.prot), fat: m(item.gord) };
+}
+async function buscaAlimento(body){
+  const { data, error } = await sb.functions.invoke('alimentos', { body });
+  if (error) throw error;
+  if (data && data.error) { const e = new Error(data.error); e.userMsg = data.error; throw e; }
+  return data;
+}
+// confirmação: foto, quantidade e em qual refeição entra
+function openAlimento(item, meal){
+  const porcao = item.porcao || null;
+  openForm({
+    title: 'Adicionar ao diário',
+    fields: [
+      { k:'qty', label:porcao ? 'Quantidade' : 'Quantidade (g ou ml)', type:'text', def:String(porcao || 100) },
+      { k:'unit', label:'Medida', type:'select', def:'g', options:[['g', 'gramas / ml'], ['porcao', porcao ? `porções de ${porcao} g` : 'porções'], ['un', 'unidades']] },
+      { k:'meal', label:'Refeição', type:'select', def:meal || refeicaoDaHora(), options:MEALS.map(([k, l]) => [k, l]) },
+    ],
+    saveLabel: 'Adicionar',
+    onSave: async v => {
+      const q = Number(String(v.qty).replace(',', '.'));
+      if (!q || q <= 0 || q > 10000){ const e = new Error('qtd'); e.userMsg = 'Coloque a quantidade, por exemplo 100.'; throw e; }
+      const c = calcPor(item, q, v.unit);
+      const o = { day: ui.comerDia || today(), meal: v.meal, name: item.nome, brand: item.marca || '', qty: q, unit: v.unit,
+        kcal: c.kcal, carb: c.carb, prot: c.prot, fat: c.fat, code: item.codigo || '', img: item.foto || '', src: item.fonte ? 'off' : 'manual' };
+      const rec = await dbSave('food', o, true);
+      S.comer.push(rec); ui.comerNovo = rec.id;
+      return 'Adicionado';
+    },
+  });
+}
+function openAlimentoManual(){
+  openForm({
+    title: 'Escrever um alimento',
+    fields: [
+      { k:'name', label:'O que você comeu', type:'text', ph:'Pão com ovo' },
+      { k:'qty', label:'Quantidade (g ou ml)', type:'text', def:'100' },
+      { k:'kcal', label:'Calorias (kcal)', type:'text', ph:'opcional' },
+      { k:'meal', label:'Refeição', type:'select', def:refeicaoDaHora(), options:MEALS.map(([k, l]) => [k, l]) },
+    ],
+    saveLabel: 'Adicionar',
+    onSave: async v => {
+      const nome = String(v.name || '').trim();
+      if (nome.length < 2){ const e = new Error('nome'); e.userMsg = 'Escreva o que você comeu.'; throw e; }
+      const q = Number(String(v.qty || '100').replace(',', '.')) || 100;
+      const kc = String(v.kcal || '').trim() ? Math.round(Number(String(v.kcal).replace(',', '.'))) : null;
+      const rec = await dbSave('food', { day: ui.comerDia || today(), meal: v.meal, name: nome.slice(0, 120), brand: '', qty: q, unit: 'g',
+        kcal: kc, carb: null, prot: null, fat: null, code: '', img: '', src: 'manual' }, true);
+      S.comer.push(rec); ui.comerNovo = rec.id;
+      return 'Adicionado';
+    },
+  });
+}
+function openMetaKcal(){
+  openForm({
+    title: 'Meta diária de calorias',
+    fields: [{ k:'meta', label:'Calorias por dia', type:'text', ph:'ex.: 2000 — deixe vazio para não usar meta' }],
+    values: { meta: S.metaKcal || '' },
+    saveLabel: 'Salvar',
+    onSave: async v => {
+      const m = String(v.meta || '').trim() ? Math.round(Number(String(v.meta).replace(',', '.'))) : 0;
+      if (m && (m < 800 || m > 6000)){ const e = new Error('meta'); e.userMsg = 'Use um valor entre 800 e 6000 kcal — e de preferência o que a nutricionista passou.'; throw e; }
+      S.metaKcal = m; saveProfile();
+      return m ? 'Meta salva' : 'Meta removida';
+    },
+  });
+}
+const refeicaoDaHora = () => { const h = new Date().getHours(); return h < 10 ? 'cafe' : h < 15 ? 'almoco' : h < 18 ? 'lanche' : 'jantar'; };
+// busca por nome, com foto do produto
+function openBuscaAlimento(meal){
+  const el = $('#sheet');
+  el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="Buscar alimento">
+    <div class="bar"><button data-x>Fechar</button><b>Buscar alimento</b><span></span></div>
+    <div class="body">
+      <form class="fd-busca" id="fd-f"><input id="fd-q" placeholder="Pão de forma, iogurte, arroz…" autocomplete="off" aria-label="Nome do alimento"><button class="btn-go">Buscar</button></form>
+      <div class="fd-res" id="fd-res"><div class="fd-dica">Escreva o nome do alimento ou use o leitor de código de barras — é mais certeiro.</div></div>
+    </div></div>`;
+  el.hidden = false;
+  const fechar = () => { el.hidden = true; el.innerHTML = ''; };
+  el.querySelector('[data-x]').onclick = fechar;
+  const res = el.querySelector('#fd-res');
+  el.querySelector('#fd-f').onsubmit = async e => {
+    e.preventDefault();
+    const q = el.querySelector('#fd-q').value.trim();
+    if (q.length < 3){ res.innerHTML = '<div class="fd-dica">Escreva pelo menos 3 letras.</div>'; return; }
+    res.innerHTML = '<div class="fd-load"><span></span><span></span><span></span></div>';
+    try {
+      const d = await buscaAlimento({ busca: q });
+      const l = d.lista || [];
+      if (!l.length){ res.innerHTML = '<div class="fd-dica">Não achei esse alimento na base. Dá para registrar à mão pelo botão “Escrever”.</div>'; return; }
+      res.innerHTML = l.map((x, i) => `<button class="fd-it" data-i="${i}" style="animation-delay:${i * 28}ms">
+        ${x.foto ? `<img src="${esc(x.foto)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'fd-noimg'}))">` : '<span class="fd-noimg"></span>'}
+        <span class="fd-tx"><b>${esc(x.nome)}</b><small>${[x.marca, x.embalagem].filter(Boolean).map(esc).join(' · ')}</small></span>
+        <span class="fd-kc">${x.kcal == null ? '—' : Math.round(x.kcal)}<i>kcal/100g</i></span></button>`).join('');
+      res.querySelectorAll('[data-i]').forEach(b => b.onclick = () => { fechar(); openAlimento(l[Number(b.dataset.i)], meal); });
+    } catch (err) { res.innerHTML = `<div class="fd-dica">${esc(err.userMsg || 'Não deu para buscar agora.')}</div>`; }
+  };
+  setTimeout(() => { const i = el.querySelector('#fd-q'); if (i) i.focus(); }, 60);
+}
+// leitor de código de barras do alimento (o mesmo do remédio)
+function escanearAlimento(meal){
+  abrirScanner(async code => {
+    toast('Procurando o produto…');
+    try {
+      const d = await buscaAlimento({ codigo: code });
+      if (!d.achou){ toast('Esse código não está na base de alimentos. Dá para buscar pelo nome.'); openBuscaAlimento(meal); return; }
+      if (navigator.vibrate) navigator.vibrate(40);
+      openAlimento(d.item, meal);
+    } catch (err) { toast(err.userMsg || 'Não deu para consultar agora.'); }
+  });
+}
+// anel de calorias: desenha o dia e, se houver meta, o quanto dela já foi
+function anelKcal(total, meta){
+  const R = 52, C = 2 * Math.PI * R;
+  const frac = meta ? Math.min(1, total / meta) : (total ? 1 : 0);
+  return `<div class="kc-ring" data-ring="${frac.toFixed(3)}" data-kcal="${total}">
+    <svg viewBox="0 0 130 130" aria-hidden="true">
+      <circle class="kc-bg" cx="65" cy="65" r="${R}"/>
+      <circle class="kc-fg" cx="65" cy="65" r="${R}" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C * (1 - frac)).toFixed(1)}" style="--c:${C.toFixed(1)}"/>
+    </svg>
+    <div class="kc-mid"><b data-kcount>${total}</b><small>kcal${meta ? ` de ${meta}` : ''}</small></div></div>`;
+}
+function vComer(){
+  const dia = ui.comerDia || today(), hoje = today();
+  const l = comerDia(dia), total = somaKcal(l), meta = S.metaKcal || 0;
+  const carb = somaMac(l, 'carb'), prot = somaMac(l, 'prot'), fat = somaMac(l, 'fat');
+  const gTot = carb + prot + fat || 1;
+  const dLabel = dia === hoje ? 'hoje' : dia === iso(new Date(fromIso(hoje).getTime() - 864e5)) ? 'ontem' : brD(dia);
+
+  const barra = (lab, g, cls) => `<div class="mc"><div class="mc-h"><span>${lab}</span><b>${g} g</b></div>
+    <div class="mc-bar"><i class="${cls}" style="width:${Math.round(g / gTot * 100)}%"></i></div></div>`;
+
+  const item = x => `<div class="fd-row ${ui.comerNovo === x.id ? 'novo' : ''}" data-swipe="food:${esc(x.id)}">
+      ${x.img ? `<img src="${esc(x.img)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'fd-noimg'}))">` : '<span class="fd-noimg"></span>'}
+      <span class="fd-tx"><b>${esc(x.name)}</b><small>${[x.brand, `${n2(x.qty, 0)} ${x.unit === 'porcao' ? 'porção' : x.unit === 'un' ? 'un' : x.unit}`].filter(Boolean).map(esc).join(' · ')}</small></span>
+      <span class="fd-kc">${x.kcal == null ? '—' : Math.round(x.kcal)}<i>kcal</i></span></div>`;
+
+  const bloco = ([k, nome, emo]) => { const its = l.filter(x => x.meal === k), sub = somaKcal(its);
+    return `<section class="card fd-meal"><div class="ch"><b>${emo} ${nome}</b>${its.length ? `<span>${sub} kcal</span>` : ''}
+      <button class="lnk" data-addmeal="${k}">+ adicionar</button></div>
+      ${its.length ? its.map(item).join('') : '<div class="empty fd-vazio">Nada registrado</div>'}</section>`; };
+
+  const head = `${back()}<div class="head"><div><h1 class="lt">Alimentação</h1><div class="sub">${dLabel} · ${l.length} ${l.length === 1 ? 'item' : 'itens'}</div></div>
+    <div class="fd-nav"><button class="icon-btn" data-comerdia="-1" aria-label="Dia anterior">${ic('l')}</button>
+      <button class="icon-btn" data-comerdia="1" aria-label="Próximo dia" ${dia >= hoje ? 'disabled' : ''}>${ic('r')}</button></div></div>`;
+
+  const topo = `<section class="card fd-top">
+    ${anelKcal(total, meta)}
+    <div class="fd-mac">
+      ${barra('Carboidrato', carb, 'c1')}${barra('Proteína', prot, 'c2')}${barra('Gordura', fat, 'c3')}
+      <button class="fd-meta" data-act="kcal-meta">${meta ? `meta de ${meta} kcal por dia · trocar` : 'definir meta diária (opcional)'}</button>
+    </div></section>`;
+
+  const acoes = `<div class="fd-acts">
+    <button class="fd-btn p" data-act="food-scan">${ic('cam')}<span>Escanear embalagem</span></button>
+    <button class="fd-btn" data-act="food-busca">${ic('search')}<span>Buscar pelo nome</span></button>
+    <button class="fd-btn" data-act="food-manual">${ic('plus')}<span>Escrever</span></button></div>`;
+
+  return `${head}${topo}${acoes}${MEALS.map(bloco).join('')}
+    <div class="foot">Os valores vêm do Open Food Facts, base aberta e colaborativa — confira no rótulo quando algo parecer estranho. O app soma o que você registra; não define dieta nem meta por conta própria.</div>`;
+}
+
 /* ---------- Saúde: remédios, consultas, peso e IMC ---------- */
 function openPeso(it){
   const hoje = today();
@@ -4771,6 +5018,10 @@ function vSaude(){
     <button class="pz-tile" data-act="peso-meta"><small>Meta</small><b>${meta ? `${n2(meta,1)} kg` : '—'}</b><em>${meta ? (falta > 0 ? `faltam ${n2(falta,1)} kg` : falta < 0 ? `${n2(-falta,1)} kg abaixo` : 'alcançada') : 'toque para definir'}</em></button>
   </section>`;
 
+  const hojeComer = comerDia(t), kcalHoje = somaKcal(hojeComer);
+  const prato = `<button class="card fd-sum" data-go="comer"><span class="qi" style="width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:rgba(123,139,227,.14);color:var(--accent);flex:none">${ic('cart')}</span>
+    <span class="fd-tx"><b>Alimentação de hoje</b><small>${hojeComer.length ? `${hojeComer.length} ${hojeComer.length === 1 ? 'item' : 'itens'} registrados` : 'nada registrado ainda'}</small></span>
+    <span class="fd-kc">${kcalHoje}<i>kcal</i></span></button>`;
   const curva = pesos.length >= 2 ? `<section class="card"><div class="ch"><b>Curva do peso</b><span>${pesos.length} registros</span></div>
     ${pesoChart(pesos.slice(-40).map(p => [p.day, p.kg]), meta)}</section>` : '';
 
@@ -4796,7 +5047,7 @@ function vSaude(){
       <label class="switch"><input type="checkbox" data-act="peso-lembrete" ${pesar ? 'checked' : ''} aria-label="Lembrete de pesagem"><span></span></label></div>
     <div class="foot">O IMC é uma referência da Organização Mundial da Saúde para adultos — não serve para gestantes, crianças nem atletas, e não substitui avaliação médica. O app registra e mostra; quem define meta e dieta é você com seu médico ou nutricionista.</div></section>`;
 
-  return `${head}${alt ? '' : semAltura}${resumo}${curva}${remedios}${consult}${lista}${lembrete}`;
+  return `${head}${alt ? '' : semAltura}${resumo}${prato}${curva}${remedios}${consult}${lista}${lembrete}`;
 }
 
 /* ---------- mercado e notícias ---------- */
