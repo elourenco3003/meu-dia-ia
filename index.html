@@ -1303,6 +1303,16 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 .hb-q b{font-size:14.5px;font-weight:800;letter-spacing:-.2px}
 .hb-q small{font-size:12px;color:var(--fg2);font-weight:600}
 .hb-q em{font-style:normal;font-size:12px;color:var(--bad);font-weight:700}
+.hb-q{transition:transform .12s}
+.hb-q:active{transform:scale(.98)}
+/* oito portas: cada card ocupa menos espaço, sem virar botão minúsculo */
+.hb-grid.oito{gap:9px}
+.hb-grid.oito .hb-q{padding:10px 11px;gap:7px;border-radius:13px}
+.hb-grid.oito .qi{width:32px;height:32px;border-radius:10px}
+.hb-grid.oito .qi svg{width:18px;height:18px}
+.hb-grid.oito b{font-size:13.4px}
+.hb-grid.oito small,.hb-grid.oito em{font-size:11.2px;line-height:1.25;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.hb-grid.oito .hb-q{min-height:94px;justify-content:flex-start}
 .hb-next{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:12px 14px;display:flex;flex-direction:column;gap:8px}
 .hb-next .nh{font-size:12.6px;font-weight:800;display:flex;align-items:center;gap:8px}
 .hb-next .nh-go{margin-left:auto;font-size:11.6px;font-weight:700;color:var(--accent);background:none;border:0;padding:0}
@@ -1318,6 +1328,7 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
   .hb-acts:empty{display:none}
   .hb-acts > *{flex:1;min-width:0;margin:0}
   .hb-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .hb-grid.oito{grid-template-columns:repeat(4,minmax(0,1fr))}
   .hb-row{display:grid;grid-template-columns:1.1fr 1fr;gap:12px;align-items:stretch}
   .hb-hero .big{font-size:30px}
   .hb-hello b{font-size:20px}
@@ -1490,6 +1501,7 @@ body.mouse .cc-b button:hover{filter:brightness(.97)}
   <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19.5h16"/><path d="m4.5 15 4.5-4.5 3.5 3 6.5-7"/><path d="M15 6.5h4v4"/></symbol>
   <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.6 3.6 5.5 3.6 8.5s-1.1 5.9-3.6 8.5c-2.5-2.6-3.6-5.5-3.6-8.5S9.5 6.1 12 3.5Z"/></symbol>
   <symbol id="i-cart" viewBox="0 0 24 24"><path d="M3.5 4.5h2.2l2.2 10.5h10.3l2-7.5H7"/><circle cx="9.5" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/></symbol>
+  <symbol id="i-food" viewBox="0 0 24 24"><path d="M7 3v7a2 2 0 0 0 4 0V3M9 10v11"/><path d="M17 3c-1.5 1.5-2 3.5-2 5.5 0 1.4.7 2.5 2 2.5V3zM17 11v10"/></symbol>
   <symbol id="i-dots" viewBox="0 0 24 24"><rect x="4" y="4" width="6.5" height="6.5" rx="2"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="2"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="2"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="2"/></symbol>
   <symbol id="i-list" viewBox="0 0 24 24"><path d="M10 6h10M10 12h10M10 18h10"/><path d="m3.5 6 1.2 1.2L7 5M3.5 12l1.2 1.2L7 11M3.5 18l1.2 1.2L7 17"/></symbol>
   <symbol id="i-note" viewBox="0 0 24 24"><path d="M6 3.5h8.5L18.5 7.5v13H6z"/><path d="M14 3.5v4.5h4.5M9 12h6M9 16h6"/></symbol>
@@ -1527,7 +1539,7 @@ body.mouse .cc-b button:hover{filter:brightness(.97)}
     <button data-v="invest" class="side-only"><svg class="i"><use href="#i-chart"/></svg>Investimentos</button>
     <button data-v="mercado" class="side-only"><svg class="i"><use href="#i-globe"/></svg>Economia</button>
     <button data-v="saude" class="side-only"><svg class="i"><use href="#i-pill"/></svg>Saúde</button>
-    <button data-v="comer" class="side-only"><svg class="i"><use href="#i-cart"/></svg>Alimentação</button>
+    <button data-v="comer" class="side-only"><svg class="i"><use href="#i-food"/></svg>Alimentação</button>
     <button data-v="arquivados" class="side-only"><svg class="i"><use href="#i-box"/></svg>Arquivados</button>
     <button data-v="ajustes" class="side-only"><svg class="i"><use href="#i-gear"/></svg>Ajustes</button>
   </nav>
@@ -2158,13 +2170,16 @@ function vHub(){
   // acesso rápido: uma porta por área
   const q = (go, icn, nome, linha, cor, soft, alerta) => `<button class="hb-q" ${go} style="--at:${cor};--as:${soft}">
     <span class="qi">${ic(icn)}</span><b>${nome}</b>${alerta ? `<em>${linha}</em>` : `<small>${linha}</small>`}</button>`;
-  const grid = `<div class="hb-grid">
+  const kcalDia = somaKcal(comerDia(t));
+  const grid = `<div class="hb-grid oito">
     ${q('data-go="dia"', 'cal', 'Meu dia', `${quantos} hoje · ${pend.length} tarefa${pend.length === 1 ? '' : 's'}`, '#7B8BE3', 'rgba(123,139,227,.14)')}
-    ${q('data-go="saude"', 'pill', 'Saúde', [doses.length ? `${dOk} de ${doses.length} doses` : '', (S.pesos && S.pesos.length) ? `${n2(S.pesos[0].kg,1)} kg` : ''].filter(Boolean).join(' · ') || 'Remédios, consultas e peso', '#E5674B', 'rgba(229,103,75,.13)')}
+    ${q('data-go="saude"', 'pill', 'Saúde', doses.length ? `${dOk} de ${doses.length} doses` : ((S.pesos && S.pesos.length) ? `${n2(S.pesos[0].kg,1)} kg` : 'Remédios e peso'), '#E5674B', 'rgba(229,103,75,.13)')}
+    ${q('data-go="comer"', 'food', 'Alimentação', kcalDia ? `${kcalDia} kcal hoje` : 'Registre o que comeu', '#D96B9A', 'rgba(217,107,154,.14)')}
     ${q('data-go="financas"', 'fin', 'Dinheiro', venc.length ? `R$ ${brl(vencV)} vencido${venc.length > 1 ? 's' : ''}` : `R$ ${brl(owed)} a pagar`, '#2F9E6A', 'rgba(47,158,106,.13)', venc.length)}
-    ${q('data-go="invest"', 'chart', 'Investimentos', w.length ? `${w.length} ativo${w.length === 1 ? '' : 's'} · ${altas} em alta` : 'Acompanhe seus ativos', '#5E6DD8', 'rgba(94,109,216,.13)')}
-    ${q('data-go="mercado"', 'globe', 'Economia', usd ? `Dólar ${usd.v}${selic ? ' · Selic ' + selic.v : ''}` : 'Indicadores e notícias', '#C27417', 'rgba(194,116,23,.13)')}
+    ${q('data-go="invest"', 'chart', 'Investimentos', w.length ? `${w.length} ativo${w.length === 1 ? '' : 's'} · ${altas} em alta` : 'Seus ativos', '#5E6DD8', 'rgba(94,109,216,.13)')}
+    ${q('data-go="mercado"', 'globe', 'Economia', usd ? `Dólar ${usd.v}${selic ? ' · Selic ' + String(selic.v).replace(' a.a.', '') : ''}` : 'Indicadores', '#C27417', 'rgba(194,116,23,.13)')}
     ${q('data-golistas', 'cart', 'Casa e listas', left ? `${left} ${left === 1 ? 'item faltando' : 'itens faltando'}` : 'Listas e notas', '#4FA98A', 'rgba(79,169,138,.15)')}
+    ${q('data-go="noticias"', 'news', 'Notícias', mkt && mkt.noticias ? 'Brasil · Economia · Mundo' : 'Manchetes do dia', '#5D6B7F', 'rgba(93,107,127,.14)')}
   </div>`;
 
   // o que vem a seguir: hoje primeiro e, se sobrar espaço, os próximos dias
@@ -3515,25 +3530,17 @@ function vMais(){
   const t = today(), lateB = openBills().filter(b => b.date < t).length;
   const remT = S.rems.filter(r => r.date === t && !r.done).length, pend = pendingTasks().length;
   const tile = (go, icon, lab, n, extra = '') => `<button class="tile" ${go}><span class="ic">${ic(icon)}</span><span class="tx"><div class="lab">${lab}</div><div class="n">${n}</div></span></button>${extra}`;
-  return `<div class="head"><div><h1 class="lt">Mais</h1><div class="sub">Todas as áreas do Meu Dia</div></div></div>
+  // aqui ficam só as telas que não estão nos cards da Início nem na barra de baixo
+  return `<div class="head"><div><h1 class="lt">Mais</h1><div class="sub">O que não está na tela inicial</div></div></div>
   <div class="tiles">
     ${tile('data-go="tarefas"', 'task', 'Tarefas', pend + remT)}
-    ${tile('data-go="financas"', 'fin', lateB ? `<span style="color:var(--bad)">Finanças · ${lateB} vencida${lateB > 1 ? 's' : ''}</span>` : 'Finanças', acc(openBills().reduce((s, b) => s + b.cents, 0)))}
-    ${tile('data-golistas', 'cart', 'Listas', S.items.filter(i => !i.done).length)}
     ${tile('data-lnnotes', 'note', 'Notas', S.notes.length)}
     ${tile('data-go="rotinas"', 'pill', 'Rotinas e remédios', rotPend() || '✓')}
-    ${tile('data-go="invest"', 'chart', 'Investimentos', (S.watch || []).length || '+')}
-    ${tile('data-go="mercado"', 'globe', 'Economia', mkt && mkt.moedas ? 'US$ ' + n2(mkt.moedas.usd.value) : '—')}
-    ${tile('data-go="noticias"', 'news', 'Notícias', '')}
     ${tile('data-go="clima"', 'spark', 'Clima', wx ? wx.temp + '°C' : '—')}
-    ${tile('data-go="dia"', 'cal', 'Meu dia', '')}
-    ${tile('data-go="saude"', 'pill', 'Saúde', '')}
-    ${tile('data-go="comer"', 'cart', 'Alimentação', '')}
     ${tile('data-go="arquivados"', 'ok', 'Arquivados', (S.arq || []).length || '')}
-    ${tile('data-go="agenda"', 'cal', 'Agenda', S.events.filter(e => e.date === t).length + ' hoje')}
     ${tile('data-go="ajustes"', 'gear', 'Ajustes', '')}
   </div>
-  <div class="foot">Dica: em Ajustes → Aparência você escolhe o que aparece na tela inicial.</div>`;
+  <div class="foot">As outras telas estão nos cards da tela inicial. Em Ajustes → Aparência você escolhe o que aparece lá.</div>`;
 }
 
 /* ---------- tarefa ou lembrete num formulário só ---------- */
