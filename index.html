@@ -1212,6 +1212,36 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 .fd-sum{display:flex;align-items:center;gap:12px;padding:12px 13px}
 .fd-sum .fd-kc{font-size:20px}
 
+/* foto do prato */
+.fd-acts.quatro{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (min-width:640px){ .fd-acts.quatro{grid-template-columns:repeat(4,minmax(0,1fr))} }
+.pr-foto{position:relative;border-radius:14px;overflow:hidden;margin-bottom:12px;background:var(--fill)}
+.pr-foto img{width:100%;max-height:210px;object-fit:cover;display:block}
+.pr-scan{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:prScan 1.6s ease-in-out infinite}
+@keyframes prScan{0%{top:0}50%{top:calc(100% - 3px)}100%{top:0}}
+.pr-tot{text-align:center;padding:10px 0 12px}
+.pr-tot b{display:block;font-size:24px;font-weight:800;letter-spacing:-.6px}
+.pr-tot small{font-size:11.8px;color:var(--fg2)}
+.pr-nota{font-size:12px;color:var(--warn);background:rgba(194,116,23,.1);border-radius:10px;padding:8px 11px;margin-bottom:10px}
+.pr-lista{display:flex;flex-direction:column;gap:9px}
+.pr-it{background:var(--card);border-radius:13px;box-shadow:var(--shadow);padding:10px 12px;animation:fdUp .3s both}
+.pr-it.fora{opacity:.45}
+.pr-ih{display:flex;align-items:center;gap:8px}
+.pr-ih b{flex:1;min-width:0;font-size:13.8px;font-weight:700}
+.pr-x{width:26px;height:26px;border-radius:50%;background:var(--fill);font-size:15px;font-weight:700;color:var(--fg2);flex:none;display:grid;place-items:center}
+.pr-c{font-size:10px;font-weight:800;text-transform:uppercase;padding:2px 7px;border-radius:999px;background:rgba(194,116,23,.14);color:var(--warn)}
+.pr-c.baixa{background:rgba(217,72,59,.13);color:var(--bad)}
+.pr-ib{display:flex;align-items:center;gap:7px;margin-top:7px}
+.pr-ib input{width:74px;border:0;background:var(--fill);border-radius:9px;padding:8px 9px;font-size:14px;font-weight:700;text-align:right;color:var(--fg)}
+.pr-ib span{font-size:12.4px;color:var(--fg2)}
+.pr-ib em{font-style:normal;font-size:11.6px;color:var(--fg2)}
+.pr-ib .pr-k{margin-left:auto;font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.pr-it select{width:100%;margin-top:8px;border:0;background:var(--fill);border-radius:9px;padding:8px 9px;font-size:12.4px;color:var(--fg)}
+.pr-pe{display:flex;align-items:center;gap:10px;margin:14px 0 4px;flex-wrap:wrap}
+.pr-pe label{font-size:12.6px;color:var(--fg2);font-weight:600;display:flex;align-items:center;gap:7px;flex:1;min-width:160px}
+.pr-pe select{flex:1;border:0;background:var(--fill);border-radius:10px;padding:10px;font-size:13.4px;color:var(--fg)}
+.pr-pe .btn-go{flex:none}
+
 /* ---------- Saúde: peso e IMC ---------- */
 .pz-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .pz-tile{background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:12px 13px;text-align:left;width:100%}
@@ -2571,6 +2601,7 @@ function bindView(){
     if (a==='push-on'){ enablePush(); }
     if (a==='wx-on'){ loadWeather(true); }
     if (a==='peso-novo'){ openPeso(null); }
+    if (a==='food-foto'){ fotoPrato(); }
     if (a==='food-scan'){ escanearAlimento(); }
     if (a==='food-busca'){ openBuscaAlimento(); }
     if (a==='food-manual'){ openAlimentoManual(); }
@@ -4869,6 +4900,120 @@ function openBuscaAlimento(meal){
   };
   setTimeout(() => { const i = el.querySelector('#fd-q'); if (i) i.focus(); }, 60);
 }
+// foto do prato: a IA identifica os itens, as calorias vêm da tabela e você confere antes de entrar no diário
+function fotoPrato(meal){
+  const inp = Object.assign(document.createElement('input'), { type:'file', accept:'image/*' });
+  inp.capture = 'environment';
+  inp.onchange = async () => {
+    const f = inp.files && inp.files[0]; if (!f) return;
+    try {
+      const url = await encolheFoto(f);
+      prateAberto(url, meal);
+    } catch(e) { toast('Não consegui ler essa foto.'); }
+  };
+  inp.click();
+}
+// manda a foto menor: gasta menos dados e menos IA, sem perder o que importa
+function encolheFoto(file, max = 1024){
+  return new Promise((ok, erro) => {
+    const img = new Image(), fr = new FileReader();
+    fr.onload = () => { img.src = fr.result; };
+    fr.onerror = erro;
+    img.onload = () => {
+      const e = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * e); c.height = Math.round(img.height * e);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      ok(c.toDataURL('image/jpeg', 0.82));
+    };
+    img.onerror = erro;
+    fr.readAsDataURL(file);
+  });
+}
+async function prateAberto(dataUrl, meal){
+  const el = $('#sheet');
+  el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="Foto do prato">
+    <div class="bar"><button data-x>Fechar</button><b>Lendo o prato…</b><span></span></div>
+    <div class="body"><div class="pr-foto"><img src="${dataUrl}" alt=""><span class="pr-scan"></span></div>
+      <div class="fd-load"><span></span><span></span><span></span></div>
+      <div class="fd-dica">Identificando os alimentos e buscando os valores na tabela.</div></div></div>`;
+  el.hidden = false;
+  const fechar = () => { el.hidden = true; el.innerHTML = ''; };
+  el.querySelector('[data-x]').onclick = fechar;
+  let d;
+  try { d = await buscaAlimento({ foto: dataUrl }); }
+  catch (e) { el.querySelector('.body').innerHTML = `<div class="fd-dica">${esc(e.userMsg || 'Não deu para ler a foto agora.')}</div>`; return; }
+  if (!d.achou || !d.itens.length){
+    el.querySelector('.body').innerHTML = `<div class="fd-dica">Não reconheci comida nessa foto.${d.nota ? ' ' + esc(d.nota) : ''}<br><br>Dá para registrar pelo nome ou pelo código de barras.</div>`;
+    return;
+  }
+  revisarPrato(el, dataUrl, d, meal || refeicaoDaHora(), fechar);
+}
+function revisarPrato(el, dataUrl, d, meal, fechar){
+  // cada item fica editável: a tabela dá o valor por 100 g, você ajusta os gramas
+  const itens = d.itens.filter(x => x.achado).map(x => ({ ...x, kcal100: x.achado.kcal, nome: x.achado.nome }));
+  const perdidos = d.itens.filter(x => !x.achado).map(x => x.termo);
+  const kcalDe = it => it.kcal100 == null ? 0 : Math.round(it.kcal100 * it.gramas / 100);
+  const total = () => itens.filter(x => !x.fora).reduce((a, x) => a + kcalDe(x), 0);
+  const selo = c => c === 'alta' ? '' : `<span class="pr-c ${c}">${c === 'baixa' ? 'chute' : 'incerto'}</span>`;
+
+  const pinta = () => {
+    const t = total(), min = Math.round(t * 0.75 / 10) * 10, max = Math.round(t * 1.25 / 10) * 10;
+    el.querySelector('.bar b').textContent = 'Confira o prato';
+    el.querySelector('.body').innerHTML = `
+      <div class="pr-foto"><img src="${dataUrl}" alt=""></div>
+      <div class="pr-tot"><b>≈ ${min}–${max} kcal</b><small>estimativa · ajuste as quantidades abaixo</small></div>
+      ${d.nota ? `<div class="pr-nota">${esc(d.nota)}</div>` : ''}
+      <div class="pr-lista">${itens.map((x, i) => `<div class="pr-it ${x.fora ? 'fora' : ''}" data-i="${i}">
+          <div class="pr-ih"><b>${esc(x.nome)}</b>${selo(x.confianca)}<button class="pr-x" data-fora="${i}" aria-label="${x.fora ? 'Voltar' : 'Tirar'}">${x.fora ? '+' : '×'}</button></div>
+          <div class="pr-ib"><input type="number" inputmode="numeric" min="1" max="2000" step="5" value="${x.gramas}" data-g="${i}" aria-label="Gramas de ${esc(x.nome)}"><span>g</span>
+            ${x.medida ? `<em>${esc(x.medida)}</em>` : ''}<b class="pr-k" data-k="${i}">${kcalDe(x)} kcal</b></div>
+          ${x.alternativas && x.alternativas.length ? `<select data-alt="${i}" aria-label="Trocar o alimento">
+            <option value="-1">${esc(x.nome)} · ${x.kcal100} kcal/100 g</option>
+            ${x.alternativas.map((a, j) => `<option value="${j}">${esc(a.nome)} · ${a.kcal} kcal/100 g</option>`).join('')}</select>` : ''}
+        </div>`).join('')}</div>
+      ${perdidos.length ? `<div class="pr-nota">Não achei na tabela: ${perdidos.map(esc).join(', ')}. Dá para registrar à parte.</div>` : ''}
+      <div class="pr-pe">
+        <label>Refeição <select data-meal>${MEALS.map(([k, l]) => `<option value="${k}" ${k === meal ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+        <button class="btn-go" data-salvar>Adicionar ao diário</button>
+      </div>
+      <div class="foot">Valores por 100 g da tabela TACO (NEPA/UNICAMP); medidas caseiras da POF/IBGE. A quantidade é estimada pela foto — é daí que vem a margem de erro, por isso confira antes de salvar.</div>`;
+    liga();
+  };
+  const liga = () => {
+    el.querySelectorAll('[data-g]').forEach(i => i.oninput = () => {
+      const k = Number(i.dataset.g), g = Math.max(1, Math.min(2000, Math.round(Number(i.value) || 0)));
+      itens[k].gramas = g; el.querySelector(`[data-k="${k}"]`).textContent = kcalDe(itens[k]) + ' kcal';
+      const t = total(), min = Math.round(t * 0.75 / 10) * 10, max = Math.round(t * 1.25 / 10) * 10;
+      el.querySelector('.pr-tot b').textContent = `≈ ${min}–${max} kcal`;
+    });
+    el.querySelectorAll('[data-fora]').forEach(b => b.onclick = () => { const k = Number(b.dataset.fora); itens[k].fora = !itens[k].fora; pinta(); });
+    el.querySelectorAll('[data-alt]').forEach(sel => sel.onchange = () => {
+      const k = Number(sel.dataset.alt), v = Number(sel.value);
+      if (v < 0) return;
+      const a = itens[k].alternativas[v];
+      itens[k] = { ...itens[k], nome: a.nome, kcal100: a.kcal, carb: null, prot: null, gord: null };
+      pinta();
+    });
+    el.querySelector('[data-salvar]').onclick = async e => {
+      const b = e.currentTarget; b.disabled = true; b.textContent = 'Salvando…';
+      const refeicao = el.querySelector('[data-meal]').value;
+      const dia = ui.comerDia || today();
+      try {
+        for (const x of itens.filter(y => !y.fora)){
+          const f = x.gramas / 100;
+          const rec = await dbSave('food', { day: dia, meal: refeicao, name: x.nome, brand: '', qty: x.gramas, unit: 'g',
+            kcal: kcalDe(x), carb: x.carb == null ? null : Math.round(x.carb * 10) / 10, prot: x.prot == null ? null : Math.round(x.prot * 10) / 10,
+            fat: x.gord == null ? null : Math.round(x.gord * 10) / 10, code: '', img: '', src: 'foto' }, true);
+          S.comer.push(rec); ui.comerNovo = rec.id;
+        }
+        fechar(); go('comer'); toast('Prato registrado');
+      } catch (err) { b.disabled = false; b.textContent = 'Adicionar ao diário'; fail(err); }
+    };
+  };
+  pinta();
+}
+
 // leitor de código de barras do alimento (o mesmo do remédio)
 function escanearAlimento(meal){
   abrirScanner(async code => {
@@ -4923,9 +5068,10 @@ function vComer(){
       <button class="fd-meta" data-act="kcal-meta">${meta ? `meta de ${meta} kcal por dia · trocar` : 'definir meta diária (opcional)'}</button>
     </div></section>`;
 
-  const acoes = `<div class="fd-acts">
-    <button class="fd-btn p" data-act="food-scan">${ic('cam')}<span>Escanear embalagem</span></button>
-    <button class="fd-btn" data-act="food-busca">${ic('search')}<span>Buscar pelo nome</span></button>
+  const acoes = `<div class="fd-acts quatro">
+    <button class="fd-btn p" data-act="food-foto">${ic('cam')}<span>Foto do prato</span></button>
+    <button class="fd-btn" data-act="food-scan">${ic('box')}<span>Código de barras</span></button>
+    <button class="fd-btn" data-act="food-busca">${ic('search')}<span>Buscar nome</span></button>
     <button class="fd-btn" data-act="food-manual">${ic('plus')}<span>Escrever</span></button></div>`;
 
   return `${head}${topo}${acoes}${MEALS.map(bloco).join('')}
