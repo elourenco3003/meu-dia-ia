@@ -1163,6 +1163,34 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 .kcards{overflow:hidden}
 .k-more{flex:none;font-size:11.5px;font-weight:600;color:var(--fg2);padding:4px 6px;text-align:center}
 
+/* ---------- Saúde: peso e IMC ---------- */
+.pz-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.pz-tile{background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:12px 13px;text-align:left;width:100%}
+.pz-tile small{display:block;font-size:11px;color:var(--fg2);font-weight:700;text-transform:uppercase;letter-spacing:.3px}
+.pz-tile b{display:block;font-size:22px;font-weight:800;letter-spacing:-.5px;margin-top:2px;font-variant-numeric:tabular-nums}
+.pz-tile em{font-style:normal;display:block;font-size:11.5px;color:var(--fg2);margin-top:2px}
+/* cabeçalho das seções da tela de Saúde */
+.ch{display:flex;align-items:center;gap:10px;padding:11px 13px;border-bottom:1px solid var(--sep);font-size:13px;font-weight:800}
+.ch span{font-size:11.6px;color:var(--fg2);font-weight:600}
+.ch .lnk{margin-left:auto;font-size:11.8px;font-weight:700;color:var(--accent);background:none;border:0;padding:0;white-space:nowrap}
+.pz-row .main{text-align:left;display:block}
+.pz-row .main b{display:block;font-size:14px}
+.pz-row .main small{display:block;font-size:11.8px;color:var(--fg2);margin-top:1px}
+.pz-chart{padding:4px 10px 10px}
+.pz-chart svg{width:100%;height:170px;display:block}
+.pz-ax{display:flex;justify-content:space-between;font-size:11px;color:var(--fg2);font-weight:600;padding:0 2px}
+.pz-ax .pz-meta{color:var(--good)}
+.pz-h{font-size:11.5px;color:var(--fg2);font-weight:700;font-variant-numeric:tabular-nums;flex:none}
+.pz-alt{padding:12px 13px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.pz-ah{flex:1;min-width:180px}
+.pz-ah b{display:block;font-size:14px}
+.pz-ah span{font-size:12.4px;color:var(--fg2)}
+.pz-af{display:flex;align-items:center;gap:8px}
+.pz-af input{width:88px;border:0;background:var(--fill);border-radius:10px;padding:9px 10px;font-size:14px;font-weight:700;text-align:right;color:var(--fg)}
+.pz-af span{font-size:12.6px;color:var(--fg2)}
+.chip.w{background:rgba(194,116,23,.14);color:var(--warn)}
+@media (min-width:900px){ .pz-tiles{grid-template-columns:repeat(4,minmax(0,1fr))} }
+
 /* ---------- Início: hub de áreas ---------- */
 .hb{display:flex;flex-direction:column;gap:12px}
 .hb-hello small{display:block;font-size:13px;color:var(--fg2);font-weight:600}
@@ -1219,7 +1247,7 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 @media (max-width:1023px){ .hb-wx .dt,.hb-wx .wr{display:none} }
 
 /* ---------- página de Notícias: capa sorteada e seções por tema ---------- */
-.wrap.v-noticias{max-width:none}
+.wrap.v-noticias{max-width:1360px;margin:0 auto;width:100%}
 .n-abas{display:flex;gap:6px;margin:0 0 14px;overflow:auto;scrollbar-width:none}
 .n-abas::-webkit-scrollbar{display:none}
 .n-abas button{flex:none;padding:7px 16px;border-radius:999px;font-size:13.5px;font-weight:600;color:var(--fg2);background:var(--card);border:1px solid var(--sep)}
@@ -1229,7 +1257,7 @@ body.mouse .n-abas button:hover{border-color:var(--accent)}
 .n-cad.c-economia{background:#0E8A5F} .n-cad.c-internacional{background:#2A6BC4}
 .n-novo{display:inline-block;margin-left:5px;font-size:9.5px;font-weight:800;padding:2px 6px;border-radius:4px;background:#E3A23B;color:#15161B}
 /* capa */
-.n-capas{position:relative;height:360px;border-radius:16px;overflow:hidden;background:#171922;box-shadow:var(--shadow)}
+.n-capas{position:relative;height:340px;border-radius:16px;overflow:hidden;background:#171922;box-shadow:var(--shadow)}
 .n-capa{position:absolute;inset:0;display:block;text-decoration:none;opacity:0;transition:opacity .7s ease;pointer-events:none}
 .n-capa.on{opacity:1;pointer-events:auto}
 .n-dots{position:absolute;right:18px;bottom:18px;display:flex;gap:7px;z-index:3}
@@ -1252,6 +1280,15 @@ body.mouse .n-capa:hover img{transform:scale(1.035)}
 .n-sh button .i{width:14px;height:14px}
 .n-cnt{margin-left:auto;font-size:12px;color:var(--fg2)}
 .n-grade{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.n-top{display:grid;gap:16px}
+.n-side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.n-sc{display:flex;gap:11px;align-items:center;background:var(--card);border-radius:12px;box-shadow:var(--shadow);padding:9px;text-decoration:none;flex:1;min-height:0}
+.n-sc img{width:104px;height:72px;object-fit:cover;border-radius:9px;flex:none;background:var(--fill)}
+.n-sc span{min-width:0}
+.n-sc b{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-size:13.4px;font-weight:700;line-height:1.3;color:var(--fg)}
+.n-sc small{display:block;font-size:11px;color:var(--fg2);margin-top:4px}
+@media (min-width:1100px){ .n-top{grid-template-columns:1.9fr minmax(300px,1fr)} }
+@media (max-width:1099px){ .n-side{display:none} }
 .n-card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--sep);border-radius:12px;overflow:hidden;text-decoration:none;color:var(--fg);box-shadow:var(--shadow);transition:transform .14s,border-color .14s}
 .n-card .ph{height:148px;background:var(--fill);overflow:hidden;flex:none}
 .n-card .ph.vazia{height:0}
@@ -1261,7 +1298,7 @@ body.mouse .n-capa:hover img{transform:scale(1.035)}
 .n-card small{font-size:11px;color:var(--fg2);margin-top:auto}
 body.mouse .n-card:hover{border-color:var(--accent);transform:translateY(-2px)}
 body.mouse .n-card:hover .ph img{transform:scale(1.05)}
-@media (min-width:1500px){ .n-grade{grid-template-columns:repeat(5,minmax(0,1fr))} .n-capas{height:400px} }
+@media (min-width:1500px){ .n-capas{height:368px} }
 @media (max-width:1100px){ .n-grade{grid-template-columns:repeat(3,minmax(0,1fr))} }
 @media (max-width:899px){
   .n-capas{height:230px;border-radius:16px}
@@ -1410,6 +1447,7 @@ body.mouse .cc-b button:hover{filter:brightness(.97)}
     <button data-v="listas" class="side-only"><svg class="i"><use href="#i-cart"/></svg>Listas e notas</button>
     <button data-v="invest" class="side-only"><svg class="i"><use href="#i-chart"/></svg>Investimentos</button>
     <button data-v="mercado" class="side-only"><svg class="i"><use href="#i-globe"/></svg>Economia</button>
+    <button data-v="saude" class="side-only"><svg class="i"><use href="#i-pill"/></svg>Saúde</button>
     <button data-v="arquivados" class="side-only"><svg class="i"><use href="#i-box"/></svg>Arquivados</button>
     <button data-v="ajustes" class="side-only"><svg class="i"><use href="#i-gear"/></svg>Ajustes</button>
   </nav>
@@ -1489,13 +1527,16 @@ const MAP = {
   fin:  { table:'finance_entries',
           to: r => ({id:r.id, type:r.kind, title:r.title, cents:Number(r.amount_cents), date:r.date, paid:r.paid}),
           from: o => ({kind:o.type, title:o.title, amount_cents:o.cents, date:o.date, paid:!!o.paid}) },
+  peso: { table:'weights',
+          to: r => ({id:r.id, day:r.day, kg:Number(r.kg), cintura:r.waist_cm == null ? '' : Number(r.waist_cm), nota:r.note || ''}),
+          from: o => ({day:o.day, kg:o.kg, waist_cm:o.cintura === '' || o.cintura == null ? null : Number(o.cintura), note:o.nota || null}) },
   rem:  { table:'reminders',
           to: r => ({id:r.id, title:r.title, date:r.date, time:tm(r.time), adv:r.advance_min, done:r.done}),
           from: o => ({title:o.title, date:o.date, time:o.time, advance_min:Number(o.adv) || 0, done:!!o.done}) },
 };
 async function loadAll(){
   const [p, ev, tk, fn, rm] = await Promise.all([
-    sb.from('profiles').select('name,sounds,sound_cats,quiet_start,quiet_end,event_advance_min,summary_time,home_addr,home_lat,home_lon,work_addr,work_lat,work_lon,travel_on,travel_arrive_min,reserve_pct,plan').maybeSingle(),
+    sb.from('profiles').select('height_cm,weight_goal_kg,name,sounds,sound_cats,quiet_start,quiet_end,event_advance_min,summary_time,home_addr,home_lat,home_lon,work_addr,work_lat,work_lon,travel_on,travel_arrive_min,reserve_pct,plan').maybeSingle(),
     sb.from('events').select('*').is('archived_at', null).order('date'),
     sb.from('tasks').select('*'),
     sb.from('finance_entries').select('*').order('date'),
@@ -1508,17 +1549,20 @@ async function loadAll(){
     S.home = { addr:p.data.home_addr || '', lat:p.data.home_lat, lon:p.data.home_lon }; S.work = { addr:p.data.work_addr || '', lat:p.data.work_lat, lon:p.data.work_lon };
     S.travel_on = p.data.travel_on !== false; S.travel_arrive = p.data.travel_arrive_min || 30; S.plan = p.data.plan || 'free';
     S.reserve = Number(p.data.reserve_pct) || 0;
+    S.altura = p.data.height_cm || 0; S.metaPeso = p.data.weight_goal_kg == null ? '' : Number(p.data.weight_goal_kg);
   }
   S.events = ev.data.map(MAP.ev.to); S.tasks = tk.data.map(MAP.task.to); S.fin = fn.data.map(MAP.fin.to); S.rems = rm.data.map(MAP.rem.to);
-  const [ls, li, nt, rb, bd, rt, rl] = await Promise.all([
+  const [ls, li, nt, rb, bd, rt, rl, pw] = await Promise.all([
     sb.from('lists').select('*').order('updated_at', { ascending:false }), sb.from('list_items').select('*').order('created_at'),
     sb.from('notes').select('*').order('updated_at', { ascending:false }), sb.from('recurring_bills').select('*').order('day'),
     sb.from('birthdays').select('*').order('month').order('day'),
     sb.from('routines').select('*').order('created_at'),
     sb.from('routine_logs').select('*').gte('due_on', today()),
+    sb.from('weights').select('*').order('day', { ascending:false }).limit(400),
   ]);
   S.lists = ls.data || []; S.items = li.data || []; S.notes = nt.data || []; S.recurring = rb.data || []; S.birthdays = bd.data || [];
   S.rots = (rt.data || []).map(MAP.rot.to); S.rlogs = rl.data || [];
+  S.pesos = (pw.data || []).map(MAP.peso.to);
 }
 async function dbSave(k, o, isNew){
   const m = MAP[k];
@@ -1531,7 +1575,7 @@ const persist = p => Promise.resolve(p).catch(fail);
 let profT;
 function saveProfile(){
   clearTimeout(profT);
-  profT = setTimeout(() => persist(sb.from('profiles').update({ name:S.name, sounds:S.sounds, sound_cats:S.cats, quiet_start:S.quiet_start || null, quiet_end:S.quiet_end || null, event_advance_min:Number(S.event_adv) || 0, summary_time:S.summary_time || '07:30', travel_on:!!S.travel_on, travel_arrive_min:Number(S.travel_arrive) || 30, reserve_pct:Number(S.reserve) || 0 }).eq('id', session.user.id).then(r => { if (r.error) throw r.error; })), 500);
+  profT = setTimeout(() => persist(sb.from('profiles').update({ height_cm:S.altura || null, weight_goal_kg:S.metaPeso === '' || S.metaPeso == null ? null : Number(S.metaPeso), name:S.name, sounds:S.sounds, sound_cats:S.cats, quiet_start:S.quiet_start || null, quiet_end:S.quiet_end || null, event_advance_min:Number(S.event_adv) || 0, summary_time:S.summary_time || '07:30', travel_on:!!S.travel_on, travel_arrive_min:Number(S.travel_arrive) || 30, reserve_pct:Number(S.reserve) || 0 }).eq('id', session.user.id).then(r => { if (r.error) throw r.error; })), 500);
 }
 
 /* ---------- sons (originais, gerados no aparelho) ---------- */
@@ -1748,6 +1792,8 @@ function swipeDelete(key){
     restore = () => { S.arq.push(it); S.arq.sort((a, b) => String(b.at).localeCompare(String(a.at))); };
     commit = () => sb.from(A.table).delete().eq('id', id);
     label = `${A.n} excluído de vez`; }
+  else if (k === 'peso'){ const w = (S.pesos || []).find(x => x.id === id); if (!w) return; S.pesos = S.pesos.filter(x => x !== w);
+    restore = () => { S.pesos.push(w); S.pesos.sort((a, b) => b.day.localeCompare(a.day)); }; commit = () => sb.from('weights').delete().eq('id', id); label = 'Registro de peso excluído'; }
   else if (k === 'rem' || k === 'ev'){ return archiveItem(k, id); }
   else return;
   render();
@@ -1897,13 +1943,13 @@ document.querySelectorAll('#tabs [data-v]').forEach(b => b.onclick = () => go(b.
 $('#fab').onclick = () => openNewMenu();
 
 function render(){
-  const MAIS = ['mais','dia','tarefas','lembretes','rotinas','financas','listas','lista','invest','mercado','noticias','clima','ajustes','admin','arquivados'];
+  const MAIS = ['mais','dia','saude','tarefas','lembretes','rotinas','financas','listas','lista','invest','mercado','noticias','clima','ajustes','admin','arquivados'];
   document.querySelectorAll('#tabs [data-v]').forEach(b => { if (b.dataset.v===view || (b.dataset.v==='listas' && view==='lista') || (b.dataset.v==='mais' && MAIS.includes(view))) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
   // computador: as listas abrem ao lado (a primeira já aberta); notas continuam na tela própria
   if (desk() && view==='listas' && (ui.lnTab||'listas')==='listas' && S.lists.length){ if (!S.lists.some(l => l.id===ui.listId)) ui.listId = S.lists[0].id; view = 'lista'; }
   if (desk() && view==='lista'){ if (ui.lnTab==='notas' || !S.lists.length) view = 'listas'; else if (!S.lists.some(l => l.id===ui.listId)) ui.listId = S.lists[0].id; }
   const D = desk();
-  const V = {inicio:vHub, dia:vHome, agenda:D?vAgendaDesk:vAgenda, assistente:vAssist, tarefas:vTasks, financas:D?vFinDesk:vFin, lembretes:vTasks, ajustes:vSettings, mais:vMais, admin:vAdmin, clima:vClima, mercado:D?vMercadoDesk:vMercado, noticias:vNoticias, listas:vListas, lista:D?vListaDesk:vLista, invest:D?vInvestDesk:vInvest, rotinas:vRotinas, arquivados:vArq}[view] || vHome;
+  const V = {inicio:vHub, dia:vHome, saude:vSaude, agenda:D?vAgendaDesk:vAgenda, assistente:vAssist, tarefas:vTasks, financas:D?vFinDesk:vFin, lembretes:vTasks, ajustes:vSettings, mais:vMais, admin:vAdmin, clima:vClima, mercado:D?vMercadoDesk:vMercado, noticias:vNoticias, listas:vListas, lista:D?vListaDesk:vLista, invest:D?vInvestDesk:vInvest, rotinas:vRotinas, arquivados:vArq}[view] || vHome;
   const m = $('#view'); m.classList.toggle('chat', view==='assistente');
   const hadQ = document.activeElement && document.activeElement.id === 'topq'; hvHide();
   m.innerHTML = `${side() ? topbar() : ''}<div class="wrap v-${view}${D ? ' desk' : ''}">${V()}</div>`;
@@ -2022,7 +2068,7 @@ function vHub(){
     <span class="qi">${ic(icn)}</span><b>${nome}</b>${alerta ? `<em>${linha}</em>` : `<small>${linha}</small>`}</button>`;
   const grid = `<div class="hb-grid">
     ${q('data-go="dia"', 'cal', 'Meu dia', `${quantos} hoje · ${pend.length} tarefa${pend.length === 1 ? '' : 's'}`, '#7B8BE3', 'rgba(123,139,227,.14)')}
-    ${q('data-go="rotinas"', 'pill', 'Saúde', doses.length ? `${dOk} de ${doses.length} doses${proxDose ? ' · próxima ' + proxDose.t : ''}` : 'Remédios e rotinas', '#E5674B', 'rgba(229,103,75,.13)')}
+    ${q('data-go="saude"', 'pill', 'Saúde', [doses.length ? `${dOk} de ${doses.length} doses` : '', (S.pesos && S.pesos.length) ? `${n2(S.pesos[0].kg,1)} kg` : ''].filter(Boolean).join(' · ') || 'Remédios, consultas e peso', '#E5674B', 'rgba(229,103,75,.13)')}
     ${q('data-go="financas"', 'fin', 'Dinheiro', venc.length ? `R$ ${brl(vencV)} vencido${venc.length > 1 ? 's' : ''}` : `R$ ${brl(owed)} a pagar`, '#2F9E6A', 'rgba(47,158,106,.13)', venc.length)}
     ${q('data-go="invest"', 'chart', 'Investimentos', w.length ? `${w.length} ativo${w.length === 1 ? '' : 's'} · ${altas} em alta` : 'Acompanhe seus ativos', '#5E6DD8', 'rgba(94,109,216,.13)')}
     ${q('data-go="mercado"', 'globe', 'Economia', usd ? `Dólar ${usd.v}${selic ? ' · Selic ' + selic.v : ''}` : 'Indicadores e notícias', '#C27417', 'rgba(194,116,23,.13)')}
@@ -2394,6 +2440,12 @@ function bindView(){
   V.querySelectorAll('[data-rotnew]').forEach(b => b.onclick = () => openRoutine(b.dataset.rotnew, null));
   V.querySelectorAll('[data-reserva]').forEach(b => b.onclick = e => { e.stopPropagation(); openReserva(); });
   V.querySelectorAll('[data-dosecard]').forEach(b => b.onclick = () => { const [st, id, t] = b.dataset.dosecard.split('|'); rotMark(id, t, st); });
+  V.querySelectorAll('[data-peso]').forEach(b => b.onclick = () => openPeso((S.pesos || []).find(x => x.id === b.dataset.peso)));
+  V.querySelectorAll('[data-dose]').forEach(b => b.onclick = () => openDose(b.dataset.dose));
+  { const f = V.querySelector('[data-altura]'); if (f) f.onsubmit = e => { e.preventDefault();
+      const v = Math.round(Number(String($('#alt-in').value).replace(',', '.')));
+      if (!v || v < 80 || v > 260){ toast('Coloque a altura em centímetros, por exemplo 175.'); return; }
+      S.altura = v; saveProfile(); render(); }; }
   V.querySelectorAll('[data-toggle]').forEach(b => b.onclick = () => {
     const [k,id] = b.dataset.toggle.split(':'); const it = S[ARR[k]].find(x=>x.id===id); if (!it) return;
     it.done = !it.done; if (it.done){ play('concluida'); (ui.keep = ui.keep || new Set()).add(id); } render(); persist(dbSave(k, it, false));
@@ -2448,6 +2500,9 @@ function bindView(){
     if (a==='logout'){ inbox = []; unsubscribePush().finally(() => sb.auth.signOut()); }
     if (a==='push-on'){ enablePush(); }
     if (a==='wx-on'){ loadWeather(true); }
+    if (a==='peso-novo'){ openPeso(null); }
+    if (a==='peso-meta'){ openAlturaMeta(); }
+    if (a==='peso-lembrete'){ togglePesagem(); }
     if (a==='frete-edit'){ openFreteEdit(); }
     if (a==='news-eco'){ ui.newsTab = 'economia'; go('noticias'); }
     if (a==='mkt-refresh'){ loadMarket(true); }
@@ -3236,10 +3291,39 @@ async function openAsset(sym){
 }
 // gráfico de linha com escala de preço ao lado, linhas de grade e cursor (mouse ou dedo) mostrando o valor de cada dia
 const brD = s => { const [yy, mm, dd] = s.split('-'); return `${dd}/${mm}`; };
+// IMC: referência da OMS para adultos — o app mostra a faixa, não dá diagnóstico nem dieta
+const imcDe = (kg, cm) => (!kg || !cm) ? null : Math.round((kg / Math.pow(cm / 100, 2)) * 10) / 10;
+const imcFaixa = v => v == null ? null
+  : v < 18.5 ? { t:'abaixo do peso', c:'var(--warn)' }
+  : v < 25   ? { t:'peso normal', c:'var(--good)' }
+  : v < 30   ? { t:'sobrepeso', c:'var(--warn)' }
+  : v < 35   ? { t:'obesidade grau 1', c:'var(--bad)' }
+  : v < 40   ? { t:'obesidade grau 2', c:'var(--bad)' }
+  :            { t:'obesidade grau 3', c:'var(--bad)' };
+// curva do peso: pontos [data, kg], com a meta como linha tracejada
+function pesoChart(pts, meta){
+  if (pts.length < 2) return '';
+  const W = 640, H = 170, pad = { l:6, r:6, t:14, b:18 };
+  const vs = pts.map(p => p[1]).concat(meta ? [meta] : []);
+  const mn = Math.min(...vs) - 0.6, mx = Math.max(...vs) + 0.6, amp = Math.max(0.8, mx - mn);
+  const x = i => pad.l + (W - pad.l - pad.r) * (pts.length === 1 ? 0.5 : i / (pts.length - 1));
+  const y = v => pad.t + (H - pad.t - pad.b) * (1 - (v - mn) / amp);
+  const linha = pts.map((p, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(p[1]).toFixed(1)}`).join(' ');
+  const area = `${linha} L${x(pts.length - 1).toFixed(1)},${H - pad.b} L${x(0).toFixed(1)},${H - pad.b} Z`;
+  const ult = pts[pts.length - 1];
+  return `<div class="pz-chart"><svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Curva do peso: de ${n2(pts[0][1],1)} kg em ${brD(pts[0][0])} a ${n2(ult[1],1)} kg em ${brD(ult[0])}">
+      <defs><linearGradient id="pzg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--accent)" stop-opacity=".26"/><stop offset="1" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>
+      ${meta ? `<line x1="${pad.l}" y1="${y(meta).toFixed(1)}" x2="${W - pad.r}" y2="${y(meta).toFixed(1)}" stroke="var(--good)" stroke-width="1.4" stroke-dasharray="6 5" opacity=".8"/>` : ''}
+      <path d="${area}" fill="url(#pzg)"/>
+      <path d="${linha}" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+      <circle cx="${x(pts.length - 1).toFixed(1)}" cy="${y(ult[1]).toFixed(1)}" r="4" fill="var(--accent)"/>
+    </svg>
+    <div class="pz-ax"><span>${brD(pts[0][0])}</span>${meta ? `<span class="pz-meta">meta ${n2(meta,1)} kg</span>` : ''}<span>${brD(ult[0])}</span></div></div>`;
+}
 function lineChart(pts, unit, cls){
   const vs = pts.map(p => p[1]), mn = Math.min(...vs), mx = Math.max(...vs);
-  return `<div class="lc-box ${cls || ''}" data-lc role="img" aria-label="Preço de ${brD(pts[0][0])} a ${brD(pts[pts.length - 1][0])}: mínimo R$ ${n2(mn)}, máximo R$ ${n2(mx)}"></div>
-    <div class="lc-ax"><span>máx ${unit ? n2(mx, 0) + ' ' + unit : 'R$ ' + n2(mx)}</span><span class="lc-hint">${matchMedia('(hover:hover)').matches ? 'Passe o mouse no gráfico para ver cada dia' : '⁠Toque e ⁠arraste no gráfico para ver cada dia'}</span><span>mín ${unit ? n2(mn, 0) + ' ' + unit : 'R$ ' + n2(mn)}</span></div>`;
+  return `<div class="lc-box ${cls || ''}" data-lc role="img" aria-label="Preço de ${brD(pts[0][0])} a ${brD(pts[pts.length - 1][0])}: mínimo R$ ${n2(mn,1)}, máximo R$ ${n2(mx)}"></div>
+    <div class="lc-ax"><span>máx ${unit ? n2(mx, 0) + ' ' + unit : 'R$ ' + n2(mx)}</span><span class="lc-hint">${matchMedia('(hover:hover)').matches ? 'Passe o mouse no gráfico para ver cada dia' : '⁠Toque e ⁠arraste no gráfico para ver cada dia'}</span><span>mín ${unit ? n2(mn, 0) + ' ' + unit : 'R$ ' + n2(mn,1)}</span></div>`;
 }
 function niceStep(raw){ const p = Math.pow(10, Math.floor(Math.log10(raw))), f = raw / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p; }
 const WD = ['dom','seg','ter','qua','qui','sex','sáb'];
@@ -3338,6 +3422,7 @@ function vMais(){
     ${tile('data-go="noticias"', 'news', 'Notícias', '')}
     ${tile('data-go="clima"', 'spark', 'Clima', wx ? wx.temp + '°C' : '—')}
     ${tile('data-go="dia"', 'cal', 'Meu dia', '')}
+    ${tile('data-go="saude"', 'pill', 'Saúde', '')}
     ${tile('data-go="arquivados"', 'ok', 'Arquivados', (S.arq || []).length || '')}
     ${tile('data-go="agenda"', 'cal', 'Agenda', S.events.filter(e => e.date === t).length + ' hoje')}
     ${tile('data-go="ajustes"', 'gear', 'Ajustes', '')}
@@ -4600,6 +4685,120 @@ function bindPlace(inp){
   });
 }
 
+/* ---------- Saúde: remédios, consultas, peso e IMC ---------- */
+function openPeso(it){
+  const hoje = today();
+  openForm({
+    title: it ? 'Registro de peso' : 'Registrar peso',
+    fields: [
+      { k:'day', label:'Dia', type:'date', def:hoje },
+      { k:'kg', label:'Peso (kg)', type:'text', ph:'84,2' },
+      { k:'cintura', label:'Cintura (cm)', type:'text', ph:'opcional' },
+      { k:'nota', label:'Observação', type:'text', ph:'opcional' },
+    ],
+    values: it || {},
+    onSave: async v => {
+      const kg = Number(String(v.kg).replace(',', '.'));
+      if (!kg || kg < 20 || kg > 400){ const e = new Error('peso'); e.userMsg = 'Coloque o peso em quilos, por exemplo 84,2.'; throw e; }
+      const cin = String(v.cintura || '').trim() ? Number(String(v.cintura).replace(',', '.')) : '';
+      if (cin !== '' && (!cin || cin < 30 || cin > 250)){ const e = new Error('cintura'); e.userMsg = 'A cintura precisa estar em centímetros, por exemplo 92.'; throw e; }
+      const o = { id: it && it.id, day: v.day || hoje, kg: Math.round(kg * 10) / 10, cintura: cin, nota: (v.nota || '').slice(0, 200) };
+      const velho = S.pesos.find(x => x.day === o.day && (!it || x.id !== it.id));
+      if (velho){ Object.assign(velho, { kg:o.kg, cintura:o.cintura, nota:o.nota }); await dbSave('peso', velho, false); }
+      else if (it){ Object.assign(it, o); await dbSave('peso', it, false); }
+      else { const rec = await dbSave('peso', o, true); S.pesos.push(rec); }
+      S.pesos.sort((a, b) => b.day.localeCompare(a.day));
+      return 'Peso registrado';
+    },
+    onDelete: it ? async () => { await dbDel('peso', it.id); S.pesos = S.pesos.filter(x => x !== it); } : null,
+  });
+}
+function openAlturaMeta(){
+  openForm({
+    title: 'Altura e meta',
+    fields: [
+      { k:'altura', label:'Altura (cm)', type:'text', ph:'175' },
+      { k:'meta', label:'Meta de peso (kg)', type:'text', ph:'opcional' },
+    ],
+    values: { altura: S.altura || '', meta: S.metaPeso === '' || S.metaPeso == null ? '' : n2(S.metaPeso,1) },
+    saveLabel: 'Salvar',
+    onSave: async v => {
+      const a = String(v.altura || '').trim() ? Math.round(Number(String(v.altura).replace(',', '.'))) : 0;
+      if (a && (a < 80 || a > 260)){ const e = new Error('altura'); e.userMsg = 'A altura precisa estar em centímetros, por exemplo 175.'; throw e; }
+      const m = String(v.meta || '').trim() ? Math.round(Number(String(v.meta).replace(',', '.')) * 10) / 10 : '';
+      if (m !== '' && (!m || m < 20 || m > 400)){ const e = new Error('meta'); e.userMsg = 'A meta precisa ser um peso em quilos, por exemplo 80.'; throw e; }
+      S.altura = a; S.metaPeso = m; saveProfile();
+      return 'Salvo';
+    },
+  });
+}
+// lembrete de pesagem: usa o motor de rotinas que já existe (vira alerta como qualquer outro)
+async function togglePesagem(){
+  const r = (S.rots || []).find(x => x.kind === 'habito' && /^pesar$/i.test(x.title));
+  if (r && r.active){ r.active = false; render(); persist(dbSave('rot', r, false)); toast('Lembrete de pesagem desligado'); return; }
+  if (r){ r.active = true; render(); persist(dbSave('rot', r, false)); toast('Lembrete de pesagem ligado'); return; }
+  const o = { kind:'habito', title:'Pesar', dose:'', mode:'horarios', times:['08:00'], days:[0], start:today(), active:true };
+  try { const rec = await dbSave('rot', o, true); S.rots.push(rec); render(); toast('Vou lembrar todo domingo às 08:00'); } catch(e) { fail(e); }
+}
+function vSaude(){
+  const t = today(), n = new Date();
+  const pesos = [...(S.pesos || [])].sort((a, b) => a.day.localeCompare(b.day));
+  const ult = pesos[pesos.length - 1] || null;
+  const alt = S.altura || 0, imc = ult ? imcDe(ult.kg, alt) : null, fx = imcFaixa(imc);
+  const antes = (dias) => { const lim = iso(new Date(n.getTime() - dias * 864e5)); const l = pesos.filter(p => p.day <= lim); return l[l.length - 1] || null; };
+  const d30 = ult && antes(30) ? Math.round((ult.kg - antes(30).kg) * 10) / 10 : null;
+  const meta = S.metaPeso === '' || S.metaPeso == null ? null : Number(S.metaPeso);
+  const falta = ult && meta ? Math.round((ult.kg - meta) * 10) / 10 : null;
+  const rot = rotAgenda(), doses = rot.filter(x => x.r.kind === 'remedio');
+  const dOk = doses.filter(x => x.log && x.log.status !== 'pulado').length;
+  const consultas = S.events.filter(e => e.date >= t && !e.done && e.ekind && e.ekind !== 'normal')
+    .sort((a, b) => (a.date + (a.time || '')).localeCompare(b.date + (b.time || ''))).slice(0, 4);
+  const pesar = (S.rots || []).find(r => r.kind === 'habito' && /^pesar$/i.test(r.title) && r.active);
+
+  const sinal = v => v == null ? '' : (v > 0 ? '+' : '') + n2(v,1);
+  const tile = (lab, val, sub, cor) => `<div class="pz-tile"><small>${lab}</small><b${cor ? ` style="color:${cor}"` : ''}>${val}</b>${sub ? `<em>${sub}</em>` : ''}</div>`;
+
+  const head = `${back()}<div class="head"><div><h1 class="lt">Saúde</h1><div class="sub">Remédios, consultas e peso</div></div>
+    <button class="btn-go" data-act="peso-novo">${ic('plus')}Registrar peso</button></div>`;
+
+  const semAltura = `<section class="card pz-alt"><div class="pz-ah"><b>Falta a sua altura</b><span>Sem ela não dá para calcular o IMC.</span></div>
+    <form class="pz-af" data-altura><input id="alt-in" type="text" inputmode="numeric" placeholder="175" aria-label="Altura em centímetros" value="${S.altura || ''}"><span>cm</span><button class="btn-go">Salvar</button></form></section>`;
+
+  const resumo = `<section class="pz-tiles">
+    ${tile('Peso (kg)', ult ? n2(ult.kg,1) : '—', ult ? `em ${brD(ult.day)}` : 'nenhum registro ainda')}
+    ${tile('IMC', imc != null ? n2(imc,1) : '—', fx ? fx.t : (alt ? 'registre um peso' : 'falta a altura'), fx ? fx.c : '')}
+    ${tile('Em 30 dias', d30 == null ? '—' : `${sinal(d30)} kg`, d30 == null ? 'sem comparação' : 'contra o registro de 30 dias atrás', d30 == null ? '' : d30 < 0 ? 'var(--good)' : d30 > 0 ? 'var(--warn)' : '')}
+    <button class="pz-tile" data-act="peso-meta"><small>Meta</small><b>${meta ? `${n2(meta,1)} kg` : '—'}</b><em>${meta ? (falta > 0 ? `faltam ${n2(falta,1)} kg` : falta < 0 ? `${n2(-falta,1)} kg abaixo` : 'alcançada') : 'toque para definir'}</em></button>
+  </section>`;
+
+  const curva = pesos.length >= 2 ? `<section class="card"><div class="ch"><b>Curva do peso</b><span>${pesos.length} registros</span></div>
+    ${pesoChart(pesos.slice(-40).map(p => [p.day, p.kg]), meta)}</section>` : '';
+
+  const linhaDose = x => `<div class="row pz-row"><span class="main"><b>${esc(x.r.title)}</b><small>${x.r.dose ? esc(x.r.dose) : 'dose de hoje'}</small></span>
+    <span class="pz-h">${x.t}</span>${x.log ? `<span class="chip ${x.log.status === 'pulado' ? '' : 'g'}">${x.log.status === 'pulado' ? 'pulado' : 'tomado'}</span>` : `<button class="pay" data-dose="${esc(x.r.id)}:${x.t}">Responder</button>`}</div>`;
+  const remedios = `<section class="card"><div class="ch"><b>Hoje</b><span>${doses.length ? `${dOk} de ${doses.length} doses` : 'sem remédio marcado'}</span>
+      <button class="lnk" data-go="rotinas">ver remédios</button></div>
+    ${doses.length ? doses.map(linhaDose).join('') : '<div class="empty">Nenhuma dose marcada para hoje.</div>'}</section>`;
+
+  const consult = `<section class="card"><div class="ch"><b>Consultas e exames</b><button class="lnk" data-go="agenda">ver agenda</button></div>
+    ${consultas.length ? consultas.map(e => `<button class="row pz-row" data-ev="${esc(e.id)}"><span class="main"><b>${esc(e.title)}</b><small>${brD(e.date)}${e.time ? ' · ' + e.time : ''}${e.place ? ' · ' + esc(e.place) : ''}</small></span><span class="chip">${e.ekind === 'exame' ? 'exame' : 'consulta'}</span></button>`).join('')
+      : '<div class="empty">Nada marcado. Compromissos do tipo consulta ou exame aparecem aqui.</div>'}</section>`;
+
+  const regs = pesos.slice().reverse().slice(0, 12);
+  const lista = `<section class="card"><div class="ch"><b>Registros</b><span>deslize para excluir</span></div>
+    ${regs.length ? regs.map((p, i) => { const ant = pesos[pesos.length - 2 - i]; const dif = ant ? Math.round((p.kg - ant.kg) * 10) / 10 : null;
+        return `<div class="row pz-row" data-swipe="peso:${esc(p.id)}"><button class="main" data-peso="${esc(p.id)}"><b>${n2(p.kg,1)} kg</b><small>${brD(p.day)}${p.cintura ? ' · cintura ' + n2(p.cintura,1) + ' cm' : ''}${p.nota ? ' · ' + esc(p.nota) : ''}</small></button>
+          ${dif == null ? '' : `<span class="chip ${dif < 0 ? 'g' : dif > 0 ? 'w' : ''}">${sinal(dif)} kg</span>`}
+          ${alt ? `<span class="pz-h">IMC ${n2(imcDe(p.kg, alt),1)}</span>` : ''}</div>`; }).join('')
+      : '<div class="empty">Toque em “Registrar peso” para começar.</div>'}</section>`;
+
+  const lembrete = `<section class="card"><div class="row pz-row"><span class="main"><b>Lembrete de pesagem</b><small>${pesar ? 'todo domingo às ' + (pesar.times[0] || '08:00') : 'desligado'}</small></span>
+      <label class="switch"><input type="checkbox" data-act="peso-lembrete" ${pesar ? 'checked' : ''} aria-label="Lembrete de pesagem"><span></span></label></div>
+    <div class="foot">O IMC é uma referência da Organização Mundial da Saúde para adultos — não serve para gestantes, crianças nem atletas, e não substitui avaliação médica. O app registra e mostra; quem define meta e dieta é você com seu médico ou nutricionista.</div></section>`;
+
+  return `${head}${alt ? '' : semAltura}${resumo}${curva}${remedios}${consult}${lista}${lembrete}`;
+}
+
 /* ---------- mercado e notícias ---------- */
 let mkt = null, mktAt = 0, mktSig = '';
 try { const c = JSON.parse(localStorage.getItem('meudia.mkt') || 'null'); if (c){ mkt = c.data; mktAt = c.at; } } catch(e) {}
@@ -4899,8 +5098,13 @@ function vNoticias(){
       ${n.img ? `<img src="${esc(n.img)}" alt="" loading="lazy" onerror="this.closest('.n-capa').classList.add('noimg');this.remove()">` : ''}
       <span class="ov"></span><span class="tx">${sel(n)}${selo(n)}<b>${esc(n.title)}</b><small>${agoTxt(n.at)} · Agência Brasil</small></span></a>`;
   // rodízio: as manchetes do caderno trocam sozinhas, com as bolinhas para escolher
-  const capa = () => `<div class="n-capas" data-ncapa>${ordem.map(umaCapa).join('')}
-    ${ordem.length > 1 ? `<span class="n-dots">${ordem.map((_, i) => `<i class="${i ? '' : 'on'}" data-ncd="${i}"></i>`).join('')}</span>` : ''}</div>`;
+  const lado = fonte.filter(x => !giro.includes(x)).slice(0, 3);
+  const umLado = n => `<a class="n-sc" href="${esc(n.link)}" target="_blank" rel="noopener" data-newsopen="${esc(n.at || '')}">
+      ${n.img ? `<img src="${esc(n.img)}" alt="" loading="lazy" onerror="this.remove()">` : ''}
+      <span><b>${esc(n.title)}</b><small>${agoTxt(n.at)} · Agência Brasil</small></span></a>`;
+  const capa = () => `<div class="n-top"><div class="n-capas" data-ncapa>${ordem.map(umaCapa).join('')}
+    ${ordem.length > 1 ? `<span class="n-dots">${ordem.map((_, i) => `<i class="${i ? '' : 'on'}" data-ncd="${i}"></i>`).join('')}</span>` : ''}</div>
+    ${lado.length ? `<div class="n-side">${lado.map(umLado).join('')}</div>` : ''}</div>`;
   const cartao = n => `<a class="n-card ${n.img ? '' : 'noimg'}" href="${esc(n.link)}" target="_blank" rel="noopener" data-newsopen="${esc(n.at || '')}">
       <span class="ph">${n.img ? `<img src="${esc(n.img)}" alt="" loading="lazy" onerror="this.closest('.ph').classList.add('vazia');this.remove()">` : ''}</span>
       <span class="tx">${sel(n)}${selo(n)}<b>${esc(n.title)}</b><small>${agoTxt(n.at)} · Agência Brasil</small></span></a>`;
