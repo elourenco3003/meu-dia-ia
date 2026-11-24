@@ -112,13 +112,24 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 .h2{font-size:22px;font-weight:600;letter-spacing:-.015em;margin:0}
 .sub{color:var(--fg2);font-size:14.5px;margin-top:4px}
 .head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
-.row[data-swipe]{touch-action:pan-y}
-.row.swiping{background:linear-gradient(to left,var(--bad) var(--swa,0px),var(--card) var(--swa,0px))}
-.row.swiping.sw-right{background:linear-gradient(to right,var(--bad) var(--swa,0px),var(--card) var(--swa,0px))}
-.row.swiping>*{transform:translateX(var(--sw,0px))}
-.row.swiping::after{content:"Excluir";position:absolute;right:18px;top:50%;transform:translateY(-50%);color:#fff;font-weight:700;font-size:14.5px;opacity:var(--swo,0);pointer-events:none}
-.row.swiping.sw-right::after{right:auto;left:18px}
-.row.sw-anim>*{transition:transform .18s ease}
+[data-swipe]{touch-action:pan-y;position:relative}
+/* a gaveta fica escondida atrás da linha; o arrastar só revela o que já estava lá */
+[data-swipe].swiping{overflow:hidden;background:var(--sw-bg,#0b8043)}
+.fd-meal,.card:has(> [data-swipe]){overflow:hidden}
+[data-swipe].swiping.sw-del{--sw-bg:#c5221f}
+/* a linha inteira desliza por cima da gaveta: o conteúdo nunca fica sobre o verde */
+[data-swipe].swiping::before{content:"";position:absolute;inset:0;background:var(--card);transform:translateX(var(--sw,0px));z-index:0}
+[data-swipe].swiping>*:not(.sw-act){position:relative;z-index:1;transform:translateX(var(--sw,0px))}
+[data-swipe].sw-anim::before,[data-swipe].sw-anim>*:not(.sw-act){transition:transform .24s cubic-bezier(.22,1,.36,1)}
+.sw-act{position:absolute;top:0;right:0;height:100%;width:104px;border:0;padding:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  background:transparent;color:#fff;font-size:12.5px;font-weight:800;letter-spacing:.01em;
+  opacity:var(--swo,0);transition:opacity .12s linear;cursor:pointer;z-index:2}
+[data-swipe].sw-right .sw-act{right:auto;left:0}
+.sw-act .sw-ic{width:24px;height:24px;background:#fff;
+  -webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='4.5' rx='1.2'/><path d='M5.2 8.5V19a1 1 0 0 0 1 1h11.6a1 1 0 0 0 1-1V8.5'/><path d='M12 11.3v5.2'/><path d='m9.6 14.1 2.4 2.4 2.4-2.4'/></svg>") center/contain no-repeat;mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='3' y='4' width='18' height='4.5' rx='1.2'/><path d='M5.2 8.5V19a1 1 0 0 0 1 1h11.6a1 1 0 0 0 1-1V8.5'/><path d='M12 11.3v5.2'/><path d='m9.6 14.1 2.4 2.4 2.4-2.4'/></svg>") center/contain no-repeat}
+.sw-act.del .sw-ic{-webkit-mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4.5 7h15'/><path d='M9.5 7V4.5h5V7'/><path d='m6.5 7 1 13h9l1-13'/><path d='M10 11v5.5M14 11v5.5'/></svg>");mask-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M4.5 7h15'/><path d='M9.5 7V4.5h5V7'/><path d='m6.5 7 1 13h9l1-13'/><path d='M10 11v5.5M14 11v5.5'/></svg>")}
+.sw-act:active{opacity:.75}
 #toast .undo{color:var(--accent-2);font-weight:800;font-size:14.5px;background:none;border:0;padding:4px 2px;white-space:nowrap}
 .inv-sum{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13.5px;color:var(--fg2)}
 .inv-sum b{font-weight:700}.inv-sum .up{color:var(--good)}.inv-sum .down{color:var(--bad)}
@@ -1287,7 +1298,11 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 .ch .lnk{display:inline-flex;align-items:center;gap:4px;margin-left:auto;font-size:11.8px;font-weight:700;color:var(--accent);background:none;border:0;padding:7px 4px;margin-top:-7px;margin-bottom:-7px;white-space:nowrap;line-height:1}
 .ch .lnk + .lnk{margin-left:4px}
 .ch .lnk svg{width:13px;height:13px;flex:0 0 auto;display:block}
-.pchips.arqf{margin:0 0 10px}
+.arq-g{margin-bottom:6px}
+.arq-sh{display:flex;align-items:center;gap:8px;width:100%;background:none;border:0;text-align:left}
+.arq-sh .arq-n{background:var(--fill);color:var(--fg2);border-radius:999px;padding:1px 8px;font-size:11.5px;font-weight:700}
+.arq-sh .chev{margin-left:auto;transition:transform .2s ease;opacity:.55}
+.arq-sh .chev.on{transform:rotate(180deg)}
 .pz-row .main{text-align:left;display:block}
 .pz-row .main b{display:block;font-size:14px}
 .pz-row .main small{display:block;font-size:11.8px;color:var(--fg2);margin-top:1px}
@@ -1624,6 +1639,7 @@ const PRI = {alta:'Alta',media:'Média',baixa:'Baixa'};
 const PRIO_N = {alta:0,media:1,baixa:2};
 
 /* ---------- dados (Supabase) ---------- */
+const APP_V = 'v95';   // sobe junto com o CACHE do sw.js; se os dois não baterem, o app avisa
 const SB_URL = 'https://tgrfwgzfjrwgkkvpgbqq.supabase.co';
 // chave pública (anon): pode ficar no navegador; quem protege os dados de cada usuário é o RLS do banco
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ3Z3pmanJ3Z2trdnBnYnFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2OTMxMDYsImV4cCI6MjExMDI2OTEwNn0.O2xXMY9NAQSeuxYmbOvT20u9UXaFp9Fr73W2HMcju4Q';
@@ -1877,6 +1893,27 @@ function alarmCheck(){
 setInterval(alarmCheck, 15e3);
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') alarmCheck(); });
 
+/* ---------- versão: conferir e forçar atualização ---------- */
+async function limparECarregar(){
+  try { const rs = await navigator.serviceWorker.getRegistrations(); for (const r of rs) await r.unregister(); } catch(e) {}
+  try { const ks = await caches.keys(); await Promise.all(ks.map(k => caches.delete(k))); } catch(e) {}
+  location.replace(location.pathname + '?v=' + Date.now());
+}
+async function conferirVersao(){
+  const campo = $('#v-estado');
+  const diz = t => { ui.vEstado = t; if (campo) campo.textContent = t; };
+  diz('Conferindo…');
+  try {
+    const r = await fetch('sw.js?v=' + Date.now(), { cache:'no-store' });
+    const txt = await r.text();
+    const noAr = (txt.match(/meudia-(v\d+)/) || [])[1] || '?';
+    if (noAr === APP_V){ diz(`Em dia: o servidor também está na ${APP_V}`); toast('Você já está na versão mais nova.'); return; }
+    diz(`O servidor está na ${noAr} e este aparelho na ${APP_V} — atualizando…`);
+    toast('Baixando a versão nova…');
+    setTimeout(limparECarregar, 700);
+  } catch (e) { diz('Não deu para conferir agora. Confira sua conexão.'); }
+}
+
 /* ---------- aviso rápido ---------- */
 let toastT;
 function toast(html, ms){
@@ -1884,36 +1921,97 @@ function toast(html, ms){
   clearTimeout(toastT); toastT = setTimeout(() => el.hidden = true, ms || 3200);
 }
 
-/* ---------- arrastar para o lado para ARQUIVAR (estilo Gmail), com "Desfazer" ---------- */
-let swp = null, swipedAt = 0;
+/* ---------- arrastar para o lado: a ação fica escondida atrás da linha e vai sendo revelada ----------
+   Puxou pouco: a gaveta abre e fica aberta (toque nela para confirmar). Puxou de volta: fecha.
+   Puxou até o fim: faz na hora, com "Desfazer" na barra de baixo. */
+const SW_W = 104;                 // largura da gaveta escondida
+let swp = null, swipedAt = 0, swAberta = null;
+
+function swPos(row, px){
+  const a = Math.abs(px);
+  row.style.setProperty('--sw', px + 'px');
+  row.style.setProperty('--swa', a + 'px');
+  row.style.setProperty('--swo', String(Math.min(1, a / 54)));
+}
+// o botão só existe enquanto a gaveta está em uso
+function swBotao(row){
+  let b = row.querySelector(':scope > .sw-act');
+  const del = String(row.dataset.swipe || '').startsWith('arq:');
+  if (!b){
+    b = document.createElement('button');
+    b.type = 'button'; b.className = 'sw-act';
+    b.innerHTML = `<span class="sw-ic"></span><span class="sw-tx">${del ? 'Excluir' : 'Arquivar'}</span>`;
+    b.onclick = ev => { ev.stopPropagation(); ev.preventDefault(); const k = row.dataset.swipe; swFecha(row, true); swipeDelete(k); };
+    row.appendChild(b);
+  }
+  b.classList.toggle('del', del);
+  return b;
+}
+function swFecha(row, agora){
+  if (!row) return;
+  if (swAberta === row) swAberta = null;
+  row.classList.add('sw-anim'); swPos(row, 0);
+  setTimeout(() => {
+    row.classList.remove('swiping', 'sw-anim', 'sw-right', 'sw-del', 'sw-open');
+    const b = row.querySelector(':scope > .sw-act'); if (b) b.remove();
+    row.style.removeProperty('--sw'); row.style.removeProperty('--swa'); row.style.removeProperty('--swo');
+  }, agora ? 0 : 240);
+}
+function swAbre(row, lado){
+  row.classList.add('sw-anim', 'sw-open'); swPos(row, lado * SW_W);
+  setTimeout(() => row.classList.remove('sw-anim'), 240);
+  swAberta = row;
+}
 document.addEventListener('pointerdown', e => {
-  const row = e.target.closest('[data-swipe]'); if (!row || (e.button && e.button > 0)) return;
-  swp = { row, x: e.clientX, y: e.clientY, dx: 0, on: false, id: e.pointerId };
+  const row = e.target.closest('[data-swipe]');
+  if (swAberta && swAberta !== row) swFecha(swAberta);            // só uma gaveta aberta por vez
+  if (!row || (e.button && e.button > 0)) return;
+  if (e.target.closest('.sw-act')) return;                        // o toque é no botão da gaveta
+  const base = row.classList.contains('sw-open') ? (row.classList.contains('sw-right') ? SW_W : -SW_W) : 0;
+  swp = { row, x: e.clientX, y: e.clientY, base, dx: base, on: base !== 0, id: e.pointerId };
 }, true);
 document.addEventListener('pointermove', e => {
   if (!swp || e.pointerId !== swp.id) return;
-  const dx = e.clientX - swp.x, dy = e.clientY - swp.y;
+  const mx = e.clientX - swp.x, dy = e.clientY - swp.y;
   if (!swp.on){
-    if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)){ swp = null; return; }
-    if (Math.abs(dx) > 12 && Math.abs(dx) > Math.abs(dy) * 1.3){ swp.on = true; swp.row.classList.add('swiping'); try { swp.row.setPointerCapture(e.pointerId); } catch(_) {} }
-    else return;
+    if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(mx)){ swp = null; return; }
+    if (Math.abs(mx) > 10 && Math.abs(mx) > Math.abs(dy) * 1.2){
+      swp.on = true;
+      swp.row.classList.add('swiping');
+      swp.row.classList.toggle('sw-del', String(swp.row.dataset.swipe || '').startsWith('arq:'));
+      swBotao(swp.row);
+      try { swp.row.setPointerCapture(e.pointerId); } catch(_) {}
+    } else return;
   }
-  swp.dx = dx; const a = Math.abs(dx);
-  swp.row.style.setProperty('--sw', dx + 'px'); swp.row.style.setProperty('--swa', a + 'px'); swp.row.style.setProperty('--swo', String(Math.min(1, a / 90)));
+  let dx = swp.base + mx;
+  if (swp.base < 0 && dx > 0) dx = dx * 0.25;                     // puxar além do fechado tem resistência
+  if (swp.base > 0 && dx < 0) dx = dx * 0.25;
+  swp.dx = dx;
+  swp.row.classList.remove('sw-anim');
   swp.row.classList.toggle('sw-right', dx > 0);
+  swPos(swp.row, dx);
   e.preventDefault();
 }, { passive: false });
 function endSwipe(){
   if (!swp) return; const s = swp; swp = null; if (!s.on) return;
-  swipedAt = Date.now(); const w = s.row.offsetWidth; s.row.classList.add('sw-anim');
-  const lim = Math.min(w * 0.3, 110);   // um empurrão de ~110px já basta, mesmo em tela larga
-  if (Math.abs(s.dx) > lim){ s.row.style.setProperty('--sw', (s.dx < 0 ? -w : w) + 'px'); s.row.style.setProperty('--swa', w + 'px'); setTimeout(() => swipeDelete(s.row.dataset.swipe), 170); }
-  else { s.row.style.setProperty('--sw', '0px'); s.row.style.setProperty('--swa', '0px'); setTimeout(() => s.row.classList.remove('swiping', 'sw-anim', 'sw-right'), 220); }
+  swipedAt = Date.now();
+  const row = s.row, w = row.offsetWidth, dx = s.dx, a = Math.abs(dx), lado = dx < 0 ? -1 : 1;
+  const tudo = Math.min(w * 0.55, 230);                           // puxou até o fim: faz agora
+  if (a > tudo){
+    row.classList.add('sw-anim'); swPos(row, lado * w);
+    setTimeout(() => swipeDelete(row.dataset.swipe), 190);
+    return;
+  }
+  if (a > SW_W * 0.45) swAbre(row, lado);                         // deixa a gaveta aberta
+  else swFecha(row);                                              // puxou de volta: fecha
 }
 document.addEventListener('pointerup', endSwipe, true);
 document.addEventListener('pointercancel', endSwipe, true);
 // depois de arrastar, o toque não conta como clique
-document.addEventListener('click', e => { if (Date.now() - swipedAt < 400){ e.stopPropagation(); e.preventDefault(); } }, true);
+document.addEventListener('click', e => { if (Date.now() - swipedAt < 400 && !e.target.closest('.sw-act')){ e.stopPropagation(); e.preventDefault(); } }, true);
+// trocar de tela fecha o que estiver aberto
+document.addEventListener('scroll', () => { if (swAberta) swFecha(swAberta); }, true);
+
 function swipeDelete(key){
   const p = key.split(':');
   if (p[0] === 'arq') return excluirDeVez(p[1], p[2]);   // já está no arquivo: aí sim some
@@ -2037,27 +2135,41 @@ async function loadArq(){
 function vArq(){
   if (!S.arq || Date.now() - (S.arqAt || 0) > 60e3) loadArq();
   const todos = S.arq || [];
-  const filtro = ui.arqF || 'tudo';
-  const GRUPO = { agenda:['ev', 'rem'], tarefas:['task', 'note'], listas:['li', 'list'], saude:['food', 'peso'] };
-  const l = filtro === 'tudo' ? todos : todos.filter(x => (GRUPO[filtro] || []).includes(x.k));
-  const tem = g => todos.some(x => (GRUPO[g] || []).includes(x.k));
+  // cada coisa no seu grupo, nunca tudo misturado
+  const GRUPOS = [
+    ['agenda',  'Agenda',           ['ev', 'rem']],
+    ['tarefas', 'Tarefas e notas',  ['task', 'note']],
+    ['listas',  'Listas e compras', ['list', 'li']],
+    ['diario',  'Diário alimentar', ['food']],
+    ['peso',    'Peso',             ['peso']],
+    ['invest',  'Investimentos',    ['ativo']],
+  ];
   const velhos = todos.filter(x => x.at && x.at < new Date(Date.now() - 30 * 864e5).toISOString()).length;
-  const chip = (k, lab) => `<button class="pchip ${filtro === k ? 'on' : ''}" data-arqf="${k}" aria-pressed="${filtro === k}">${lab}</button>`;
-
-  return `${back()}<div class="head"><div><h1 class="lt">Arquivados</h1><div class="sub">Tudo que você arrastou para o lado fica aqui${todos.length ? ` · ${todos.length} ${todos.length === 1 ? 'item' : 'itens'}` : ''}</div></div>
-    ${velhos ? `<button class="icon-btn" id="arq-limpa" aria-label="Excluir os antigos" title="Excluir os antigos">${ic('trash')}</button>` : ''}</div>
-  ${todos.length ? `<div class="pchips arqf">${chip('tudo', 'Tudo')}${tem('agenda') ? chip('agenda', 'Agenda') : ''}${tem('tarefas') ? chip('tarefas', 'Tarefas e notas') : ''}${tem('listas') ? chip('listas', 'Listas') : ''}${tem('saude') ? chip('saude', 'Diário e peso') : ''}</div>` : ''}
-  ${velhos ? `<div class="group"><button class="row" id="arq-limpa2"><span class="set-ic">${ic('trash')}</span><span class="main"><div class="t">Excluir os antigos</div><div class="s">${velhos} ${velhos === 1 ? 'item arquivado há mais de 30 dias' : 'itens arquivados há mais de 30 dias'}</div></span>${ic('r','i chev')}</button></div>` : ''}
-  <div class="group">${l.length ? l.map(x => `<div class="row" data-swipe="arq:${x.k}:${x.id}"><span class="main">
+  const linha = x => `<div class="row" data-swipe="arq:${x.k}:${x.id}"><span class="main">
       <div class="t">${esc(x.title)}${x.done ? ' <span class="chip good">Concluído</span>' : ''}</div>
       <div class="s">${x.date ? rel(x.date) + (x.time ? ' às ' + x.time : '') + ' · ' : ''}${esc(x.sub || ARQ[x.k].n)} · arquivado ${agoTxt(x.at)}</div></span>
       <button class="pay" data-unarq="${x.k}:${x.id}">Restaurar</button>
-      <button class="pay del" data-delarq="${x.k}:${x.id}">Excluir</button></div>`).join('')
-    : `<div class="empty">${S.arq ? (filtro === 'tudo' ? 'Nada arquivado. Arraste qualquer linha para o lado — compromisso, tarefa, nota, item de lista ou do diário — e ela vem para cá.' : 'Nada arquivado nesse grupo.') : 'Carregando…'}</div>`}</div>
+      <button class="pay del" data-delarq="${x.k}:${x.id}">Excluir</button></div>`;
+
+  const secoes = GRUPOS.map(([id, nome, ks]) => {
+    const l = todos.filter(x => ks.includes(x.k)); if (!l.length) return '';
+    const aberto = (ui.arqAberto || {})[id] !== false;
+    return `<section class="arq-g"><button class="sh arq-sh" data-arqg="${id}" aria-expanded="${aberto}">
+        <span>${nome}</span><span class="arq-n">${l.length}</span>${ic('down', 'i chev' + (aberto ? ' on' : ''))}</button>
+      ${aberto ? `<div class="group">${l.map(linha).join('')}</div>` : ''}</section>`;
+  }).join('');
+
+  return `${back()}<div class="head"><div><h1 class="lt">Arquivados</h1><div class="sub">Guardado por grupo, nada se perde${todos.length ? ` · ${todos.length} ${todos.length === 1 ? 'item' : 'itens'}` : ''}</div></div>
+    ${velhos ? `<button class="icon-btn" id="arq-limpa" aria-label="Excluir os antigos" title="Excluir os antigos">${ic('trash')}</button>` : ''}</div>
+  ${velhos ? `<div class="group"><button class="row" id="arq-limpa2"><span class="set-ic">${ic('trash')}</span><span class="main"><div class="t">Excluir os antigos</div><div class="s">${velhos} ${velhos === 1 ? 'item arquivado há mais de 30 dias' : 'itens arquivados há mais de 30 dias'}</div></span>${ic('r','i chev')}</button></div>` : ''}
+  ${secoes || `<div class="group"><div class="empty">${S.arq ? 'Nada arquivado. Arraste qualquer linha para o lado — compromisso, tarefa, nota, item de lista ou do diário — e ela vem para cá.' : 'Carregando…'}</div></div>`}
   <div class="foot">Arrastar para o lado nunca exclui: guarda aqui, com alguns segundos para desfazer. Restaurar devolve o item para a tela de onde saiu. Excluir de vez é só por aqui — pelo botão Excluir (que pergunta antes) ou arrastando a linha, e ainda dá tempo de desfazer.</div>`;
 }
 function bindArq(){
-  $('#view').querySelectorAll('[data-arqf]').forEach(b => b.onclick = () => { ui.arqF = b.dataset.arqf; render(); });
+  $('#view').querySelectorAll('[data-arqg]').forEach(b => b.onclick = () => {
+    ui.arqAberto = ui.arqAberto || {};
+    const g = b.dataset.arqg; ui.arqAberto[g] = ui.arqAberto[g] === false; render();
+  });
   $('#view').querySelectorAll('[data-unarq]').forEach(b => b.onclick = async () => {
     const [k, id] = b.dataset.unarq.split(':'), A = ARQ[k]; b.disabled = true;
     const { error } = await sb.from(A.table).update({ archived_at: null }).eq('id', id);
@@ -2603,7 +2715,10 @@ function vSettings(){
     ${plan !== 'familia' && !inFam ? `<button class="row" data-act="fam-code"><span class="set-ic">${ic('home')}</span><span class="main"><div class="t">Tenho um código de convite</div><div class="s">Entrar no Plano Família de alguém</div></span>${ic('r','i chev')}</button>` : ''}
     ${S.isAdmin ? `<button class="row" data-go="admin"><span class="set-ic">${ic('gear')}</span><span class="main"><div class="t">Painel do administrador</div><div class="s">Usuários, planos e gasto da IA</div></span>${ic('r','i chev')}</button>` : ''}
     ${item('sobre', 'info', 'Sobre', 'ELO Sistemas de Informação')}
-  </div></section>`;
+    <button class="row" data-act="versao"><span class="set-ic">${ic('refresh')}</span><span class="main">
+      <div class="t">Este app é a ${APP_V}</div><div class="s" id="v-estado">${ui.vEstado || 'Toque para conferir se há versão nova e atualizar'}</div></span>${ic('r','i chev')}</button>
+  </div>
+  <div class="foot">Se o app parecer travado numa versão antiga, toque em "Este app é a ${APP_V}": ele confere o que está no servidor, limpa o que está guardado no aparelho e recarrega.</div></section>`;
 }
 
 /* ---------- eventos da tela ---------- */
@@ -2695,6 +2810,7 @@ function bindView(){
     if (a==='food-foto'){ fotoPrato(); }
     if (a==='food-scan'){ escanearAlimento(); }
     if (a==='food-busca'){ openBuscaAlimento(); }
+    if (a==='versao'){ conferirVersao(); }
     if (a==='food-manual'){ openAlimentoManual(); }
     if (a==='kcal-meta'){ openMetaKcal(); }
     if (a==='peso-meta'){ openAlturaMeta(); }
@@ -3669,7 +3785,7 @@ function showOnboarding(force){
 function swipeHint(){
   if (mouse()) return;
   try { if (localStorage.getItem('meudia.swhint2')) return; localStorage.setItem('meudia.swhint2', '1'); } catch(e) { return; }
-  setTimeout(() => toast('Dica: ⁠arraste um item para o lado para arquivar. Nada se perde: fica em Arquivados.', 6000), 600);
+  setTimeout(() => toast('Dica: ⁠arraste um item para o lado — o botão Arquivar aparece por trás. ⁠Puxe de volta para desistir. Nada é excluído: fica em Arquivados.', 7000), 600);
 }
 
 /* ---------- termos de uso e política de privacidade ---------- */
