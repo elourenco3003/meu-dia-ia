@@ -1188,8 +1188,41 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 .fd-btn.p{background:var(--accent);color:#fff} .fd-btn.p svg{color:#fff}
 .fd-meal .empty{padding:14px 13px;font-size:12.6px}
 .fd-row,.fd-it{display:flex;align-items:center;gap:11px;padding:9px 13px;border-bottom:1px solid var(--sep);width:100%;text-align:left}
+.fd-row{padding:0}
+.fd-abrir{display:flex;align-items:center;gap:11px;padding:9px 13px;width:100%;text-align:left;transition:background .12s}
+.fd-abrir:active{background:var(--fill)}
+.id-card{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:13px;margin-bottom:12px;opacity:0;animation:idIn .42s cubic-bezier(.22,1,.36,1) var(--d,0ms) both}
+@keyframes idIn{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
+.id-h{display:flex;align-items:flex-start;gap:12px}
+.id-tx{flex:1;min-width:0}
+.id-tx b{display:block;font-size:15px;font-weight:800;line-height:1.25}
+.id-tx small{display:block;margin-top:3px;font-size:12px;color:var(--fg2);line-height:1.35}
+.id-kc{flex:0 0 auto;text-align:right;background:color-mix(in srgb,var(--accent) 12%,transparent);border-radius:12px;padding:7px 10px}
+.id-kc b{display:block;font-size:19px;font-weight:800;color:var(--accent);line-height:1}
+.id-kc i{font-size:10.5px;font-style:normal;color:var(--accent);opacity:.8;font-weight:700}
+.id-mac{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 2px}
+.id-mac span{font-size:11.4px;font-weight:700;color:var(--fg2);background:var(--fill);border-radius:999px;padding:4px 9px}
+.id-its{margin-top:8px;border-top:1px solid var(--line);padding-top:4px}
+.id-it{display:flex;align-items:center;gap:10px;padding:7px 0}
+.id-it + .id-it{border-top:1px solid var(--line)}
+.id-go{display:block;width:100%;margin-top:11px;padding:12px;border-radius:13px;background:var(--accent);color:#fff;font-size:14px;font-weight:800}
+.id-go:disabled{opacity:.6}
+.id-outras{display:block;width:100%;padding:12px;border-radius:13px;background:var(--fill);color:var(--accent);font-size:13.5px;font-weight:800;margin-bottom:12px}
+.fd-vazio[data-ideias]{color:var(--accent);font-weight:700;text-align:center;width:100%}
+.fd-atual{display:flex;align-items:center;gap:11px;background:var(--card);border-radius:13px;box-shadow:var(--shadow);padding:10px 12px}
+.fd-qtd{display:flex;align-items:center;gap:9px;margin:10px 0 4px}
+.fd-qtd label{font-size:12.6px;color:var(--fg2);font-weight:600}
+.fd-qtd input{width:92px;border:0;background:var(--fill);border-radius:10px;padding:10px;font-size:14.5px;font-weight:700;text-align:right;color:var(--fg)}
+.fd-qtd span{font-size:12.6px;color:var(--fg2)}
+.fd-qtd .btn-go{margin-left:auto}
+.fd-ou{text-align:center;font-size:11.6px;color:var(--fg3);font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin:14px 0 10px}
 .fd-row:last-child,.fd-it:last-child{border-bottom:0}
 .fd-row img,.fd-it img,.fd-noimg{width:46px;height:46px;border-radius:10px;object-fit:cover;flex:none;background:var(--fill)}
+.fd-emo{width:46px;height:46px;border-radius:10px;flex:none;display:grid;place-items:center;font-size:23px;line-height:1;
+  background:color-mix(in srgb, var(--ec) 18%, transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--ec) 28%, transparent)}
+.pr-ih .fd-emo{width:30px;height:30px;font-size:16px;border-radius:9px}
+.fd-prato{width:26px;height:26px;border-radius:7px;object-fit:cover;margin-left:auto;box-shadow:0 0 0 2px var(--card)}
+.fd-prato + .lnk{margin-left:8px}
 .fd-tx{flex:1;min-width:0}
 .fd-tx b{display:block;font-size:13.6px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fd-tx small{display:block;font-size:11.6px;color:var(--fg2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1520,6 +1553,7 @@ body.mouse .cc-b button:hover{filter:brightness(.97)}
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5 19 6v5.5c0 4.3-3 7.6-7 9-4-1.4-7-4.7-7-9V6z"/><path d="m9 12 2.2 2.2L15.5 10"/></symbol>
   <symbol id="i-send" viewBox="0 0 24 24"><path d="M20.5 3.5 10.5 13.5M20.5 3.5l-6.5 17-3.5-7-7-3.5z"/></symbol>
   <symbol id="i-cam" viewBox="0 0 24 24"><path d="M4 7.5h3.2L8.8 5h6.4l1.6 2.5H20v11.5H4z"/><circle cx="12" cy="13.2" r="3.3"/></symbol>
+  <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 17.5h6M10 20.5h4"/><path d="M12 3.5a6 6 0 0 0-3.4 10.9c.5.4.9 1 .9 1.6h5c0-.6.4-1.2.9-1.6A6 6 0 0 0 12 3.5Z"/></symbol>
   <symbol id="i-pill" viewBox="0 0 24 24"><rect x="2.6" y="8.6" width="18.8" height="6.8" rx="3.4" transform="rotate(-45 12 12)"/><path d="M9.5 9.5 14.5 14.5"/></symbol>
 </svg>
 
@@ -1623,9 +1657,10 @@ const MAP = {
           to: r => ({id:r.id, day:r.day, meal:r.meal, name:r.name, brand:r.brand || '', qty:Number(r.qty), unit:r.unit,
                 kcal:r.kcal == null ? null : Number(r.kcal), carb:r.carb_g == null ? null : Number(r.carb_g),
                 prot:r.prot_g == null ? null : Number(r.prot_g), fat:r.fat_g == null ? null : Number(r.fat_g),
-                code:r.barcode || '', img:r.image_url || '', src:r.source || 'manual', at:r.at}),
+                code:r.barcode || '', img:r.image_url || '', src:r.source || 'manual', foto:r.photo_id || '', at:r.at}),
           from: o => ({day:o.day, meal:o.meal, name:o.name, brand:o.brand || null, qty:o.qty, unit:o.unit,
-                kcal:o.kcal, carb_g:o.carb, prot_g:o.prot, fat_g:o.fat, barcode:o.code || null, image_url:o.img || null, source:o.src || 'manual'}) },
+                kcal:o.kcal, carb_g:o.carb, prot_g:o.prot, fat_g:o.fat, barcode:o.code || null, image_url:o.img || null,
+                source:o.src || 'manual', photo_id:o.foto || null}) },
   peso: { table:'weights',
           to: r => ({id:r.id, day:r.day, kg:Number(r.kg), cintura:r.waist_cm == null ? '' : Number(r.waist_cm), nota:r.note || ''}),
           from: o => ({day:o.day, kg:o.kg, waist_cm:o.cintura === '' || o.cintura == null ? null : Number(o.cintura), note:o.nota || null}) },
@@ -1652,7 +1687,7 @@ async function loadAll(){
     S.metaKcal = p.data.kcal_goal || 0;
   }
   S.events = ev.data.map(MAP.ev.to); S.tasks = tk.data.map(MAP.task.to); S.fin = fn.data.map(MAP.fin.to); S.rems = rm.data.map(MAP.rem.to);
-  const [ls, li, nt, rb, bd, rt, rl, pw, fd] = await Promise.all([
+  const [ls, li, nt, rb, bd, rt, rl, pw, fd, fp] = await Promise.all([
     sb.from('lists').select('*').order('updated_at', { ascending:false }), sb.from('list_items').select('*').order('created_at'),
     sb.from('notes').select('*').order('updated_at', { ascending:false }), sb.from('recurring_bills').select('*').order('day'),
     sb.from('birthdays').select('*').order('month').order('day'),
@@ -1660,11 +1695,13 @@ async function loadAll(){
     sb.from('routine_logs').select('*').gte('due_on', today()),
     sb.from('weights').select('*').order('day', { ascending:false }).limit(400),
     sb.from('food_log').select('*').gte('day', iso(new Date(Date.now() - 8 * 864e5))).order('at'),
+    sb.from('food_photos').select('id,thumb').gte('day', iso(new Date(Date.now() - 8 * 864e5))),
   ]);
   S.lists = ls.data || []; S.items = li.data || []; S.notes = nt.data || []; S.recurring = rb.data || []; S.birthdays = bd.data || [];
   S.rots = (rt.data || []).map(MAP.rot.to); S.rlogs = rl.data || [];
   S.pesos = (pw.data || []).map(MAP.peso.to);
   S.comer = (fd.data || []).map(MAP.food.to);
+  S.fotos = Object.fromEntries((fp.data || []).map(x => [x.id, x.thumb]));
 }
 async function dbSave(k, o, isNew){
   const m = MAP[k];
@@ -2548,7 +2585,12 @@ function bindView(){
   V.querySelectorAll('[data-reserva]').forEach(b => b.onclick = e => { e.stopPropagation(); openReserva(); });
   V.querySelectorAll('[data-dosecard]').forEach(b => b.onclick = () => { const [st, id, t] = b.dataset.dosecard.split('|'); rotMark(id, t, st); });
   V.querySelectorAll('[data-peso]').forEach(b => b.onclick = () => openPeso((S.pesos || []).find(x => x.id === b.dataset.peso)));
+  V.querySelectorAll('[data-ideias]').forEach(b => b.onclick = () => openIdeias(b.dataset.ideias));
   V.querySelectorAll('[data-addmeal]').forEach(b => b.onclick = () => openBuscaAlimento(b.dataset.addmeal));
+  V.querySelectorAll('[data-edcomida]').forEach(b => b.onclick = () => {
+    const x = (S.comer || []).find(y => y.id === b.dataset.edcomida);
+    if (x) openBuscaAlimento(x.meal, (item, g) => trocaPor(x, item, g), x);
+  });
   V.querySelectorAll('[data-comerdia]').forEach(b => b.onclick = () => {
     const d = fromIso(ui.comerDia || today()); d.setDate(d.getDate() + Number(b.dataset.comerdia));
     const novo = iso(d); if (novo > today()) return; ui.comerDia = novo === today() ? null : novo; render(); });
@@ -2740,7 +2782,7 @@ function startDictation(btn, onDone){
 }
 
 /* ---------- formulários ---------- */
-function openForm({title, fields, values={}, onSave, onDelete, saveLabel, onField}){
+function openForm({title, fields, values={}, onSave, onDelete, saveLabel, onField, extra, onExtra}){
   const okLabel = saveLabel || (onDelete ? 'Salvar' : 'Adicionar');
   const el = $('#sheet');
   const f = fd => f0(fd).replace('class="row', `data-fk="${fd.k}" class="row`);
@@ -2761,9 +2803,12 @@ function openForm({title, fields, values={}, onSave, onDelete, saveLabel, onFiel
     <div class="body">
       ${groups.map(g=>`<div class="group">${g.map(f).join('')}</div>`).join('')}
       <div class="err" id="f-err" hidden></div>
+      ${extra ? extra.replace('data-trocar', 'data-extra') : ''}
       ${onDelete ? `<div class="group"><button class="row del" data-d>Excluir</button></div>` : ''}
     </div></div>`;
   el.hidden = false;
+  { const bx = el.querySelector('[data-extra]');
+    if (bx && onExtra) bx.onclick = () => { el.hidden = true; el.innerHTML = ''; onExtra(); }; }
   // campos que só aparecem conforme a escolha feita em outro campo
   const vis = () => fields.filter(x => x.showIf).forEach(fd => {
     const row = el.querySelector(`[data-fk="${fd.k}"]`), ctl = $('#f-' + fd.showIf.k);
@@ -4861,6 +4906,64 @@ function openAlimentoManual(){
     },
   });
 }
+// miniatura do alimento: produto embalado tem foto; o resto ganha um símbolo por tipo,
+// com a cor da família (verde para folha, vermelho para carne, e assim por diante)
+const COMIDA_ICONES = [
+  [/arroz/, '🍚', '#E8C97A'], [/feij|lentilha|gr[aã]o.?de.?bico|ervilha|soja/, '🫘', '#B07A4F'],
+  [/macarr|espaguete|talharim|lasanha|nhoque|massa/, '🍝', '#E9A94F'],
+  [/p[ãa]o|torrada|biscoito|bolacha|crackers/, '🍞', '#D9A066'], [/bolo|torta|pudim|sorvete|doce|chocolate|brigadeiro|a[çc]ucar|mel\b/, '🍰', '#E08AAE'],
+  [/tilapia|til[áa]pia|peixe|merluza|abadejo|bacalhau|pescada|sardinha|atum|cor[v]ina|pintado|cação|salm[ãa]o/, '🐟', '#6FA8C7'],
+  [/camar[ãa]o|lula|polvo|mexilh|caranguejo|siri|marisco/, '🦐', '#E07B5C'],
+  [/frango|galinha|peru|chester|ave\b/, '🍗', '#D9A14A'],
+  [/carne|bovin|boi\b|bife|costela|picanha|alcatra|patinho|acém|acem|maminha|fraldinha|músculo|musculo|cupim/, '🥩', '#C2564B'],
+  [/porco|su[íi]n|lombo|bacon|linguiça|lingui[çc]a|salsicha|presunto|mortadela|salame|pernil/, '🥓', '#D97A6C'],
+  [/ovo\b|ovos/, '🥚', '#E8C86A'],
+  [/leite|iogurte|coalhada|requeij/, '🥛', '#9FB8D9'], [/queijo|mu[çc]arela|minas|parmes|ricota|catupiry/, '🧀', '#E8C45C'],
+  [/alface|rúcula|rucula|agri[ãa]o|couve|espinafre|repolho|acelga|salada|catalonha|escarola|chicória|chicoria|br[óo]colis|br[óo]colo/, '🥬', '#6FB98F'],
+  [/tomate/, '🍅', '#D9574B'], [/cenoura/, '🥕', '#E08A3C'], [/cebola|alho\b/, '🧅', '#C9A27A'],
+  [/batata, doce|batata-doce/, '🍠', '#C97A6D'], [/batata|mandioca|aipim|macaxeira|inhame|car[áa]\b|mandioquinha/, '🥔', '#C9A86A'],
+  [/ab[óo]bora|moranga/, '🎃', '#E08A3C'], [/milho|pipoca/, '🌽', '#E8C24A'], [/pepino|abobrinha|chuchu|berinjela|quiabo|vagem|piment[ãa]o/, '🥒', '#6FB98F'],
+  [/banana/, '🍌', '#E8C84A'], [/ma[çc][ãa]\b/, '🍎', '#D9574B'], [/laranja|mexerica|tangerina|bergamota|lim[ãa]o|lima\b/, '🍊', '#E8933C'],
+  [/mam[ãa]o|manga\b/, '🥭', '#E8A13C'], [/melancia/, '🍉', '#D9574B'], [/uva/, '🍇', '#9B6FB9'],
+  [/abacaxi/, '🍍', '#E8C24A'], [/morango|cereja|amora|framboesa|a[çc]a[íi]/, '🍓', '#D94B6B'],
+  [/abacate|guacamole/, '🥑', '#7FB06A'], [/coco\b/, '🥥', '#A98A6A'], [/fruta|pera\b|goiaba|caju|kiwi|ameixa|p[êe]ssego|melão/, '🍐', '#8FBF7A'],
+  [/azeite|[óo]leo|manteiga|margarina|banha|gordura/, '🫒', '#9BA84A'],
+  [/castanha|am[êe]ndoa|noz|nozes|amendoim|pistache|semente|gergelim|chia|linhaça/, '🥜', '#B07A4F'],
+  [/caf[ée]/, '☕', '#8A6A4F'], [/ch[áa]\b/, '🍵', '#7FA87A'], [/suco|refrigerante|refresco|água de coco|agua de coco/, '🥤', '#6FA8C7'],
+  [/cerveja|vinho|cacha[çc]a|whisky|vodka|licor|caipirinha/, '🍺', '#D9A14A'], [/[áa]gua\b/, '💧', '#8FB8D9'],
+  [/pizza/, '🍕', '#D9743C'], [/hamb[úu]rguer|sandu[íi]che|x-|lanche/, '🍔', '#C98A4A'],
+  [/sopa|caldo|canja/, '🍲', '#C9843C'], [/farofa|farinha|cuscuz|tapioca|polenta|angu/, '🌾', '#C9A86A'],
+  [/salgado|coxinha|empada|pastel|esfiha|quibe|bolinho/, '🥟', '#D9A066'],
+  [/feijoada|estrogonofe|strogonoff|escondidinho|lasanha|risoto|moqueca|virado|baião|baiao/, '🍛', '#C9743C'],
+  [/tremo[çc]o|azeitona|conserva|picles/, '🫒', '#8A9B4A'], [/sal\b|tempero|molho|ketchup|maionese|mostarda|vinagre/, '🧂', '#A8A8A8'],
+];
+const CAT_ICONES = { 'Cereais e derivados':['🌾','#C9A86A'], 'Verduras, hortaliças e derivados':['🥬','#6FB98F'], 'Frutas e derivados':['🍐','#8FBF7A'],
+  'Gorduras e óleos':['🫒','#9BA84A'], 'Pescados e frutos do mar':['🐟','#6FA8C7'], 'Carnes e derivados':['🥩','#C2564B'],
+  'Leite e derivados':['🥛','#9FB8D9'], 'Bebidas (alcoólicas e não alcoólicas)':['🥤','#6FA8C7'], 'Ovos e derivados':['🥚','#E8C86A'],
+  'Produtos açucarados':['🍰','#E08AAE'], 'Nozes e sementes':['🥜','#B07A4F'], 'Leguminosas e derivados':['🫘','#B07A4F'],
+  'Alimentos preparados':['🍛','#C9743C'], 'Miscelâneas':['🍽️','#9AA0B0'], 'Outros alimentos industrializados':['🍽️','#9AA0B0'] };
+function iconeComida(nome, categoria){
+  const n = String(nome || '').toLowerCase();
+  for (const [re, emo, cor] of COMIDA_ICONES) if (re.test(n)) return { emo, cor };
+  const c = CAT_ICONES[categoria || ''];
+  return c ? { emo: c[0], cor: c[1] } : { emo: '🍽️', cor: '#9AA0B0' };
+}
+const selinho = (nome, cat) => { const i = iconeComida(nome, cat);
+  return `<span class="fd-emo" style="--ec:${i.cor}" aria-hidden="true">${i.emo}</span>`; };
+
+// trocar o alimento mantendo a quantidade: pega os valores certos da tabela
+function trocaPor(x, item, gramas){
+  const g = Math.max(1, Math.min(10000, Math.round(Number(gramas) || x.qty)));
+  const f = g / 100;
+  Object.assign(x, { name:item.nome, brand:item.marca || '', img:item.foto || '', qty:g, unit:'g',
+    kcal: item.kcal == null ? null : Math.round(item.kcal * f),
+    carb: item.carb == null ? null : Math.round(item.carb * f * 10) / 10,
+    prot: item.prot == null ? null : Math.round(item.prot * f * 10) / 10,
+    fat:  item.gord == null ? null : Math.round(item.gord * f * 10) / 10,
+    src: item.codigo ? 'off' : 'taco' });
+  persist(dbSave('food', x, false));
+  render(); toast('Item atualizado');
+}
 function openMetaKcal(){
   openForm({
     title: 'Meta diária de calorias',
@@ -4877,18 +4980,32 @@ function openMetaKcal(){
 }
 const refeicaoDaHora = () => { const h = new Date().getHours(); return h < 10 ? 'cafe' : h < 15 ? 'almoco' : h < 18 ? 'lanche' : 'jantar'; };
 // busca por nome, com foto do produto
-function openBuscaAlimento(meal){
+function openBuscaAlimento(meal, aoEscolher, atual){
   const el = $('#sheet');
-  el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="Buscar alimento">
-    <div class="bar"><button data-x>Fechar</button><b>Buscar alimento</b><span></span></div>
+  el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="${atual ? 'Trocar o alimento' : 'Buscar alimento'}">
+    <div class="bar"><button data-x>Fechar</button><b>${atual ? 'Trocar o alimento' : 'Buscar alimento'}</b><span></span></div>
     <div class="body">
-      <form class="fd-busca" id="fd-f"><input id="fd-q" placeholder="Pão de forma, iogurte, arroz…" autocomplete="off" aria-label="Nome do alimento"><button class="btn-go">Buscar</button></form>
-      <div class="fd-res" id="fd-res"><div class="fd-dica">Escreva o nome do alimento ou use o leitor de código de barras — é mais certeiro.</div></div>
+      ${atual ? `<div class="fd-atual">${selinho(atual.name)}<span class="fd-tx"><b>${esc(atual.name)}</b><small>está no diário com ${n2(atual.qty, 0)} ${atual.unit === 'un' ? 'un' : atual.unit === 'porcao' ? 'porção' : 'g'}</small></span></div>
+        <div class="fd-qtd"><label for="fd-g">Quantidade</label><input id="fd-g" type="number" inputmode="numeric" min="1" max="10000" step="5" value="${n2(atual.qty, 0)}"><span>g</span>
+          <button class="btn-go" data-soqtd>Salvar</button></div>
+        <div class="fd-ou">ou escolha outro alimento</div>` : ''}
+      <form class="fd-busca" id="fd-f"><input id="fd-q" placeholder="${atual ? 'Tilápia, arroz, feijão…' : 'Pão de forma, iogurte, arroz…'}" autocomplete="off" aria-label="Nome do alimento"><button class="btn-go">Buscar</button></form>
+      <div class="fd-res" id="fd-res">${atual ? '' : '<div class="fd-dica">Escreva o nome do alimento ou use o leitor de código de barras — é mais certeiro.</div>'}</div>
     </div></div>`;
   el.hidden = false;
   const fechar = () => { el.hidden = true; el.innerHTML = ''; };
   el.querySelector('[data-x]').onclick = fechar;
   const res = el.querySelector('#fd-res');
+  const gramas = () => { const i = el.querySelector('#fd-g'); return i ? Number(i.value) : null; };
+  { const b = el.querySelector('[data-soqtd]');
+    if (b) b.onclick = () => { const g = Math.max(1, Math.min(10000, Math.round(gramas() || atual.qty)));
+      const por100 = atual.qty > 0 && atual.kcal != null ? atual.kcal / atual.qty * 100 : null;
+      const f = atual.qty > 0 ? g / atual.qty : 1;
+      Object.assign(atual, { qty:g, kcal: por100 == null ? atual.kcal : Math.round(por100 * g / 100),
+        carb: atual.carb == null ? null : Math.round(atual.carb * f * 10) / 10,
+        prot: atual.prot == null ? null : Math.round(atual.prot * f * 10) / 10,
+        fat:  atual.fat  == null ? null : Math.round(atual.fat  * f * 10) / 10 });
+      persist(dbSave('food', atual, false)); fechar(); render(); toast('Quantidade atualizada'); }; }
   el.querySelector('#fd-f').onsubmit = async e => {
     e.preventDefault();
     const q = el.querySelector('#fd-q').value.trim();
@@ -4899,10 +5016,11 @@ function openBuscaAlimento(meal){
       const l = d.lista || [];
       if (!l.length){ res.innerHTML = '<div class="fd-dica">Não achei esse alimento na base. Dá para registrar à mão pelo botão “Escrever”.</div>'; return; }
       res.innerHTML = l.map((x, i) => `<button class="fd-it" data-i="${i}" style="animation-delay:${i * 28}ms">
-        ${x.foto ? `<img src="${esc(x.foto)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'fd-noimg'}))">` : '<span class="fd-noimg"></span>'}
+        ${x.foto ? `<img src="${esc(x.foto)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'fd-noimg'}))">` : selinho(x.nome)}
         <span class="fd-tx"><b>${esc(x.nome)}</b><small>${[x.marca, x.embalagem].filter(Boolean).map(esc).join(' · ')}</small></span>
         <span class="fd-kc">${x.kcal == null ? '—' : Math.round(x.kcal)}<i>kcal/100g</i></span></button>`).join('');
-      res.querySelectorAll('[data-i]').forEach(b => b.onclick = () => { fechar(); openAlimento(l[Number(b.dataset.i)], meal); });
+      res.querySelectorAll('[data-i]').forEach(b => b.onclick = () => { const alvo = l[Number(b.dataset.i)]; fechar();
+        aoEscolher ? aoEscolher(alvo, gramas()) : openAlimento(alvo, meal); });
     } catch (err) { res.innerHTML = `<div class="fd-dica">${esc(err.userMsg || 'Não deu para buscar agora.')}</div>`; }
   };
   setTimeout(() => { const i = el.querySelector('#fd-q'); if (i) i.focus(); }, 60);
@@ -4935,6 +5053,20 @@ function encolheFoto(file, max = 1024){
     };
     img.onerror = erro;
     fr.readAsDataURL(file);
+  });
+}
+// reduz uma imagem que já está em data URL (para a miniatura guardada no diário)
+function encolheDataUrl(url, max, q){
+  return new Promise((ok, erro) => {
+    const img = new Image();
+    img.onload = () => {
+      const e = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * e); c.height = Math.round(img.height * e);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      ok(c.toDataURL('image/jpeg', q));
+    };
+    img.onerror = erro; img.src = url;
   });
 }
 async function prateAberto(dataUrl, meal){
@@ -4972,7 +5104,7 @@ function revisarPrato(el, dataUrl, d, meal, fechar){
       <div class="pr-tot"><b>≈ ${min}–${max} kcal</b><small>estimativa · ajuste as quantidades abaixo</small></div>
       ${d.nota ? `<div class="pr-nota">${esc(d.nota)}</div>` : ''}
       <div class="pr-lista">${itens.map((x, i) => `<div class="pr-it ${x.fora ? 'fora' : ''}" data-i="${i}">
-          <div class="pr-ih"><b>${esc(x.nome)}</b>${selo(x.confianca)}<button class="pr-x" data-fora="${i}" aria-label="${x.fora ? 'Voltar' : 'Tirar'}">${x.fora ? '+' : '×'}</button></div>
+          <div class="pr-ih">${selinho(x.nome)}<b>${esc(x.nome)}</b>${selo(x.confianca)}<button class="pr-x" data-fora="${i}" aria-label="${x.fora ? 'Voltar' : 'Tirar'}">${x.fora ? '+' : '×'}</button></div>
           <div class="pr-ib"><input type="number" inputmode="numeric" min="1" max="2000" step="5" value="${x.gramas}" data-g="${i}" aria-label="Gramas de ${esc(x.nome)}"><span>g</span>
             ${x.medida ? `<em>${esc(x.medida)}</em>` : ''}<b class="pr-k" data-k="${i}">${kcalDe(x)} kcal</b></div>
           ${x.alternativas && x.alternativas.length ? `<select data-alt="${i}" aria-label="Trocar o alimento">
@@ -5007,11 +5139,18 @@ function revisarPrato(el, dataUrl, d, meal, fechar){
       const refeicao = el.querySelector('[data-meal]').value;
       const dia = ui.comerDia || today();
       try {
+        // a miniatura do prato ilustra os itens no diário (a foto grande não é guardada)
+        let fotoId = '';
+        try {
+          const thumb = await encolheDataUrl(dataUrl, 240, 0.6);
+          const { data } = await sb.from('food_photos').insert({ day: dia, thumb }).select('id,thumb').single();
+          if (data){ fotoId = data.id; S.fotos = S.fotos || {}; S.fotos[data.id] = data.thumb; }
+        } catch(err) { console.warn('miniatura', err); }
         for (const x of itens.filter(y => !y.fora)){
           const f = x.gramas / 100;
           const rec = await dbSave('food', { day: dia, meal: refeicao, name: x.nome, brand: '', qty: x.gramas, unit: 'g',
             kcal: kcalDe(x), carb: x.carb == null ? null : Math.round(x.carb * 10) / 10, prot: x.prot == null ? null : Math.round(x.prot * 10) / 10,
-            fat: x.gord == null ? null : Math.round(x.gord * 10) / 10, code: '', img: '', src: 'foto' }, true);
+            fat: x.gord == null ? null : Math.round(x.gord * 10) / 10, code: '', img: '', src: 'foto', foto: fotoId }, true);
           S.comer.push(rec); ui.comerNovo = rec.id;
         }
         fechar(); go('comer'); toast('Prato registrado');
@@ -5054,15 +5193,20 @@ function vComer(){
   const barra = (lab, g, cls) => `<div class="mc"><div class="mc-h"><span>${lab}</span><b>${g} g</b></div>
     <div class="mc-bar"><i class="${cls}" style="width:${Math.round(g / gTot * 100)}%"></i></div></div>`;
 
-  const item = x => `<div class="fd-row ${ui.comerNovo === x.id ? 'novo' : ''}" data-swipe="food:${esc(x.id)}">
-      ${x.img ? `<img src="${esc(x.img)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'fd-noimg'}))">` : '<span class="fd-noimg"></span>'}
-      <span class="fd-tx"><b>${esc(x.name)}</b><small>${[x.brand, `${n2(x.qty, 0)} ${x.unit === 'porcao' ? 'porção' : x.unit === 'un' ? 'un' : x.unit}`].filter(Boolean).map(esc).join(' · ')}</small></span>
-      <span class="fd-kc">${x.kcal == null ? '—' : Math.round(x.kcal)}<i>kcal</i></span></div>`;
+  const item = x => { const im = x.img;
+    return `<div class="fd-row ${ui.comerNovo === x.id ? 'novo' : ''}" data-swipe="food:${esc(x.id)}">
+      <button class="fd-abrir" data-edcomida="${esc(x.id)}" aria-label="Editar ${esc(x.name)}">
+        ${im ? `<img src="${esc(im)}" alt="" loading="lazy" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'fd-noimg'}))">` : selinho(x.name)}
+        <span class="fd-tx"><b>${esc(x.name)}</b><small>${[x.brand, `${n2(x.qty, 0)} ${x.unit === 'porcao' ? 'porção' : x.unit === 'un' ? 'un' : x.unit}`, x.src === 'foto' ? 'por foto' : ''].filter(Boolean).map(esc).join(' · ')}</small></span>
+        <span class="fd-kc">${x.kcal == null ? '—' : Math.round(x.kcal)}<i>kcal</i></span></button></div>`; };
 
   const bloco = ([k, nome, emo]) => { const its = l.filter(x => x.meal === k), sub = somaKcal(its);
+    const pratos = [...new Set(its.map(x => x.foto).filter(f => f && S.fotos && S.fotos[f]))].slice(0, 3);
     return `<section class="card fd-meal"><div class="ch"><b>${emo} ${nome}</b>${its.length ? `<span>${sub} kcal</span>` : ''}
+      ${pratos.map(f => `<img class="fd-prato" src="${esc(S.fotos[f])}" alt="Foto do prato" loading="lazy">`).join('')}
+      <button class="lnk" data-ideias="${k}">${ic('bulb')} ideias</button>
       <button class="lnk" data-addmeal="${k}">+ adicionar</button></div>
-      ${its.length ? its.map(item).join('') : '<div class="empty fd-vazio">Nada registrado</div>'}</section>`; };
+      ${its.length ? its.map(item).join('') : `<button class="empty fd-vazio" data-ideias="${k}">Nada registrado · ver ideias do ${nome.toLowerCase()}</button>`}</section>`; };
 
   const head = `${back()}<div class="head"><div><h1 class="lt">Alimentação</h1><div class="sub">${dLabel} · ${l.length} ${l.length === 1 ? 'item' : 'itens'}</div></div>
     <div class="fd-nav"><button class="icon-btn" data-comerdia="-1" aria-label="Dia anterior">${ic('l')}</button>
@@ -5082,7 +5226,76 @@ function vComer(){
     <button class="fd-btn" data-act="food-manual">${ic('plus')}<span>Escrever</span></button></div>`;
 
   return `${head}${topo}${acoes}${MEALS.map(bloco).join('')}
-    <div class="foot">Os valores vêm do Open Food Facts, base aberta e colaborativa — confira no rótulo quando algo parecer estranho. O app soma o que você registra; não define dieta nem meta por conta própria.</div>`;
+    <div class="foot">Os valores vêm da tabela TACO (NEPA/UNICAMP), do USDA e do Open Food Facts — confira no rótulo quando algo parecer estranho. O app soma o que você registra e dá ideias do que comer; não define dieta nem meta por conta própria.</div>`;
+}
+
+const PLURAL = { colher:'colheres', copo:'copos', 'xícara':'xícaras', unidade:'unidades', fatia:'fatias',
+  concha:'conchas', 'filé':'filés', escumadeira:'escumadeiras', prato:'pratos', 'pedaço':'pedaços', pires:'pires' };
+function medidaCaseira(g, porcaoG, txt){
+  if (!porcaoG || !txt) return '';
+  const n = g / porcaoG;
+  if (n < 0.45 || n > 12) return '';
+  const q = n < 1.2 ? 1 : Math.round(n * 2) / 2;
+  let base = String(txt).replace(/^1\s+/, '').toLowerCase()
+    .replace('colher de arroz/servir', 'colher de servir').replace('copo de requeijao', 'copo')
+    .replace('xicara de cafe', 'xícara de café').replace('xicara', 'xícara');
+  if (q !== 1) base = base.replace(/^[a-záâãéêíóôõúç]+/, m => PLURAL[m] || m);
+  return `≈ ${n2(q, q % 1 ? 1 : 0)} ${base}`;
+}
+// Ideias do que comer: combinações caseiras guardadas no banco, com os valores
+// calculados na hora pela tabela de alimentos. Um toque lança tudo no diário.
+async function openIdeias(meal){
+  const nome = (MEALS.find(([k]) => k === meal) || [, 'refeição'])[1].toLowerCase();
+  const el = $('#sheet');
+  el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="Ideias para o ${esc(nome)}">
+    <div class="bar"><button data-x>Fechar</button><b>Ideias para o ${esc(nome)}</b><span></span></div>
+    <div class="body" id="id-body"><div class="fd-load"><span></span><span></span><span></span></div>
+      <div class="fd-dica">Montando combinações com a tabela de alimentos.</div></div></div>`;
+  el.hidden = false;
+  const fechar = () => { el.hidden = true; el.innerHTML = ''; };
+  el.querySelector('[data-x]').onclick = fechar;
+  const vistas = [];
+  const corpo = el.querySelector('#id-body');
+
+  const pinta = ideias => {
+    if (!ideias.length){ corpo.innerHTML = '<div class="fd-dica">Acabaram as ideias dessa refeição por hoje.</div>'; return; }
+    ideias.forEach(i => { if (!vistas.includes(i.id)) vistas.push(i.id); });
+    corpo.innerHTML = ideias.map((i, n) => `<article class="id-card" style="--d:${n * 90}ms">
+      <div class="id-h"><span class="id-tx"><b>${esc(i.titulo)}</b>${i.nota ? `<small>${esc(i.nota)}</small>` : ''}</span>
+        <span class="id-kc"><b>${n2(i.kcal, 0)}</b><i>kcal</i></span></div>
+      <div class="id-mac"><span>Proteína ${n2(i.prot, 1)} g</span><span>Carboidrato ${n2(i.carb, 1)} g</span><span>Gordura ${n2(i.gord, 1)} g</span></div>
+      <div class="id-its">${(i.itens || []).map(x => `<div class="id-it">${selinho(x.nome)}
+        <span class="fd-tx"><b>${esc(x.nome)}</b><small>${n2(x.g, 0)} g${medidaCaseira(x.g, x.porcao_g, x.medida) ? ` · ${esc(medidaCaseira(x.g, x.porcao_g, x.medida))}` : ''}</small></span>
+        <span class="fd-kc">${n2(x.kcal, 0)}<i>kcal</i></span></div>`).join('')}</div>
+      <button class="id-go" data-lanca="${n}">Lançar no ${esc(nome)}</button></article>`).join('')
+      + `<button class="id-outras" data-outras>Ver outras ideias</button>
+      <div class="foot">Combinações inspiradas no Guia Alimentar para a População Brasileira (Ministério da Saúde): comida de verdade, arroz com feijão, um legume e uma fruta. Os valores são da TACO/USDA, para a porção indicada. São ideias gerais, não um plano alimentar — para algo individual, procure um nutricionista.</div>`;
+    corpo.querySelector('[data-outras]').onclick = () => carrega();
+    corpo.querySelectorAll('[data-lanca]').forEach(b => b.onclick = () => lanca(ideias[Number(b.dataset.lanca)], b));
+  };
+
+  const carrega = async () => {
+    corpo.innerHTML = '<div class="fd-load"><span></span><span></span><span></span></div>';
+    try {
+      const { data, error } = await sb.rpc('sugerir_refeicao', { p_meal: meal, p_qtd: 3, p_pular: vistas });
+      if (error) throw error;
+      pinta(data || []);
+    } catch (e) { corpo.innerHTML = '<div class="fd-dica">Não deu para buscar as ideias agora. Tente de novo em instantes.</div>'; }
+  };
+
+  const lanca = async (ideia, botao) => {
+    botao.disabled = true; botao.textContent = 'Lançando…';
+    const dia = ui.comerDia || today();
+    try {
+      for (const x of ideia.itens || []){
+        const rec = await dbSave('food', { day: dia, meal, name: x.nome, brand: '', qty: x.g, unit: 'g',
+          kcal: x.kcal, carb: x.carb, prot: x.prot, fat: x.gord, code: '', img: '', src: 'ideia', foto: '' }, true);
+        S.comer.push(rec); ui.comerNovo = rec.id;
+      }
+      fechar(); render(); toast(`${ideia.titulo} no diário`);
+    } catch (e) { botao.disabled = false; botao.textContent = `Lançar no ${nome}`; toast('Não deu para lançar agora.'); }
+  };
+  carrega();
 }
 
 /* ---------- Saúde: remédios, consultas, peso e IMC ---------- */
