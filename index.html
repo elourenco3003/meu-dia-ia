@@ -226,6 +226,8 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 .dose-ic svg{width:26px;height:26px}
 .dose-b{gap:10px}.dose-b svg{width:19px;height:19px;color:var(--fg2)}
 .dose-b.ok svg{color:var(--good)}
+.dose-b.soneca{width:100%;border-radius:14px;background:var(--fill);color:var(--accent);font-weight:700}
+.dose-b.soneca svg{color:var(--accent)}
 .back{display:inline-flex;align-items:center;gap:2px;color:var(--accent);font-weight:600;font-size:16px;align-self:flex-start;margin-left:-6px}
 .chead{display:grid;grid-template-columns:44px 1fr 44px;align-items:center}
 .ctitle{margin:0;text-align:center;font-size:18px;font-weight:600}
@@ -420,6 +422,9 @@ main.chat .wrap{flex:1;min-height:0;width:100%;gap:12px}
 #alarm .al-knob:focus-visible{outline:3px solid #fff;outline-offset:3px}
 /* "me dê uns minutos": deslizar para adiar, igual à soneca do celular */
 .sl{position:relative;height:56px;border-radius:28px;background:var(--fill);display:flex;align-items:center;padding:4px;touch-action:none;user-select:none;-webkit-user-select:none}
+.sl{background:linear-gradient(to right,color-mix(in srgb,var(--accent) 22%,var(--fill)) calc(var(--p,0) * 100%),var(--fill) 0)}
+.sl.pronto{background:color-mix(in srgb,var(--good) 26%,var(--fill))}
+.sl.pronto .sl-k{color:var(--good)}
 .sl-t{position:absolute;inset:0;display:grid;place-items:center;font-size:15.5px;font-weight:700;color:var(--fg2);padding-left:36px;pointer-events:none}
 .sl-k{width:48px;height:48px;border-radius:50%;background:var(--card);color:var(--accent);display:grid;place-items:center;flex:none;cursor:grab;box-shadow:0 3px 10px rgba(0,0,0,.18);touch-action:none;position:relative;z-index:1}
 .sl-k svg{width:24px;height:24px}
@@ -1639,7 +1644,7 @@ const PRI = {alta:'Alta',media:'Média',baixa:'Baixa'};
 const PRIO_N = {alta:0,media:1,baixa:2};
 
 /* ---------- dados (Supabase) ---------- */
-const APP_V = 'v95';   // sobe junto com o CACHE do sw.js; se os dois não baterem, o app avisa
+const APP_V = 'v97';   // sobe junto com o CACHE do sw.js; se os dois não baterem, o app avisa
 const SB_URL = 'https://tgrfwgzfjrwgkkvpgbqq.supabase.co';
 // chave pública (anon): pode ficar no navegador; quem protege os dados de cada usuário é o RLS do banco
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRncmZ3Z3pmanJ3Z2trdnBnYnFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2OTMxMDYsImV4cCI6MjExMDI2OTEwNn0.O2xXMY9NAQSeuxYmbOvT20u9UXaFp9Fr73W2HMcju4Q';
@@ -1873,14 +1878,38 @@ function previewTone(kind){
 }
 // "deslize para parar", igual ao despertador do celular
 function bindSlide(box, done){
-  const knob = box.querySelector('.al-knob, .sl-k'); let x0 = null, x = 0;
-  const max = () => box.clientWidth - knob.offsetWidth - 8;
-  const set = (v, anim) => { x = Math.max(0, Math.min(v, max())); knob.style.transition = anim ? 'transform .25s ease' : 'none'; knob.style.transform = `translateX(${x}px)`; box.querySelector('.al-slide-t, .sl-t').style.opacity = String(1 - x / max()); knob.setAttribute('aria-valuenow', String(Math.round(x / max() * 100))); };
-  knob.addEventListener('pointerdown', ev => { x0 = ev.clientX - x; knob.setPointerCapture(ev.pointerId); ev.preventDefault(); });
-  knob.addEventListener('pointermove', ev => { if (x0 !== null) set(ev.clientX - x0); });
-  const end = () => { if (x0 === null) return; x0 = null; if (x >= max() * .8){ set(max(), true); setTimeout(done, 150); } else set(0, true); };
-  knob.addEventListener('pointerup', end); knob.addEventListener('pointercancel', end);
-  knob.addEventListener('keydown', ev => { if (['Enter',' ','ArrowRight'].includes(ev.key)){ ev.preventDefault(); done(); } });
+  const knob = box.querySelector('.al-knob, .sl-k');
+  const rotulo = box.querySelector('.al-slide-t, .sl-t');
+  const txt = rotulo ? rotulo.textContent : '';
+  let x0 = null, x = 0, feito = false;
+  const max = () => Math.max(40, box.clientWidth - knob.offsetWidth - 8);
+  const limiar = () => max() * .62;
+  const set = (v, anim) => {
+    x = Math.max(0, Math.min(v, max()));
+    knob.style.transition = anim ? 'transform .25s cubic-bezier(.22,1,.36,1)' : 'none';
+    knob.style.transform = `translateX(${x}px)`;
+    box.style.setProperty('--p', String(x / max()));
+    box.classList.toggle('pronto', x >= limiar());
+    if (rotulo){ rotulo.style.opacity = String(Math.max(.25, 1 - x / max())); rotulo.textContent = x >= limiar() ? 'Solte para adiar' : txt; }
+    knob.setAttribute('aria-valuenow', String(Math.round(x / max() * 100)));
+  };
+  // o gesto começa em qualquer ponto da barra, não só no botão: é o que a mão faz
+  const pegar = cx => { const r = box.getBoundingClientRect();
+    if (cx > r.left + knob.offsetWidth + 8) set(cx - r.left - knob.offsetWidth / 2);
+    x0 = cx - x; };
+  const mover = cx => { if (x0 !== null) set(cx - x0); };
+  const soltar = () => { if (x0 === null) return; x0 = null;
+    if (x >= limiar() && !feito){ feito = true; set(max(), true); setTimeout(done, 160); } else set(0, true); };
+  box.addEventListener('pointerdown', ev => { if (ev.button && ev.button > 0) return;
+    try { box.setPointerCapture(ev.pointerId); } catch(_) {}
+    pegar(ev.clientX); ev.preventDefault(); ev.stopPropagation(); });
+  box.addEventListener('pointermove', ev => { if (x0 === null) return; mover(ev.clientX); ev.preventDefault(); ev.stopPropagation(); });
+  box.addEventListener('pointerup', soltar); box.addEventListener('pointercancel', soltar);
+  // reserva para quem não entrega eventos de ponteiro
+  box.addEventListener('touchstart', ev => { if (x0 === null && ev.touches[0]){ pegar(ev.touches[0].clientX); ev.preventDefault(); } }, { passive:false });
+  box.addEventListener('touchmove', ev => { if (ev.touches[0]){ mover(ev.touches[0].clientX); ev.preventDefault(); } }, { passive:false });
+  box.addEventListener('touchend', soltar);
+  knob.addEventListener('keydown', ev => { if (['Enter',' ','ArrowRight'].includes(ev.key)){ ev.preventDefault(); if (!feito){ feito = true; done(); } } });
 }
 // confere a cada 15 s se chegou a hora exata de sair de algum compromisso
 function alarmCheck(){
@@ -2667,7 +2696,8 @@ function vSettings(){
     <div class="group">
       <div class="row"><span class="main"><div class="t">Neste aparelho</div><div class="s">${PUSH_TXT[pushState()]}</div></span>
         ${pushState()==='ativo' ? '<span class="chip good">Ativados</span>' : pushState()==='desligado' ? '<button class="pay" data-act="push-on">Ativar</button>' : ''}</div>
-      ${pushState()==='ativo' ? `<button class="row" data-act="push-test"><span class="main t" style="color:var(--accent)">Enviar alerta de teste</span></button>` : ''}
+      ${pushState()==='ativo' ? `<button class="row" data-act="push-test"><span class="main t" style="color:var(--accent)">Enviar alerta de teste</span></button>
+      <button class="row" data-act="push-alarme"><span class="main"><div class="t" style="color:var(--accent)">Testar o alarme do remédio</div><div class="s">Três toques seguidos, como no horário de verdade</div></span></button>` : ''}
       <label class="row" for="pref-adv"><span class="main t">Avisar compromissos</span>
         <select class="field-in" id="pref-adv" data-pref="event_adv">${[[0,'No horário'],[5,'5 min antes'],[15,'15 min antes'],[30,'30 min antes'],[60,'1 hora antes']].map(([v,l])=>`<option value="${v}" ${Number(S.event_adv)===v?'selected':''}>${l}</option>`).join('')}</select></label>
       <label class="row" for="pref-sum"><span class="main t">Resumo do dia às</span><input class="field-in" type="time" id="pref-sum" data-pref="summary_time" value="${esc(S.summary_time)}"></label>
@@ -2675,6 +2705,12 @@ function vSettings(){
       <label class="row" for="pref-qe"><span class="main t">Silêncio até</span><input class="field-in" type="time" id="pref-qe" data-pref="quiet_end" value="${esc(S.quiet_end)}"></label>
     </div>
     <div class="foot">Contas avisam às 9h: um dia antes, no dia e no dia seguinte, se não estiverem pagas. Tarefas abertas avisam às 18h. No horário silencioso só tocam os lembretes que você marcou.</div>
+  </section>
+  <section>
+    <div class="sh">Alarme de remédio</div>
+    <div class="group"><div class="row"><span class="main"><div class="t">Como o alarme funciona aqui</div>
+      <div class="s">Com o app aberto, toca a sirene até você responder. Com o app fechado, o iPhone só deixa tocar o som de notificação do próprio sistema — nenhum app instalado pela internet pode tocar som próprio em segundo plano. Por isso o remédio chama três vezes seguidas, com 25 segundos entre uma e outra, até você confirmar.</div></span></div></div>
+    <div class="foot">Se for remédio de hora marcada que você não pode perder, vale cadastrar também um alarme no app Relógio do iPhone: ele toca alto mesmo no silencioso. Aqui no app ficam o controle das doses, o histórico e o aviso para a família.</div>
   </section>
   ${soundsSection()}`;
   if (sub === 'sair') return head('Hora de sair') + travelSection();
@@ -2831,6 +2867,7 @@ function bindView(){
     if (a==='admin-refresh'){ adminData = null; adminErr = ''; render(); }
     if (a==='admin-budget' && adminData){ openBudget(); }
     if (a==='push-test'){ testPush(); }
+    if (a==='push-alarme'){ testAlarme(); }
     if (a==='push-later'){ try { localStorage.setItem('meudia.pushlater', String(Date.now())); } catch(e) {} render(); }
     if (a==='today'){ ui.weekOff = 0; ui.monthOff = 0; ui.agendaSel = today(); render(); }
     if (a==='clear-chat'){ S.chat = []; S.chatLoaded = true; render(); persist(sb.from('conversations').delete().not('id','is',null).then(r => { if (r.error) throw r.error; })); }
@@ -4645,8 +4682,9 @@ function openDose(ref){
         <button class="row dose-b ok" data-dose="feito">${ic('ok')}<span class="main t">Tomei agora</span></button>
         <button class="row dose-b" data-dose="pulado">${ic('info')}<span class="main t">Pulei esta dose</span></button>
       </div>
-      <div class="sl" id="dose-snooze" style="margin-top:12px"><span class="sl-t">Deslize: me dê ${minAdiar} min</span><span class="sl-k" role="slider" tabindex="0" aria-label="Deslize para a direita para adiar ${minAdiar} minutos" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">${ic('repeat')}</span></div>
-      <div class="foot">Adiando, o aviso volta em ${minAdiar} min, mesmo com o app fechado. Você muda esse tempo em Ajustes › Alertas.</div>
+      <div class="sl" id="dose-snooze" style="margin-top:12px"><span class="sl-t">Arraste: me dê ${minAdiar} min</span><span class="sl-k" role="slider" tabindex="0" aria-label="Arraste para a direita para adiar ${minAdiar} minutos" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">${ic('repeat')}</span></div>
+      <button class="row dose-b soneca" data-dose-snooze style="margin-top:10px">${ic('repeat')}<span class="main t">Soneca de ${minAdiar} min</span></button>
+      <div class="foot">Arraste a barra de ponta a ponta ou toque em soneca: o aviso volta em ${minAdiar} min, mesmo com o app fechado. Você muda esse tempo em Ajustes › Alertas.</div>
       </div></div>`;
   el.hidden = false;
   const close = () => { doseAlarm(false); el.hidden = true; el.innerHTML = ''; };
@@ -4655,12 +4693,14 @@ function openDose(ref){
     const a = b.dataset.dose;
     rotMark(id, t, a); close(); toast(a === 'feito' ? 'Dose confirmada' : 'Dose pulada');
   });
-  bindSlide(el.querySelector('#dose-snooze'), () => {
+  const adiar = () => {
     snoozeSave('remedio', `${id}:${t.replace(':', '')}`, minAdiar);
     close(); toast(`Tudo bem. Aviso de novo em ${minAdiar} min.`);
     // reserva, caso o alerta do servidor não chegue e o app continue aberto
     setTimeout(() => { if (!rotLog(id, t) && $('#sheet').hidden){ doseAlarm(true); openDose(ref); } }, minAdiar * 60e3);
-  });
+  };
+  bindSlide(el.querySelector('#dose-snooze'), adiar);
+  el.querySelector('[data-dose-snooze]').onclick = adiar;
 }
 // cartão no Início quando passou da hora e a dose segue sem resposta
 function doseCard(){
@@ -6155,6 +6195,12 @@ async function unsubscribePush(){
     if (sub){ await sb.from('push_subscriptions').delete().eq('endpoint', sub.endpoint); await sub.unsubscribe(); }
   } catch(e) { console.error(e); }
   pushOn = false;
+}
+// o alarme de verdade: três toques em ~1 minuto
+async function testAlarme(){
+  toast('Mandando o 1º toque. Bloqueie a tela e espere: vêm mais dois.', 6000);
+  const { data, error } = await sb.functions.invoke('notificar?alarme=1', { body: {} });
+  if (error || !data || !data.sent) toast('Não chegou a nenhum aparelho. Ative os alertas e tente de novo.');
 }
 async function testPush(){
   const { data, error } = await sb.functions.invoke('notificar', { body: { test: true } });
