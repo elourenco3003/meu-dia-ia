@@ -1284,7 +1284,10 @@ body.mouse .q-follow:hover{border-color:var(--accent)}
 /* cabeçalho das seções da tela de Saúde */
 .ch{display:flex;align-items:center;gap:10px;padding:11px 13px;border-bottom:1px solid var(--sep);font-size:13px;font-weight:800}
 .ch span{font-size:11.6px;color:var(--fg2);font-weight:600}
-.ch .lnk{margin-left:auto;font-size:11.8px;font-weight:700;color:var(--accent);background:none;border:0;padding:0;white-space:nowrap}
+.ch .lnk{display:inline-flex;align-items:center;gap:4px;margin-left:auto;font-size:11.8px;font-weight:700;color:var(--accent);background:none;border:0;padding:7px 4px;margin-top:-7px;margin-bottom:-7px;white-space:nowrap;line-height:1}
+.ch .lnk + .lnk{margin-left:4px}
+.ch .lnk svg{width:13px;height:13px;flex:0 0 auto;display:block}
+.pchips.arqf{margin:0 0 10px}
 .pz-row .main{text-align:left;display:block}
 .pz-row .main b{display:block;font-size:14px}
 .pz-row .main small{display:block;font-size:11.8px;color:var(--fg2);margin-top:1px}
@@ -1672,7 +1675,7 @@ async function loadAll(){
   const [p, ev, tk, fn, rm] = await Promise.all([
     sb.from('profiles').select('height_cm,weight_goal_kg,kcal_goal,name,sounds,sound_cats,quiet_start,quiet_end,event_advance_min,summary_time,home_addr,home_lat,home_lon,work_addr,work_lat,work_lon,travel_on,travel_arrive_min,reserve_pct,plan').maybeSingle(),
     sb.from('events').select('*').is('archived_at', null).order('date'),
-    sb.from('tasks').select('*'),
+    sb.from('tasks').select('*').is('archived_at', null),
     sb.from('finance_entries').select('*').order('date'),
     sb.from('reminders').select('*').is('archived_at', null).order('date'),
   ]);
@@ -1688,13 +1691,14 @@ async function loadAll(){
   }
   S.events = ev.data.map(MAP.ev.to); S.tasks = tk.data.map(MAP.task.to); S.fin = fn.data.map(MAP.fin.to); S.rems = rm.data.map(MAP.rem.to);
   const [ls, li, nt, rb, bd, rt, rl, pw, fd, fp] = await Promise.all([
-    sb.from('lists').select('*').order('updated_at', { ascending:false }), sb.from('list_items').select('*').order('created_at'),
-    sb.from('notes').select('*').order('updated_at', { ascending:false }), sb.from('recurring_bills').select('*').order('day'),
+    sb.from('lists').select('*').is('archived_at', null).order('updated_at', { ascending:false }),
+    sb.from('list_items').select('*').is('archived_at', null).order('created_at'),
+    sb.from('notes').select('*').is('archived_at', null).order('updated_at', { ascending:false }), sb.from('recurring_bills').select('*').order('day'),
     sb.from('birthdays').select('*').order('month').order('day'),
     sb.from('routines').select('*').order('created_at'),
     sb.from('routine_logs').select('*').gte('due_on', today()),
-    sb.from('weights').select('*').order('day', { ascending:false }).limit(400),
-    sb.from('food_log').select('*').gte('day', iso(new Date(Date.now() - 8 * 864e5))).order('at'),
+    sb.from('weights').select('*').is('archived_at', null).order('day', { ascending:false }).limit(400),
+    sb.from('food_log').select('*').is('archived_at', null).gte('day', iso(new Date(Date.now() - 8 * 864e5))).order('at'),
     sb.from('food_photos').select('id,thumb').gte('day', iso(new Date(Date.now() - 8 * 864e5))),
   ]);
   S.lists = ls.data || []; S.items = li.data || []; S.notes = nt.data || []; S.recurring = rb.data || []; S.birthdays = bd.data || [];
@@ -1880,7 +1884,7 @@ function toast(html, ms){
   clearTimeout(toastT); toastT = setTimeout(() => el.hidden = true, ms || 3200);
 }
 
-/* ---------- arrastar para o lado para excluir (estilo Gmail), com "Desfazer" ---------- */
+/* ---------- arrastar para o lado para ARQUIVAR (estilo Gmail), com "Desfazer" ---------- */
 let swp = null, swipedAt = 0;
 document.addEventListener('pointerdown', e => {
   const row = e.target.closest('[data-swipe]'); if (!row || (e.button && e.button > 0)) return;
@@ -1911,52 +1915,72 @@ document.addEventListener('pointercancel', endSwipe, true);
 // depois de arrastar, o toque não conta como clique
 document.addEventListener('click', e => { if (Date.now() - swipedAt < 400){ e.stopPropagation(); e.preventDefault(); } }, true);
 function swipeDelete(key){
-  const [k, id] = key.split(':'); let restore, commit, label;
-  if (k === 'li'){ const it = S.items.find(x => x.id === id); if (!it) return; S.items = S.items.filter(x => x !== it);
-    restore = () => { S.items.push(it); S.items.sort((a, b) => String(a.created_at).localeCompare(String(b.created_at))); }; commit = () => sb.from('list_items').delete().eq('id', id); label = 'Item excluído'; }
-  else if (k === 'list'){ const l = S.lists.find(x => x.id === id); if (!l) return;
-    if (l.user_id !== myId()){ toast('Só quem criou a lista pode excluir.'); render(); return; }
-    const its = listItems(id); S.lists = S.lists.filter(x => x !== l); S.items = S.items.filter(i => i.list_id !== id);
-    restore = () => { S.lists.push(l); S.items.push(...its); S.lists.sort((a, b) => String(b.updated_at).localeCompare(String(a.updated_at))); }; commit = () => sb.from('lists').delete().eq('id', id); label = `Lista "${esc(l.name)}" excluída`; }
-  else if (k === 'task'){ const t = S.tasks.find(x => x.id === id); if (!t) return; const subs = subsOf(id); S.tasks = S.tasks.filter(x => x.id !== id && x.parent !== id);
-    restore = () => S.tasks.push(t, ...subs); commit = () => sb.from('tasks').delete().eq('id', id); label = t.parent ? 'Passo excluído' : 'Tarefa excluída'; }
-  else if (k === 'note'){ const n = S.notes.find(x => x.id === id); if (!n) return; S.notes = S.notes.filter(x => x !== n);
-    restore = () => S.notes.push(n); commit = () => sb.from('notes').delete().eq('id', id); label = 'Nota excluída'; }
-  else if (k === 'ativo'){ const a = (S.watch || []).find(x => x.id === id); if (!a) return; S.watch = S.watch.filter(x => x !== a);
-    restore = () => { S.watch.push(a); S.watch.sort((x, y) => String(x.created_at).localeCompare(String(y.created_at))); }; commit = () => sb.from('watchlist').delete().eq('id', id); label = `${esc(a.symbol)} removido`; }
-  else if (k === 'arqev' || k === 'arqrem'){
-    const kk = k === 'arqev' ? 'ev' : 'rem', A = ARQ[kk];
-    const it = (S.arq || []).find(x => x.k === kk && x.id === id); if (!it) return;
-    S.arq = S.arq.filter(x => x !== it);
-    restore = () => { S.arq.push(it); S.arq.sort((a, b) => String(b.at).localeCompare(String(a.at))); };
-    commit = () => sb.from(A.table).delete().eq('id', id);
-    label = `${A.n} excluído de vez`; }
-  else if (k === 'food'){ const f = (S.comer || []).find(x => x.id === id); if (!f) return; S.comer = S.comer.filter(x => x !== f);
-    restore = () => S.comer.push(f); commit = () => sb.from('food_log').delete().eq('id', id); label = 'Item tirado do diário'; }
-  else if (k === 'peso'){ const w = (S.pesos || []).find(x => x.id === id); if (!w) return; S.pesos = S.pesos.filter(x => x !== w);
-    restore = () => { S.pesos.push(w); S.pesos.sort((a, b) => b.day.localeCompare(a.day)); }; commit = () => sb.from('weights').delete().eq('id', id); label = 'Registro de peso excluído'; }
-  else if (k === 'rem' || k === 'ev'){ return archiveItem(k, id); }
-  else return;
+  const p = key.split(':');
+  if (p[0] === 'arq') return excluirDeVez(p[1], p[2]);   // já está no arquivo: aí sim some
+  return archiveItem(p[0], p[1]);                        // em qualquer outra tela: arquiva
+}
+// exclusão definitiva, só a partir de Arquivados
+function excluirDeVez(k, id){
+  const A = ARQ[k]; if (!A) return;
+  const it = (S.arq || []).find(x => x.k === k && x.id === id); if (!it) return;
+  S.arq = (S.arq || []).filter(x => x !== it);
   render();
   let undone = false;
-  const timer = setTimeout(() => { if (!undone) persist(Promise.resolve(commit()).then(r => { if (r && r.error) throw r.error; })); }, 4500);
-  toast(`<span style="flex:1;white-space:nowrap">${label}</span><button class="undo" data-undo>Desfazer</button>`, 4500);
-  const b = $('#toast [data-undo]'); if (b) b.onclick = () => { undone = true; clearTimeout(timer); restore(); render(); $('#toast').hidden = true; };
+  const timer = setTimeout(() => { if (!undone) persist(sb.from(A.table).delete().eq('id', id).then(r => { if (r.error) throw r.error; })); }, 6000);
+  toast(`<span style="flex:1;white-space:nowrap">${A.n} excluído de vez</span><button class="undo" data-undo>Desfazer</button>`, 6000);
+  const b = $('#toast [data-undo]'); if (b) b.onclick = () => { undone = true; clearTimeout(timer); S.arq.push(it);
+    S.arq.sort((a, c) => String(c.at).localeCompare(String(a.at))); render(); $('#toast').hidden = true; };
 }
 
-/* ---------- arquivar: sai da agenda mas continua guardado em "Arquivados" ---------- */
-const ARQ = { ev:{ arr:'events', table:'events', n:'Compromisso' }, rem:{ arr:'rems', table:'reminders', n:'Lembrete' } };
+/* ---------- arquivar: sai da tela mas continua guardado em "Arquivados" ---------- */
+const MEALN = { cafe:'Café da manhã', almoco:'Almoço', jantar:'Jantar', lanche:'Lanche' };
+const ARQ = {
+  ev:   { arr:'events', table:'events',     n:'Compromisso',       sel:'id,title,date,start_time,place,done,archived_at',
+          linha: r => ({ title:r.title, date:r.date, time:tm(r.start_time), sub:r.place || 'Compromisso', done:r.done }) },
+  rem:  { arr:'rems',   table:'reminders',  n:'Lembrete',          sel:'id,title,date,time,done,archived_at',
+          linha: r => ({ title:r.title, date:r.date, time:tm(r.time), sub:'Lembrete', done:r.done }) },
+  task: { arr:'tasks',  table:'tasks',      n:'Tarefa',            sel:'id,title,due_date,done,parent_id,archived_at',
+          linha: r => ({ title:r.title, date:r.due_date || '', time:'', sub:r.parent_id ? 'Passo de tarefa' : 'Tarefa', done:r.done }) },
+  note: { arr:'notes',  table:'notes',      n:'Nota',              sel:'id,title,body,archived_at',
+          linha: r => ({ title:r.title || String(r.body || '').slice(0, 60) || 'Nota sem título', date:'', time:'', sub:'Nota' }) },
+  li:   { arr:'items',  table:'list_items', n:'Item da lista',     sel:'id,text,qty,unit,archived_at',
+          linha: r => ({ title:r.text, date:'', time:'', sub:'Item de lista' }) },
+  list: { arr:'lists',  table:'lists',      n:'Lista',             sel:'id,name,archived_at',
+          linha: r => ({ title:r.name, date:'', time:'', sub:'Lista' }) },
+  food: { arr:'comer',  table:'food_log',   n:'Item do diário',    sel:'id,name,day,meal,qty,unit,kcal,archived_at',
+          linha: r => ({ title:r.name, date:r.day, time:'', sub:`${MEALN[r.meal] || 'Refeição'} · ${n2(r.qty, 0)} ${r.unit === 'un' ? 'un' : 'g'}${r.kcal == null ? '' : ' · ' + Math.round(r.kcal) + ' kcal'}` }) },
+  peso: { arr:'pesos',  table:'weights',    n:'Registro de peso',  sel:'id,day,kg,archived_at',
+          linha: r => ({ title:`${n2(r.kg, 1)} kg`, date:r.day, time:'', sub:'Peso' }) },
+  ativo:{ arr:'watch',  table:'watchlist',  n:'Ativo',             sel:'id,symbol,archived_at',
+          linha: r => ({ title:r.symbol, date:'', time:'', sub:'Investimentos' }) },
+};
+// arquiva o item (e o que depende dele) com 6 segundos para desfazer
 function archiveItem(k, id, extra){
   const A = ARQ[k]; if (!A) return;
-  const it = S[A.arr].find(x => x.id === id); if (!it) return;
+  const arr = S[A.arr] || [];
+  const it = arr.find(x => x.id === id); if (!it) return;
+  if (k === 'list' && it.user_id && it.user_id !== myId()){ toast('Só quem criou a lista pode arquivar.'); render(); return; }
   const prevDone = it.done;
-  S[A.arr] = S[A.arr].filter(x => x !== it);
+  // os dependentes vão junto: passos da tarefa, itens da lista
+  const filhos = k === 'task' ? (S.tasks || []).filter(x => x.parent === id)
+               : k === 'list' ? (S.items || []).filter(x => x.list_id === id) : [];
+  const arrFilho = k === 'task' ? 'tasks' : 'items';
+  S[A.arr] = arr.filter(x => x !== it);
+  if (filhos.length) S[arrFilho] = (S[arrFilho] || []).filter(x => !filhos.includes(x));
   if (extra && extra.done) it.done = true;
   render();
   let undone = false;
-  const timer = setTimeout(() => { if (!undone) persist(sb.from(A.table).update({ archived_at: new Date().toISOString(), ...(extra && extra.done ? { done: true } : {}) }).eq('id', id).then(r => { if (r.error) throw r.error; })); }, 4500);
-  toast(`<span style="flex:1;white-space:nowrap">${(extra && extra.label) || A.n + ' arquivado'}</span><button class="undo" data-undo>Desfazer</button>`, 4500);
-  const b = $('#toast [data-undo]'); if (b) b.onclick = () => { undone = true; clearTimeout(timer); it.done = prevDone; S[A.arr].push(it); render(); $('#toast').hidden = true; };
+  const agora = () => new Date().toISOString();
+  const timer = setTimeout(() => { if (undone) return;
+    persist(sb.from(A.table).update({ archived_at: agora(), ...(extra && extra.done ? { done: true } : {}) }).eq('id', id).then(r => { if (r.error) throw r.error; }));
+    if (filhos.length) persist(sb.from(k === 'task' ? 'tasks' : 'list_items').update({ archived_at: agora() }).in('id', filhos.map(x => x.id)).then(r => { if (r.error) throw r.error; }));
+  }, 6000);
+  const quantos = filhos.length ? ` e ${filhos.length} ${filhos.length === 1 ? 'item' : 'itens'}` : '';
+  toast(`<span style="flex:1;white-space:nowrap">${(extra && extra.label) || A.n + quantos + ' arquivado'}</span><button class="undo" data-undo>Desfazer</button>`, 6000);
+  const b = $('#toast [data-undo]'); if (b) b.onclick = () => { undone = true; clearTimeout(timer); it.done = prevDone;
+    S[A.arr].push(it); if (filhos.length) S[arrFilho] = (S[arrFilho] || []).concat(filhos);
+    if (k === 'ev' || k === 'rem') S[A.arr].sort((a, c) => String(a.date + a.time).localeCompare(String(c.date + c.time)));
+    render(); $('#toast').hidden = true; };
 }
 // compromissos que já terminaram e ainda não foram confirmados (o app pergunta 1 h depois)
 function toConfirm(){
@@ -1998,54 +2022,64 @@ function openConfirm(id){
   bindConfirm(el);
 }
 /* ---------- tela Arquivados ---------- */
+const ARQ_ORDEM = ['ev', 'rem', 'task', 'note', 'li', 'list', 'food', 'peso', 'ativo'];
 async function loadArq(){
   if (S.arqBusy) return; S.arqBusy = true;
-  const [ev, rm] = await Promise.all([
-    sb.from('events').select('id,title,date,start_time,place,done,archived_at').not('archived_at', 'is', null).order('date', { ascending: false }).limit(200),
-    sb.from('reminders').select('id,title,date,time,done,archived_at').not('archived_at', 'is', null).order('date', { ascending: false }).limit(200),
-  ]);
+  const res = await Promise.all(ARQ_ORDEM.map(k =>
+    sb.from(ARQ[k].table).select(ARQ[k].sel).not('archived_at', 'is', null)
+      .order('archived_at', { ascending: false }).limit(200)));
   S.arqBusy = false; S.arqAt = Date.now();
-  S.arq = [...(ev.data || []).map(r => ({ k:'ev', id:r.id, title:r.title, date:r.date, time:tm(r.start_time), sub:r.place || '', done:r.done, at:r.archived_at })),
-    ...(rm.data || []).map(r => ({ k:'rem', id:r.id, title:r.title, date:r.date, time:tm(r.time), sub:'Lembrete', done:r.done, at:r.archived_at }))]
+  S.arq = res.flatMap((r, i) => { const k = ARQ_ORDEM[i];
+    return (r.data || []).map(row => ({ k, id:row.id, at:row.archived_at, ...ARQ[k].linha(row) })); })
     .sort((a, b) => String(b.at).localeCompare(String(a.at)));
   if (view === 'arquivados') render();
 }
 function vArq(){
   if (!S.arq || Date.now() - (S.arqAt || 0) > 60e3) loadArq();
-  const l = S.arq || [];
-  const t = today(), passados = l.filter(x => x.date < t).length;
-  return `${back()}<div class="head"><div><h1 class="lt">Arquivados</h1><div class="sub">Compromissos e lembretes que saíram da agenda</div></div>
-    ${passados ? `<button class="icon-btn" id="arq-limpa" aria-label="Excluir os que já passaram" title="Excluir os que já passaram">${ic('trash')}</button>` : ''}</div>
-  ${passados ? `<div class="group"><button class="row" id="arq-limpa2"><span class="set-ic">${ic('trash')}</span><span class="main"><div class="t">Excluir os que já passaram</div><div class="s">${passados} ${passados === 1 ? 'item com data anterior a hoje' : 'itens com data anterior a hoje'}</div></span>${ic('r','i chev')}</button></div>` : ''}
-  <div class="group">${l.length ? l.map(x => `<div class="row" data-swipe="arq${x.k}:${x.id}"><button class="main" data-reopen="${x.k}:${x.id}" style="text-align:left"><div class="t">${esc(x.title)}${x.done ? ' <span class="chip good">Concluído</span>' : ''}</div>
-      <div class="s">${rel(x.date)}${x.time ? ' às ' + x.time : ''}${x.sub ? ' · ' + esc(x.sub) : ''} · arquivado ${agoTxt(x.at)}</div></button>
+  const todos = S.arq || [];
+  const filtro = ui.arqF || 'tudo';
+  const GRUPO = { agenda:['ev', 'rem'], tarefas:['task', 'note'], listas:['li', 'list'], saude:['food', 'peso'] };
+  const l = filtro === 'tudo' ? todos : todos.filter(x => (GRUPO[filtro] || []).includes(x.k));
+  const tem = g => todos.some(x => (GRUPO[g] || []).includes(x.k));
+  const velhos = todos.filter(x => x.at && x.at < new Date(Date.now() - 30 * 864e5).toISOString()).length;
+  const chip = (k, lab) => `<button class="pchip ${filtro === k ? 'on' : ''}" data-arqf="${k}" aria-pressed="${filtro === k}">${lab}</button>`;
+
+  return `${back()}<div class="head"><div><h1 class="lt">Arquivados</h1><div class="sub">Tudo que você arrastou para o lado fica aqui${todos.length ? ` · ${todos.length} ${todos.length === 1 ? 'item' : 'itens'}` : ''}</div></div>
+    ${velhos ? `<button class="icon-btn" id="arq-limpa" aria-label="Excluir os antigos" title="Excluir os antigos">${ic('trash')}</button>` : ''}</div>
+  ${todos.length ? `<div class="pchips arqf">${chip('tudo', 'Tudo')}${tem('agenda') ? chip('agenda', 'Agenda') : ''}${tem('tarefas') ? chip('tarefas', 'Tarefas e notas') : ''}${tem('listas') ? chip('listas', 'Listas') : ''}${tem('saude') ? chip('saude', 'Diário e peso') : ''}</div>` : ''}
+  ${velhos ? `<div class="group"><button class="row" id="arq-limpa2"><span class="set-ic">${ic('trash')}</span><span class="main"><div class="t">Excluir os antigos</div><div class="s">${velhos} ${velhos === 1 ? 'item arquivado há mais de 30 dias' : 'itens arquivados há mais de 30 dias'}</div></span>${ic('r','i chev')}</button></div>` : ''}
+  <div class="group">${l.length ? l.map(x => `<div class="row" data-swipe="arq:${x.k}:${x.id}"><span class="main">
+      <div class="t">${esc(x.title)}${x.done ? ' <span class="chip good">Concluído</span>' : ''}</div>
+      <div class="s">${x.date ? rel(x.date) + (x.time ? ' às ' + x.time : '') + ' · ' : ''}${esc(x.sub || ARQ[x.k].n)} · arquivado ${agoTxt(x.at)}</div></span>
       <button class="pay" data-unarq="${x.k}:${x.id}">Restaurar</button>
       <button class="pay del" data-delarq="${x.k}:${x.id}">Excluir</button></div>`).join('')
-    : `<div class="empty">${S.arq ? 'Nada arquivado ainda. Arraste um compromisso para o lado na agenda, ou confirme em "Como foi?".' : 'Carregando…'}</div>`}</div>
-  <div class="foot">Restaurar devolve o item para a agenda na mesma data. Para apagar de vez, use o botão Excluir (ele pergunta antes) ou deslize a linha para o lado — nos dois casos dá tempo de desfazer.</div>`;
+    : `<div class="empty">${S.arq ? (filtro === 'tudo' ? 'Nada arquivado. Arraste qualquer linha para o lado — compromisso, tarefa, nota, item de lista ou do diário — e ela vem para cá.' : 'Nada arquivado nesse grupo.') : 'Carregando…'}</div>`}</div>
+  <div class="foot">Arrastar para o lado nunca exclui: guarda aqui, com alguns segundos para desfazer. Restaurar devolve o item para a tela de onde saiu. Excluir de vez é só por aqui — pelo botão Excluir (que pergunta antes) ou arrastando a linha, e ainda dá tempo de desfazer.</div>`;
 }
 function bindArq(){
+  $('#view').querySelectorAll('[data-arqf]').forEach(b => b.onclick = () => { ui.arqF = b.dataset.arqf; render(); });
   $('#view').querySelectorAll('[data-unarq]').forEach(b => b.onclick = async () => {
     const [k, id] = b.dataset.unarq.split(':'), A = ARQ[k]; b.disabled = true;
     const { error } = await sb.from(A.table).update({ archived_at: null }).eq('id', id);
     if (error){ b.disabled = false; toast('Não consegui restaurar agora.'); return; }
+    if (k === 'task') await sb.from('tasks').update({ archived_at: null }).eq('parent_id', id);
+    if (k === 'list') await sb.from('list_items').update({ archived_at: null }).eq('list_id', id);
     S.arq = (S.arq || []).filter(x => !(x.k === k && x.id === id));
-    await loadAll(); render(); toast(`${A.n} de volta na agenda`);
+    await loadAll(); render(); toast(`${A.n} de volta`);
   });
-  $('#view').querySelectorAll('[data-reopen]').forEach(b => b.onclick = () => toast('Restaure o item para abrir e editar.'));
   // excluir de vez: o primeiro toque pergunta, o segundo faz
   $('#view').querySelectorAll('[data-delarq]').forEach(b => b.onclick = () => {
     if (!b.dataset.sure){ b.dataset.sure = 1; b.textContent = 'Confirmar'; setTimeout(() => { if (b.dataset.sure){ delete b.dataset.sure; b.textContent = 'Excluir'; } }, 4000); return; }
-    swipeDelete('arq' + b.dataset.delarq);
+    swipeDelete('arq:' + b.dataset.delarq);
   });
   const limpa = async b => {
-    if (!b.dataset.sure){ b.dataset.sure = 1; const q = b.querySelector('.t'); if (q) q.textContent = 'Toque de novo para excluir'; setTimeout(() => { if (b.dataset.sure){ delete b.dataset.sure; if (q) q.textContent = 'Excluir os que já passaram'; } }, 4000); return; }
-    const t = today(), velhos = (S.arq || []).filter(x => x.date < t);
+    if (!b.dataset.sure){ b.dataset.sure = 1; const q = b.querySelector('.t'); if (q) q.textContent = 'Toque de novo para excluir'; setTimeout(() => { if (b.dataset.sure){ delete b.dataset.sure; if (q) q.textContent = 'Excluir os antigos'; } }, 4000); return; }
+    const corte = new Date(Date.now() - 30 * 864e5).toISOString();
+    const velhos = (S.arq || []).filter(x => x.at && x.at < corte);
     if (!velhos.length) return;
-    S.arq = (S.arq || []).filter(x => x.date >= t); render();
-    const por = k => velhos.filter(x => x.k === k).map(x => x.id);
-    for (const k of ['ev', 'rem']){
-      const ids = por(k); if (!ids.length) continue;
+    S.arq = (S.arq || []).filter(x => !velhos.includes(x)); render();
+    for (const k of ARQ_ORDEM){
+      const ids = velhos.filter(x => x.k === k).map(x => x.id); if (!ids.length) continue;
       const { error } = await sb.from(ARQ[k].table).delete().in('id', ids);
       if (error){ toast('Não consegui excluir tudo agora.'); loadArq(); return; }
     }
@@ -2111,6 +2145,7 @@ function render(){
   if (view==='assistente') bindChat();
   if (view==='lista'){ bindLista(); if (listItems(ui.listId).length) swipeHint(); }
   if (view==='tarefas' && S.tasks.length) swipeHint();
+  if (view==='comer' && (S.comer || []).length) swipeHint();
   if (view==='tarefas') bindSubs();
   if (view==='invest') bindInvest();
 }
@@ -2585,7 +2620,6 @@ function bindView(){
   V.querySelectorAll('[data-reserva]').forEach(b => b.onclick = e => { e.stopPropagation(); openReserva(); });
   V.querySelectorAll('[data-dosecard]').forEach(b => b.onclick = () => { const [st, id, t] = b.dataset.dosecard.split('|'); rotMark(id, t, st); });
   V.querySelectorAll('[data-peso]').forEach(b => b.onclick = () => openPeso((S.pesos || []).find(x => x.id === b.dataset.peso)));
-  V.querySelectorAll('[data-ideias]').forEach(b => b.onclick = () => openIdeias(b.dataset.ideias));
   V.querySelectorAll('[data-addmeal]').forEach(b => b.onclick = () => openBuscaAlimento(b.dataset.addmeal));
   V.querySelectorAll('[data-edcomida]').forEach(b => b.onclick = () => {
     const x = (S.comer || []).find(y => y.id === b.dataset.edcomida);
@@ -3098,7 +3132,7 @@ function vLista(){
   <div class="group">${pendHtml || `<div class="empty">Lista vazia. Digite ou dite os itens acima.</div>`}</div>
   ${done.length ? `<div class="li-clear"><button class="btn-go" data-liclear>Limpar marcados (${done.length})</button></div>` : ''}
   ${total ? `<div class="card li-total"><div class="row"><span class="main t">Total da lista</span>${acc(total)}</div><div class="row"><span class="main t">Já marcado (no carrinho)</span>${acc(cart)}</div><div class="row"><span class="main t">Falta</span>${acc(total - cart)}</div></div>` : ''}
-  <div class="foot">⁠Toque no círculo para riscar (o item fica no lugar). ⁠Arraste o item para o lado para excluir. ⁠Toque no item para mudar quantidade, unidade e preço (R$ por unidade).${l.kind === 'mercado' ? ' Os itens ficam separados por seção do mercado.' : ''}</div>`;
+  <div class="foot">⁠Toque no círculo para riscar (o item fica no lugar). ⁠Arraste o item para o lado para arquivar (ele vai para Arquivados, no menu Mais). ⁠Toque no item para mudar quantidade, unidade e preço (R$ por unidade).${l.kind === 'mercado' ? ' Os itens ficam separados por seção do mercado.' : ''}</div>`;
 }
 
 // compartilhar: uma chave liga/desliga para cada pessoa da família (no Plano Família são 2 pessoas)
@@ -3376,7 +3410,7 @@ const INV_KIND = { acao:'Ação', fii:'FII', etf:'ETF', bdr:'BDR' };
 const INV_GROUPS = [['acao','Ações'],['fii','Fundos imobiliários (FIIs)'],['etf','ETFs'],['bdr','BDRs']];
 async function loadInvest(){
   if (!session) return;
-  const { data: w } = await sb.from('watchlist').select('id,symbol,created_at').order('created_at');
+  const { data: w } = await sb.from('watchlist').select('id,symbol,created_at').is('archived_at', null).order('created_at');
   S.watch = w || [];
   const syms = S.watch.map(x => x.symbol);
   if (syms.length){ const { data: q } = await sb.from('asset_quotes').select('*').in('symbol', syms); S.quotes = Object.fromEntries((q || []).map(x => [x.symbol, x])); }
@@ -3402,7 +3436,7 @@ function vInvest(){
         <span class="main"><div class="t">${esc(x.symbol)}</div><div class="s">${q ? (q.kind === 'invalido' ? 'Código não encontrado na bolsa' : esc(tcase(q.name || ''))) : 'Buscando cotação…'}</div></span>
         <span class="mk-r">${q && q.price != null ? `${accN(Number(q.price), 2)}${pctChip(q.pct)}` : ''}</span></button>`; }).join('')}</div></section>` : ''; }).join('')
     : `<div class="group"><div class="empty">${w.length ? 'Nenhum ativo nesta aba.' : 'Digite o código de um ativo acima para começar a acompanhar. Você não informa quantidade nem valor investido.'}</div></div>`}
-  <div class="foot">Preço em R$ por cota/ação e variação do dia em %. Fonte: brapi (B3), com até 30 minutos de atraso, atualizado a cada 15 min no pregão. ⁠Toque no ativo para ver o gráfico; ⁠arraste para o lado para parar de acompanhar.</div>`;
+  <div class="foot">Preço em R$ por cota/ação e variação do dia em %. Fonte: brapi (B3), com até 30 minutos de atraso, atualizado a cada 15 min no pregão. ⁠Toque no ativo para ver o gráfico; ⁠arraste para o lado para parar de acompanhar (fica em Arquivados).</div>`;
 }
 function bindInvest(){
   const f = $('#inv-form'); if (f) f.onsubmit = async e => {
@@ -3634,8 +3668,8 @@ function showOnboarding(force){
 // dica do gesto de arrastar, uma vez só
 function swipeHint(){
   if (mouse()) return;
-  try { if (localStorage.getItem('meudia.swhint')) return; localStorage.setItem('meudia.swhint', '1'); } catch(e) { return; }
-  setTimeout(() => toast('Dica: ⁠arraste um item para o lado para excluir.', 5000), 600);
+  try { if (localStorage.getItem('meudia.swhint2')) return; localStorage.setItem('meudia.swhint2', '1'); } catch(e) { return; }
+  setTimeout(() => toast('Dica: ⁠arraste um item para o lado para arquivar. Nada se perde: fica em Arquivados.', 6000), 600);
 }
 
 /* ---------- termos de uso e política de privacidade ---------- */
@@ -3727,6 +3761,7 @@ function openInbox(){
   delete el.dataset.route; el.hidden = false; paint();
 }
 document.addEventListener('click', ev => { if (ev.target.closest('[data-inbox]')) openInbox(); });
+document.addEventListener('click', ev => { const b = ev.target.closest('[data-ideias]'); if (b) openIdeias(b.dataset.ideias); });
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') loadInbox(); });
 setInterval(() => { if (document.visibilityState === 'visible') loadInbox(); }, 60e3);
 function addReply(r){
@@ -5245,8 +5280,9 @@ function medidaCaseira(g, porcaoG, txt){
 // Ideias do que comer: combinações caseiras guardadas no banco, com os valores
 // calculados na hora pela tabela de alimentos. Um toque lança tudo no diário.
 async function openIdeias(meal){
-  const nome = (MEALS.find(([k]) => k === meal) || [, 'refeição'])[1].toLowerCase();
   const el = $('#sheet');
+  let nome = 'refeição';
+  try { nome = (MEALS.find(m => m[0] === meal) || [, 'refeição'])[1].toLowerCase(); } catch (e) {}
   el.innerHTML = `<div class="pane" role="dialog" aria-modal="true" aria-label="Ideias para o ${esc(nome)}">
     <div class="bar"><button data-x>Fechar</button><b>Ideias para o ${esc(nome)}</b><span></span></div>
     <div class="body" id="id-body"><div class="fd-load"><span></span><span></span><span></span></div>
@@ -5279,8 +5315,11 @@ async function openIdeias(meal){
     try {
       const { data, error } = await sb.rpc('sugerir_refeicao', { p_meal: meal, p_qtd: 3, p_pular: vistas });
       if (error) throw error;
-      pinta(data || []);
-    } catch (e) { corpo.innerHTML = '<div class="fd-dica">Não deu para buscar as ideias agora. Tente de novo em instantes.</div>'; }
+      try { pinta(data || []); }
+      catch (err) { corpo.innerHTML = `<div class="fd-dica">Achei as ideias, mas não consegui desenhar.<br><br><small>${esc(String(err && err.message || err).slice(0, 180))}</small></div>`; }
+    } catch (e) {
+      corpo.innerHTML = `<div class="fd-dica">Não deu para buscar as ideias agora.<br><br><small>${esc(String((e && (e.message || e.msg)) || e || '').slice(0, 180))}</small></div>`;
+    }
   };
 
   const lanca = async (ideia, botao) => {
@@ -5402,7 +5441,7 @@ function vSaude(){
       : '<div class="empty">Nada marcado. Compromissos do tipo consulta ou exame aparecem aqui.</div>'}</section>`;
 
   const regs = pesos.slice().reverse().slice(0, 12);
-  const lista = `<section class="card"><div class="ch"><b>Registros</b><span>deslize para excluir</span></div>
+  const lista = `<section class="card"><div class="ch"><b>Registros</b><span>deslize para arquivar</span></div>
     ${regs.length ? regs.map((p, i) => { const ant = pesos[pesos.length - 2 - i]; const dif = ant ? Math.round((p.kg - ant.kg) * 10) / 10 : null;
         return `<div class="row pz-row" data-swipe="peso:${esc(p.id)}"><button class="main" data-peso="${esc(p.id)}"><b>${n2(p.kg,1)} kg</b><small>${brD(p.day)}${p.cintura ? ' · cintura ' + n2(p.cintura,1) + ' cm' : ''}${p.nota ? ' · ' + esc(p.nota) : ''}</small></button>
           ${dif == null ? '' : `<span class="chip ${dif < 0 ? 'g' : dif > 0 ? 'w' : ''}">${sinal(dif)} kg</span>`}
